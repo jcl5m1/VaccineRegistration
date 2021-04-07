@@ -6,6 +6,6 @@ If [Google Cloud Vision Services](https://cloud.google.com/vision) are enabled o
 
 You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbxqX4NDfrTFaTn25ilzazqobWwMPT1IKzxHUdJBnnWPI3pjZ2tAV615d7vwLxT2H0Ls-g/exec).  It is under VERY active development.
 
-#Setup your own instance
+## Setup your own instance
 
 TBD.
