@@ -1,5 +1,5 @@
-# VaccineRegistration Tool
+# Vaccine Registration Tool
 
-This is a free lightweight web tool for registering, scheduling, notifying, and submtting filing documents for COVID-19 vaccination patients.  It only requires a Google account with Google Sheets, Drive, and Gmail.  It is build using App Script to create forms and pages automatically.
+This project is a free lightweight web tool for registering, scheduling, notifying, managing, and reporting for COVID-19 vaccinations. It attempt to create digital workflows to help reduce the paperwork burden for small/medium vaccination clinics that may not have the IT infrastructure to build thier own tools.  It only requires a Google account with Google Sheets, Drive, and Gmail.  Most of the configuration can be done simply be editting a Google Sheet. It is build using [App Script](https://developers.google.com/apps-script) to create web forms/pages that create, read, and update data in the spreadsheet. 
 
-If Google Cloud Services are enabled, it can also perform text recognition on insurance cards and photo ID for much faster (and less error prone) check-in process.
+If [Google Cloud Vision Services](https://cloud.google.com/vision) are enabled on your hosting account, it can also perform text recognition on insurance cards and photo IDs for much faster (and less error prone) check-in process.  This service is free for the first 1000 queries/month, with a [modest cost for additional queries/month](https://cloud.google.com/vision/pricing).
