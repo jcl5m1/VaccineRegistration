@@ -4,4 +4,8 @@ This project is a free lightweight web tool for registering, scheduling, notifyi
 
 If [Google Cloud Vision Services](https://cloud.google.com/vision) are enabled on your hosting account, it can also perform text recognition on insurance cards and photo IDs for much faster (and less error prone) check-in process.  This service is free for the first 1000 queries/month, with a [modest cost for additional queries/month](https://cloud.google.com/vision/pricing).
 
-You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbz4I5qsDvDM2EwCnfV7AJ86ZEUf9ghRnJCms7OrjFVHc3wh4n6PsRX9d6fGzVDj-MQEPw/exec).  It is under VERY active development.
+You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbxqX4NDfrTFaTn25ilzazqobWwMPT1IKzxHUdJBnnWPI3pjZ2tAV615d7vwLxT2H0Ls-g/exec).  It is under VERY active development.
+
+#Setup your own instance
+
+TBD.
