@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+        <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Look Up Registration</h1>
+    <form id="myform"
+    method="GET"
+    action="<?=url?>">
+    <input type="hidden" name="page" value="profile">
+      First Name: <input type="text" name="FirstName"><br>
+      Last Name: <input type="text" name="LastName"><br>
+      Date of Birth <input type="date" name="DateOfBirth"><br>
+      <button type="submit">Search</button>
+      <button type="button" onclick="generateLookupTest()">Generate</button>
+    </form>
+    <script>
+      function generateLookupTest(){
+        myform.FirstName.value = 'Ixzraxzgnp';
+        myform.LastName.value = 'Lmkujptcir';
+        myform.DateOfBirth.value = '1976-10-27';
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Register</h1>
+    <form id="myform" 
+    onsubmit="google.script.run.processRegistrationForm(this)"
+    method="GET"
+    action="<?=url?>">
+      <input type="hidden" name="page" value="profile">
+      <input type="hidden" name="prev" value="register">
+      <b>Patient Information</b><br>
+      (optional) Autofill with driver's license/state ID barcode: <input type="file" accept="image/*" 
+      name="ImageIDBack" capture="environment"><br>
+      First Name: <input type="text" required name="FirstName"><br>
+      Last Name: <input type="text" required name="LastName"><br>
+      Date of Birth <input type="date" required name="DateOfBirth"><br>
+      Gender: <select name="Gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select><br>
+      Race: <input type="text" required name="Race"><br>
+      <br>
+      What is your relationship to Patient? <select name="RelationshipToPatient">
+        <option value="self">Self</option>
+        <option value="gaurdian">Parent/Gaurdian</option>
+      </select><br>
+      If you are not the patient, enter your name: <input type="text" name="SignatureName"><br>
+      <br>
+      <b>Preferred Contact Infomation:</b><br>
+      Phone: <input type="text" required name="Phone"><br>
+      Email: <input type="text" name="Email"><br>
+      <br>
+      <b>Address:</b><br>
+      Street: <input type="text" name="AddressStreet"><br>
+      City: <input type="text" name="AddressCity"><br>
+      State: <input type="text" name="AddressState"><br>
+      Zip: <input type="text" name="AddressZip"><br>
+
+      <br>
+      <b>Health Insurance Card</b><br>
+      Photo of FRONT:
+      <input type="file" accept="image/*" 
+      name="ImageInsuranceFront" capture="environment"><br>
+      Photo of BACK:
+      <input type="file" accept="image/*" 
+      name="ImageInsuranceBack" capture="environment"><br>
+      <br>
+      Any special notes?<br>
+      <textarea name="Notes" rows="4" cols="50"></textarea><br>
+      <button type="submit">Submit</button>
+      <button type="button" 
+      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+      <button type="button" onclick="debugForm(this.parentNode)">Debug</button>
+    </form>
+
+
+  <script>
+    function debugForm(formObject) {
+        for(var e in formObject.elements) {
+          console.log(e);
+        }
+    }
+    function onGenerate(record){
+      myform.FirstName.value = record.FirstName;
+      myform.LastName.value = record.LastName;
+      myform.DateOfBirth.value = record.DateOfBirth;
+      myform.Phone.value = record.Phone;
+      myform.Email.value = record.Email;
+      myform.Gender.value = record.Gender;
+      myform.Race.value = record.Race;
+      myform.RelationshipToPatient.value = record.RelationshipToPatient;
+      myform.SignatureName.value = record.SignatureName;
+      myform.AddressStreet.value = record.AddressStreet;
+      myform.AddressCity.value = record.AddressCity;
+      myform.AddressState.value = record.AddressState;
+      myform.AddressZip.value = record.AddressZip;
+    }
+    </script>
+  </body>
+</html>

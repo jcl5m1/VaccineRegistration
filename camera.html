@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Parse Medicare Card</h1>
+
+
+
+    <form id="myform" 
+    method="GET"
+    action="<?=url?>"
+    onsubmit="google.script.run.processCameraForm(this);">
+      Photo of Card :
+      <input type="hidden" name="page" value="camera">
+      <input name="ImageInsuranceFront" type="file" accept="image/*" onchange="updatePhoto(this,600)" capture="environment"><br>
+      <canvas id="myCanvas" width="10" height="10"></canvas><br>
+      Beneficiary: <input type="text" name="Beneficiary"><br>
+      MedicareClaimNumber: <input type="text" name="MedicareClaimNumber"><br>
+      <button type="submit">Submit</button>
+    </form>
+    <label id = "ocrResult"></label>
+  <script>
+
+
+
+function updatePhoto(e, maxSize){
+  resizeImage({
+      file: e.files[0],
+      maxSize: maxSize
+  }).then(function (resizedImage) {
+      console.log("resized image")
+      var file = new File([resizedImage], e.files[0].name,{type:"image/jpeg", lastModified:new Date().getTime()});
+      var container = new DataTransfer();
+      container.items.add(file);
+      e.files = container.files;
+
+      var reader = new FileReader();
+      reader.readAsDataURL(resizedImage); 
+      reader.onloadend = function() {
+          var base64data = reader.result.split("base64,")[1]; //removes conversion header         
+          google.script.run.withSuccessHandler(onVisionAPIResult).makeVisionAPIRequestWithBase64Blob(base64data);
+      }
+  }).catch(function (err) {
+      console.error(err);
+  });
+}
+
+function extractText(text, prefix, postfix){
+  // javascript doesn't support positive lookahead (required preceeding text)
+  var re = new RegExp('(?:'+prefix +')(.*?)(?='+ postfix +')')
+  res = re.exec(text);
+  if(!res)
+    return false
+  return res[0].replace(prefix,'').trim()
+}
+
+function parseMedicareOld(text){
+  if (!text.toUpperCase().includes("MEDICARE"))
+    return false;
+  var beneficiary = extractText(text,'BENEFICIARY\n','\nMEDICARE')
+  if (!beneficiary)
+    return false
+  myform.Beneficiary.value = beneficiary;
+  var res = text.match(/\d\d\d-\d\d-\d\d\d\d-[AB]/g); //just numbers?
+  if (res)
+    myform.MedicareClaimNumber.value = res[0];
+  else
+    return false
+  return true;
+}
+
+function parseMedicareNew(text){
+  if (!text.toUpperCase().includes("MEDICARE"))
+    return false;
+  var beneficiary = extractText(text,'Name/Nombre\n','\n')
+  if (!beneficiary)
+    return false
+  myform.Beneficiary.value = beneficiary;
+  var res = text.match(/[A-Z0-9]{4}-[A-Z0-9]{3}-[A-Z0-9]{4}/g);
+  if (res)
+    myform.MedicareClaimNumber.value = res[0];
+  else
+    return false
+  return true;
+}
+
+function parseInsurance(text){
+  if (parseMedicareOld(text))
+    return true;
+  if (parseMedicareNew(text))
+    return true;
+  return false;
+}
+
+function onVisionAPIResult(res){
+  console.log("vision api result")
+  //first result has all the text.  try regex parsing
+  var text = res[0]['description']; 
+  console.log(text);
+
+  if (parseInsurance(text)) {
+    console.log("parse SUCCESS");
+  } else {
+    console.log("parse FAIL");
+  }
+}
+
+var resizeImage = function (settings) {
+    var file = settings.file;
+    var maxSize = settings.maxSize;
+    var reader = new FileReader();
+    var image = new Image();
+    var canvas = document.getElementById('myCanvas');//  document.createElement('canvas');
+    var dataURItoBlob = function (dataURI) {
+        var bytes = dataURI.split(',')[0].indexOf('base64') >= 0 ?
+            atob(dataURI.split(',')[1]) :
+            unescape(dataURI.split(',')[1]);
+        var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
+        var max = bytes.length;
+        var ia = new Uint8Array(max);
+        for (var i = 0; i < max; i++)
+            ia[i] = bytes.charCodeAt(i);
+        return new Blob([ia], { type: mime });
+    };
+    var resize = function () {
+        var width = image.width;
+        var height = image.height;
+        if (width > height) {
+            if (width > maxSize) {
+                height *= maxSize / width;
+                width = maxSize;
+            }
+        } else {
+            if (height > maxSize) {
+                width *= maxSize / height;
+                height = maxSize;
+            }
+        }
+        var origWidth = canvas.width
+        var origHeight = canvas.height
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        var dataUrl = canvas.toDataURL('image/jpeg');
+        var blob = dataURItoBlob(dataUrl);
+        return blob;
+    };
+    return new Promise(function (ok, no) {
+        if (!file.type.match(/image.*/)) {
+            no(new Error("Not an image"));
+            return;
+        }
+        reader.onload = function (readerEvent) {
+            image.onload = function () { return ok(resize()); };
+            image.src = readerEvent.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+};
+    /* End Utility function to convert a canvas to a BLOB      */
+    </script>
+  </body>
+</html>
+
+<!-- 
+<!DOCTYPE html>
+<html>
+   <head>
+      <base target="_top">
+      <script>
+         function callVisionAPI(){
+           var status = document.getElementById('status'); 
+           var imgUrl = document.getElementById('imgUrl');
+           status.innerHTML = "<b>Calling VISION API with imgUrl: </b>" + imgUrl.value;
+           console.log("Calling Vision API w/ imgUrl: " + imgUrl.value);
+           google.script.run
+             .withFailureHandler(function(error) {
+               status.innerHtml = 'Error calling server function makeRequest: ' + error;
+             })
+             .withSuccessHandler(function(result){
+             console.log('Raw response from Vision API: ' + result);
+               var JResp =  JSON.parse(result); 
+               showResponse(JResp, imgUrl.value);
+           }).makeRequest(imgUrl.value);  
+         }
+         
+         
+         function showResponse(JSON, imgUrl){
+           var status = document.getElementById('status');
+           var imgTag = document.getElementById('ImgTag');
+           if (typeof(JSON['responses'][0]['textAnnotations']) != "undefined"){
+             var textResp = JSON['responses'][0]['textAnnotations'][0];
+             var description = textResp["description"];
+             var locale = textResp['locale'];    
+             status.innerHTML = '<b>Converted Text:</b> ' + description;
+             imgTag.src = imgUrl;      
+           } else
+             status.innerHTML = 'Unable to analyze text. Try an image with better contrast.';
+         }
+             
+      </script>
+   </head>
+   <body>
+         <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+      <h2>Google Cloud Vision API & G Suite</h2>
+      <h3>Document Text Detection (OCR)</h3>
+      <div>
+         <input id="imgUrl" type="text" placeholder="http://<<URL of image>>" size="80"/>
+         <button onClick="callVisionAPI()">Call Vision API</button>
+      </div>
+      <br/>
+      <div>
+         <image id="ImgTag" height="400" width="600"/>
+      </div>
+      <br/>
+      <div id="status"></div>
+   </body>
+</html> -->

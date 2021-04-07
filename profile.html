@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Profile</h1>
+
+    <table border=0>
+    <? for(var key in profileData ){?>
+      <tr><td><b><?=key?>:</b></td><td><?=profileData[key]?></td></tr>
+    <?}?>
+    </table>
+  </body>
+</html>
