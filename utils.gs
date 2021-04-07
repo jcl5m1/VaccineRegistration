@@ -19,7 +19,7 @@ function getScriptUrl() {
 
 // strong gaurantee of UUID
 function hashTimestamp(){
-  randSuffix = 1000;
+  randSuffix = 1000000000;
   return (Date.now()*randSuffix+Math.round(Math.random()*randSuffix)).toString(36).toUpperCase();
 }
 
