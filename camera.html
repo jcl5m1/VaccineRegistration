@@ -101,8 +101,6 @@ function onVisionAPIResult(res){
   console.log("vision api result")
   //first result has all the text.  try regex parsing
   var text = res[0]['description']; 
-  console.log(text);
-
   if (parseInsurance(text)) {
     console.log("parse SUCCESS");
   } else {
