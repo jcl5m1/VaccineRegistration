@@ -45,6 +45,7 @@ function detectBarcode(canvas) {
           myform.FirstName.value = res['FirstName'];
           myform.LastName.value = res['LastName'];
           myform.DateOfBirth.value = res['DateofBirth'];
+          myform.submit();
           break;
         default:
           console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
