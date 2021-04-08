@@ -1,5 +1,5 @@
 
-var APIKey = 'replace'
+
 
 function testVisionAPI(){
   var name = '1617767629200_camera.jpg'
