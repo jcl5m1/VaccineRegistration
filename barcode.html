@@ -13,7 +13,7 @@
     onsubmit="google.script.run.processCameraForm(this);">
       Photo of ID Card barcode on back:
       <input type="hidden" name="page" value="camera">
-      <input name="ImageInsuranceFront" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
+      <input name="ImageIDBack" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
       <canvas hidden id="canvas" width="0" height="0"></canvas><br>
       <button type="submit">Submit</button>
     </form>
