@@ -1,5 +1,12 @@
 
-
+// find server side ip to restrict APIkey usage
+function getIP() {
+  var data = UrlFetchApp.fetch('https://www.cloudflare.com/cdn-cgi/trace');
+  var re = RegExp(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/);
+  var ip = re.exec(data)[0];
+  console.log(ip);
+  return ip;
+}
 
 function testVisionAPI(){
   var name = '1617767629200_camera.jpg'
