@@ -6,7 +6,7 @@ It only requires a free Google account to host the project using Google Sheets a
 
 If [Google Cloud Vision Services](https://cloud.google.com/vision) are enabled on your hosting account, it can also perform text recognition on insurance cards and photo IDs for much faster (and less error prone) check-in process.  This service is free for the first 1000 queries/month, with a [modest cost for additional queries/month](https://cloud.google.com/vision/pricing).
 
-You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbxqX4NDfrTFaTn25ilzazqobWwMPT1IKzxHUdJBnnWPI3pjZ2tAV615d7vwLxT2H0Ls-g/exec).  It is under VERY active development.
+You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbwM92Cxn9iD-ePMKojsJS0RhWIcCZBfn_h50M8RgHiR2rJxIM6dIUzLEX-ojEIYcAisuQ/exec).  It is under VERY active development.
 
 ## Setup your own instance
 
