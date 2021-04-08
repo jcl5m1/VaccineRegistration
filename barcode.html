@@ -37,20 +37,21 @@ function detectBarcode(canvas) {
       var footer = document.getElementsByTagName('footer')[0];
       footer.innerHTML = '<p>Detected ' + barcodes.length + ' barcodes</p>';
       for(var i = 0; i < barcodes.length; i++) {
-        if (barcodes[i].format == 'qr_code') {
-          console.log(barcodes[i].rawValue)
-        }
-        if (barcodes[i].format == 'pdf417') {
-          res = parseDriversLicense(barcodes[i].rawValue)
-          console.log(res)
+        switch(barcodes[i].format) {
+          case 'pdf417':
+            res = parseDriversLicense(barcodes[i].rawValue)
+            var footer = document.getElementsByTagName('footer')[0];
+            html = "<table>"
+            for(var k in res){
+              html += "<tr><td>"+ k + "</td><td>"+res[k]+"</td></tr>"
+            }
+            html += "</table>"
+            footer.innerHTML = html;
+            break;
+          default:
+            footer.innerHTML += barcodes[i].format + ": " + barcodes[i].rawValue
+            console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
 
-          var footer = document.getElementsByTagName('footer')[0];
-          html = "<table>"
-          for(var k in res){
-            html += "<tr><td>"+ k + "</td><td>"+res[k]+"</td></tr>"
-          }
-          html += "</table>"
-          footer.innerHTML = html;
         }
       }  
     }).catch((e) => {

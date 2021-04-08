@@ -86,36 +86,36 @@
     }
 
 
-  function detectBarcode(canvas) {
-    if (window.BarcodeDetector == undefined) {
-      console.error('Barcode Detection not supported');
-      return;
-    }
+function detectBarcode(canvas) {
+  if (window.BarcodeDetector == undefined) {
+    console.error('Barcode Detection not supported');
+    return;
+  }
 
-    var barcodeDetector = new BarcodeDetector();
-    barcodeDetector.detect(canvas)
-    .then(barcodes => {
-      // Add the barcodes as strings to the <footer>
-      for(var i = 0; i < barcodes.length; i++) {
-        switch(barcodes[i].format) {
-          case 'pdf417':
-            res = parseDriversLicense(barcodes[i].rawValue)
-            myform.FirstName.value = res['FirstName'];
-            myform.LastName.value = res['LastName'];
-            myform.DateOfBirth.value = res['DateofBirth'];
-            myform.Gender.value = res['Sex'];
-            myform.AddressStreet.value = res['AddressStreet1'];
-            myform.AddressCity.value = res['AddressCity'];
-            myform.AddressState.value = res['AddressState'];
-            myform.AddressZip.value = res['AddressZip'];
-            break;
-          default:
-            console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
-        }
-      }  
-    }).catch((e) => {
-      console.error("Barcode Detection failed: " + e);
-    })
+  var barcodeDetector = new BarcodeDetector();
+  barcodeDetector.detect(canvas)
+  .then(barcodes => {
+    // Add the barcodes as strings to the <footer>
+    for(var i = 0; i < barcodes.length; i++) {
+      switch(barcodes[i].format) {
+        case 'pdf417':
+          res = parseDriversLicense(barcodes[i].rawValue)
+          myform.FirstName.value = res['FirstName'];
+          myform.LastName.value = res['LastName'];
+          myform.DateOfBirth.value = res['DateofBirth'];
+          myform.Gender.value = res['Sex'];
+          myform.AddressStreet.value = res['AddressStreet1'];
+          myform.AddressCity.value = res['AddressCity'];
+          myform.AddressState.value = res['AddressState'];
+          myform.AddressZip.value = res['AddressZip'];
+          break;
+        default:
+          console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
+      }
+    }  
+  }).catch((e) => {
+    console.error("Barcode Detection failed: " + e);
+  })
 }
 
 function updatePhoto(e, maxSize){
