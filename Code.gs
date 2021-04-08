@@ -5,7 +5,7 @@ function doGet(e) {
   var params = JSON.stringify(e);
   // return HtmlService.createHtmlOutput(params);
   
-  var validPages = ['clinics', 'register','lookup','camera', 'profile'];
+  var validPages = ['clinics', 'register','lookup','camera', 'profile','barcode'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
