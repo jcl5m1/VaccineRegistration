@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <? 
+      var appointments = getSheetDataAsDict('Appointments');
+      var url = getScriptUrl();
+    ?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Appointments</h1>
+    <p>Last checked: <?= new Date().toLocaleString() ?></p>
+
+      <?
+      for (i in appointments) {
+        appointment = appointments[i]
+        ?>             
+        <table><td>
+          <input type="radio" name="appointmentSelection" value="<?= appointment['ID']?>">
+          </td>
+          <td>
+          <div><b><?= appointment['DateTime']?></b></div> 
+          <div>Remaining Slots: 
+          <?= appointment['Remaining']  ?>
+          </div>
+          <div><?= appointment['Name']?></div>
+          <div><a href="https://www.google.com/maps/search/?api=1&query=<?= appointment['Location']?>"><?= appointment['Location']?></a></div>
+        </td>
+      </table><br>
+
+       <? } ?>
+  </body>
+</html>
