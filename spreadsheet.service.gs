@@ -1,10 +1,9 @@
 
-var spreadsheetId = '1pK5dEzDSJfbLtElooZfXXUyylunD2PTnUPfTl1CvRUE';
 
 function test() {
-  values = getSheetData('Clinics');
+  values = getSheetData('Appointments');
   res = getCellByKey(values,1,"Registered");
-  console.log(res)
+  console.log("appointment read: " + res)
   // if(res!=12) {
   //   throw new Error("get sheet and cell failed");
   // }
@@ -12,30 +11,38 @@ function test() {
   // res = getColumnByKey(values,"Registered");
   // console.log(res)
 
-  // res = getSheetDataAsDict('Clinics');
+  // res = getSheetDataAsDict('Appointments');
   // console.log(res)
 
 
-  res = dictToValueArray("Patients",
+  record = dictToValueArray("Patients",
   {
     "ID": hashTimestamp(),
     "FirstName": "angela",
     "LastName": "wong",
     "Status": "registered",
-    "DateOfBirth": "1/1/1960"
+    "DateOfBirth": "1960-01-01"
   })
-  console.log(res)
+  res = appendSheetData("Patients",[record])
+  console.log("append result:" + res)
 
-  res2 = appendSheetData("Patients",[res])
-  console.log(res2)
+  Utilities.sleep(1000)
+  res = searchPatients({"FirstName": "angela",'LastName': 'wong', 'DateOfBirth': '1960-01-01'});
+  if(res)
+    console.log("searchPatients:" + JSON.stringify(res));
+  else
+    console.log("fail");
 
-  // res = getSheetData('Patients');
-  // console.log(res)
+}
 
-  res = searchPatients({'LastName': 'wong', 'DateOfBirth': '1/1/1960'});
-  console.log("searchPatients:" + res);
-
-  console.log("pass");
+// save to spreadsheet tab
+function debugLog(type, message){
+  var res = dictToValueArray("Log",{
+    'Timestamp': Date.now(),
+    'Type': type,
+    'Message': message
+  })
+  return appendSheetData("Log",[res])
 }
 
 // get cell from 2D array, using header row key
@@ -134,10 +141,13 @@ function searchPatients(query)
     "LastName": query['LastName'],
     "DateOfBirth": query['DateOfBirth']
   }
+
   var key_lut = {}
   for(var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i
   }
+//  console.log("keys:" + keys)
+
   for(var i = 1; i < values.length; i++) {
     var found = true;
     for(var k in queryPatient) {

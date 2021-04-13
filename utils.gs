@@ -2,15 +2,7 @@
 function debug(message){
   console.log(message);
 }
-// save to spreadsheet tab
-function debugLog(type, message){
-  var res = dictToValueArray("Log",{
-    'Timestamp': Date.now(),
-    'Type': type,
-    'Message': message
-  })
-  return appendSheetData("Log",[res])
-}
+
 
 function getScriptUrl() {
  var url = ScriptApp.getService().getUrl();

@@ -7,11 +7,16 @@
     <?var url = getScriptUrl();?>
     <a href='<?=url?>'>Home</a><br>
     <h1>Profile</h1>
-    <img src="https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl=<?=profileData['ID']?>"><br>
-    <table border=0>
-    <? for(var key in profileData ){?>
-      <tr><td><b><?=key?>:</b></td><td><?=profileData[key]?></td></tr>
-    <?}?>
-    </table>
+    <? if(profileData) {?>
+      <img src="https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl=<?=profileData['ID']?>"><br>
+      <table border=0>
+      <? for(var key in profileData ){?>
+        <tr><td><b><?=key?>:</b></td><td><?=profileData[key]?></td></tr>
+      <?}?>
+      </table>
+
+    <?} else {?>
+      <h2>Not Found</h2>
+    <? } ?>
   </body>
 </html>

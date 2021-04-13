@@ -16,9 +16,8 @@ function doGet(e) {
     Utilities.sleep(2000);
   }
 
-
   if(page == 'profile') {
-    profileData = searchPatients(e.parameter)
+    profileData = searchPatients(e.parameter);
   }
 
   if (validPages.indexOf(page) !== -1) {
