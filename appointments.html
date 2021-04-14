@@ -3,7 +3,7 @@
   <head>
     <base target="_top">
   </head>
-  <body>
+  <body onload="hideAll()">
     <? 
       var appointments = getSheetDataAsDict('Appointments');
       var url = getScriptUrl();
@@ -13,31 +13,34 @@
     None Yet
     <h1>Available Appointments:</h1>
     <p>Last checked: <?= new Date().toLocaleString() ?></p>
+
+    Select Day: <input type="date" onchange="onDateSelect(this)"><br><br>
     <?
-    //load appointments into dict organized by day
+    //load appointments group by day
     days = {};
     for (var i in appointments) {
       appointment = appointments[i];
-      dateTime  = appointment['DateTime'];
-      dt = dateTime.split(' ');
-      if (!(dt[0] in days))
-        days[dt[0]] = []
-      days[dt[0]].push([dt[1],appointment])
+      day  = appointment['Date'];
+      if (!(day in days))
+        days[day] = []
+      days[day].push(appointment)
     }
 
     for (var day in days) {
-      appts = days[day]
-      appointment = appts[0][1]
+      appointments = days[day]
+      appointment = appointments[0]
       ?> 
+      <div id=<?=day?>>
       <b><?=day?></b><br>
       <?=appointment['Name']?><br>
       <a href="https://www.google.com/maps/search/?api=1&query=<?=appointment['Location']?>" target=new><?=appointment['Location']?></a><br>
       <select name="appointment" id="appointment">
       <option disabled selected value>select a time</option>
       <?
-      for (var i in appts) {
-        time = appts[i][0]
-        appointment = appts[i][1]
+      for (var i in appointments) {
+        appointment = appointments[i]
+        time = appointment['Time']
+
         //format time to 12hr
         hrs = parseInt(time.split(':')[0])
         suffix = (hrs >= 12) ? " PM" : " AM"
@@ -47,17 +50,33 @@
         disabled = ''
         if (appointment['Remaining'] == 0)
           disabled = 'disabled'
-        dateTime = appointment['DateTime']
+        id = appointment['ID']
 
         ?>
-        <option value="<?=dateTime?>" <?=disabled?>><?=time?></option>
+        <option value="<?=id?>" <?=disabled?>><?=time?></option>
         <?
 
       }
       ?>
-      </select>
+      </select></div>
       <br><br><?
     }
 ?>
+<script>
+  function hideAll(){
+    <?
+    for (var day in days) {
+      ?>
+     document.getElementById(<?=day?>).style.visibility = "hidden";
+      <?
+    }
+    ?>
+  }
+  function onDateSelect(e){
+    hideAll();
+    console.log(e.value);
+    document.getElementById(e.value).style.visibility = "visible";
+  }
+</script>
   </body>
 </html>
