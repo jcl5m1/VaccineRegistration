@@ -9,26 +9,55 @@
       var url = getScriptUrl();
     ?>
     <a href='<?=url?>'>Home</a><br>
-    <h1>Appointments</h1>
+    <h1>Scheduled Appointments:</h1>
+    None Yet
+    <h1>Available Appointments:</h1>
     <p>Last checked: <?= new Date().toLocaleString() ?></p>
+    <?
+    //load appointments into dict organized by day
+    days = {};
+    for (var i in appointments) {
+      appointment = appointments[i];
+      dateTime  = appointment['DateTime'];
+      dt = dateTime.split(' ');
+      if (!(dt[0] in days))
+        days[dt[0]] = []
+      days[dt[0]].push([dt[1],appointment])
+    }
 
+    for (var day in days) {
+      appts = days[day]
+      appointment = appts[0][1]
+      ?> 
+      <b><?=day?></b><br>
+      <?=appointment['Name']?><br>
+      <a href="https://www.google.com/maps/search/?api=1&query=<?=appointment['Location']?>" target=new><?=appointment['Location']?></a><br>
+      <select name="appointment" id="appointment">
+      <option disabled selected value>select a time</option>
       <?
-      for (i in appointments) {
-        appointment = appointments[i]
-        ?>             
-        <table><td>
-          <input type="radio" name="appointmentSelection" value="<?= appointment['ID']?>">
-          </td>
-          <td>
-          <div><b><?= appointment['DateTime']?></b></div> 
-          <div>Remaining Slots: 
-          <?= appointment['Remaining']  ?>
-          </div>
-          <div><?= appointment['Name']?></div>
-          <div><a href="https://www.google.com/maps/search/?api=1&query=<?= appointment['Location']?>"><?= appointment['Location']?></a></div>
-        </td>
-      </table><br>
+      for (var i in appts) {
+        time = appts[i][0]
+        appointment = appts[i][1]
+        //format time to 12hr
+        hrs = parseInt(time.split(':')[0])
+        suffix = (hrs >= 12) ? " PM" : " AM"
+        hrs = (hrs >= 13) ? hrs-12: hrs
+        time = '' + hrs + ':' + time.split(':')[1] + suffix
+        
+        disabled = ''
+        if (appointment['Remaining'] == 0)
+          disabled = 'disabled'
+        dateTime = appointment['DateTime']
 
-       <? } ?>
+        ?>
+        <option value="<?=dateTime?>" <?=disabled?>><?=time?></option>
+        <?
+
+      }
+      ?>
+      </select>
+      <br><br><?
+    }
+?>
   </body>
 </html>
