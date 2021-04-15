@@ -41,8 +41,8 @@ function generateRegistrationTest(){
     Phone: Math.floor(Math.random()*10000000000),
     Email: randomString(5)+"@"+randomString(5)+".com",
     Gender: randomOption(['male','female','other']),
-    Race: randomString(8,true),
-    Ethnicity: randomString(8,true),
+    Race: randomOption(["White","BlackOrAfricanAmerican","AmericanIndianOrAlaskaNative","Asian","NativeHawaiianOrOtherPacificIslander","Other","DeclineToSpecify"]),
+    Ethnicity: randomOption(["HispanicOrLatino","NonHispanicOrLatino","Other","DeclineToSpecify"]),
     RelationshipToPatient: randomOption(['self','gaurdian']),
     SignatureName: randomString(8,true)+" "+randomString(8,true),
     AddressStreet: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
@@ -51,12 +51,14 @@ function generateRegistrationTest(){
     AddressZip: Math.floor(Math.random()*100000),
     ImageInsuranceFront: {name: ''},
     ImageInsuranceBack: {name: ''},
+    InsuranceType: randomOption(['Private','Medicare', 'None']),
     InsurancePolicyHolder: randomString(8,true) + " " + randomString(8,true),
     InsurancePolicyHolderDateOfBirth: randomDate(),
     InsuranceCompany: randomString(8,true),
     InsuranceClaimAddress: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
     InsuranceGroupNumber: Math.floor(Math.random()*10000000000),
     InsuranceSubscriberID: Math.floor(Math.random()*10000000000),
+    InsuranceSSN: Math.floor(Math.random()*1000000000),
   };
   return res;
 }
@@ -86,6 +88,7 @@ function processRegistrationForm(formObject){
     'Source': 'webapp',
     'ImageIDBack': namePrefix + "_IDBack.jpg",
 
+    'InsuranceType': formObject.InsuranceType,
     'ImageInsuranceFront': namePrefix + "_InsuranceFront.jpg",
     'ImageInsuranceBack': namePrefix + "_InsuranceBack.jpg",
     'InsurancePolicyHolder': formObject.InsurancePolicyHolder.toUpperCase(),
@@ -94,6 +97,7 @@ function processRegistrationForm(formObject){
     'InsuranceClaimAddress': formObject.InsuranceClaimAddress.toUpperCase(),
     'InsuranceGroupNumber': formObject.InsuranceGroupNumber.toUpperCase(),
     'InsuranceSubscriberID': formObject.InsuranceSubscriberID.toUpperCase(),
+    'InsuranceSSN': formObject.InsuranceSSN,
 
     'Notes': formObject.Notes,
   }

@@ -15,7 +15,7 @@
       <input type="hidden" name="page" value="profile">
       <input type="hidden" name="prev" value="register">
       <h2>Patient Information</h2>
-      (optional) Autofill with ID barcode: <input type="file" accept="image/*" 
+      (optional) Scan State ID Barcode: <input type="file" accept="image/*" 
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
       <canvas hidden id="canvas" width="0" height="0"></canvas><br>
 
@@ -27,8 +27,23 @@
         <option value="female">Female</option>
         <option value="other">Other</option>
       </select><br>
-      Race: <input type="text" required name="Race"><br>
-      Ethnicity: <input type="text" required name="Ethnicity"><br>
+      Race: 
+      <select name="Race">
+        <option value="White">White</option>
+        <option value="BlackOrAfricanAmerican">Black or African American</option>
+        <option value="AmericanIndianOrAlaskaNative">American Indian or Alaska Native</option>
+        <option value="Asian">Asian</option>
+        <option value="NativeHawaiianOrOtherPacificIslander">Native Hawaiian or Other Pacific Islander</option>
+        <option value="Other">Other</option>
+        <option value="DeclineToSpecify">Decline to Specify</option>
+      </select><br>
+      Ethnicity:
+      <select name="Ethnicity">
+        <option value="HispanicOrLatino">Hispanic or Latino</option>
+        <option value="NonHispanicOrLatino">Non Hispanic or Latino</option>
+        <option value="Other">Other</option>
+        <option value="DeclineToSpecify">Decline to Specify</option>
+      </select><br>
       <br>
       <h2>Parent/Gaurdian/Self</h2>
       What is your relationship to Patient? <select name="RelationshipToPatient">
@@ -49,20 +64,14 @@
 
       <br>
       <h2>Insurance:</h2>
-      
-      Photo of FRONT:
-      <input type="file" accept="image/*" 
-      name="ImageInsuranceFront" capture="environment"><br>
-      Photo of BACK:
-      <input type="file" accept="image/*" 
-      name="ImageInsuranceBack" capture="environment"><br>
-
-      Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
-      Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-      Insurance Company: <input type='text' name='InsuranceCompany'><br>
-      Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
-      Group Number: <input type='text' name='InsuranceGroupNumber'><br>
-      Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+      Do you have insurance?       
+      <select name="InsuranceType" onchange="onSelectInsurace(this)">
+        <option disabled selected>--select--</option>
+        <option value="Private">Yes (Private)</option>
+        <option value="Medicare">Yes (Medicare)</option>
+        <option value="None">No</option>
+      </select><br>
+      <div id='insuranceField'></div>
       <br>
       Any special notes?<br>
       <textarea name="Notes" rows="4" cols="50"></textarea><br>
@@ -79,7 +88,62 @@
           console.log(e);
         }
     }
+
+    function onSelectInsurace(elem) {
+      html = '';
+      switch(elem.value) {
+        case 'Private':
+          html += `
+Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment"><br>
+Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment"><br>
+Policy Holder Name: <input type='text' name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+Insurance Company: <input type='text' name='InsuranceCompany'><br>
+Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
+Group Number: <input type='text' name='InsuranceGroupNumber'><br>
+Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+          `;
+          break;
+        case 'Medicare':
+          html += `
+Photo of FRONT:
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment"><br>
+Photo of BACK:
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment"><br>
+Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+<input type='text' name='InsuranceCompany' hidden value='Medicare'>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+
+          `;
+          break;
+        default:
+          html += `
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
+<input type='text' name='InsurancePolicyHolder' hidden value=''>
+<input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
+<input type='text' name='InsuranceCompany' hidden value=''>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+<input type='text' name='InsuranceSubscriberID' hidden value=''>
+Social Security Number: <input type='text' name='InsuranceSSN'><br>
+          `;
+          break;
+      }
+      document.getElementById('insuranceField').innerHTML = html;
+    }
+
     function onGenerate(record){
+      //set insurance first to generate fields
+      myform.InsuranceType.value = record.InsuranceType;
+
+      onSelectInsurace(myform.InsuranceType);
+
       myform.FirstName.value = record.FirstName;
       myform.LastName.value = record.LastName;
       myform.DateOfBirth.value = record.DateOfBirth;
@@ -100,6 +164,7 @@
       myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
       myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
       myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
+      myform.InsuranceSSN.value = record.InsuranceSSN;
     }
 
 

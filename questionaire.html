@@ -21,7 +21,12 @@
     <input type="radio" name="prevDose" value="no" required> No
   </td></tr>
   <tr bgcolor='#eee'><td>
-  If so, which one?  <input type="text" name="prevDoseType"><br>
+  If so, which one? 
+  <select name="prevDoseType">
+    <option value="pfizer">Pfzier</option>
+    <option value="modera">Moderna</option>
+    <option value="other">Other</option>
+  </select>
   If so, what was the date of first dose? <input type="date" name='prevDoseDate'><br>
   </td><td>
   </td></tr>
