@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')">
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Check-In (Staff Only)</h1>
+    Search: <input type="text" onkeyup="onKeyUp(this)">
+    <br><br>
+    <label id="results"></label>
+  </body>
+<script>
+var data;
+
+function onKeyUp(e) {
+  document.getElementById('results').innerHTML = e.value;
+  showMatches(e.value);
+}
+
+function onCheckInData(result) {
+  data = result
+  console.log(data.length);
+  showMatches('');
+}
+
+function showMatches(query) {
+  html = '';
+  query = query.toUpperCase();
+  for(var i = 0; i < data.length; i++) {
+    var found = true;
+    var lastName = data[i]['LastName'].toUpperCase();
+    var firstName = data[i]['FirstName'].toUpperCase();
+
+    if (lastName.includes(query) || firstName.includes(query))
+      html += "<div><table><td width=300>" + lastName + ', ' + firstName + "</td><td>Status:</td><td>Waiver: </td><td><button type='button'>CheckIn</button></td></table></div>";
+  }
+  if (html.length == 0)
+    html = 'No Results'
+  document.getElementById('results').innerHTML = html;
+}
+
+</script>
+</html>

@@ -129,6 +129,42 @@ function updateSheetData(range, values) {
   return result;
 }
 
+
+function dateFromDateTime(datetTime){
+  return dateTime.split(' ')[0];
+}
+
+// for a given day, get patient info needed for checkin only
+function getCheckInDataset(date) {
+  var sheetName = 'Patients';
+  var values = getSheetData(sheetName);
+  keys = values[0];
+  var key_lut = {};
+  for(var i = 0; i < keys.length; i++) {
+    key_lut[keys[i]] = i;
+  }
+  var checkInDataset = [];
+  for(var i = 1; i < values.length; i++) {
+    dose = 0;
+    // if (date == dateFromDateTime(values[i]['Dose1DateTime']))
+    //   dose = 1;
+    // if (date == dateFromDateTime(values[i]['Dose2DateTime']))
+    //   dose = 2;
+
+    var record = {
+      'FirstName': values[i][key_lut['FirstName']],
+      'LastName':  values[i][key_lut['LastName']],
+      'ID':  values[i][key_lut['ID']],
+      'Dose':  dose,
+      'Waiver': values[i][key_lut['Waiver']],
+    }
+
+    checkInDataset.push(record);
+  }
+  return checkInDataset;
+}
+
+// search for patient profile using name and DOB
 function searchPatients(query)
 {
   var sheetName = 'Patients'
@@ -137,8 +173,8 @@ function searchPatients(query)
 
   // only extract a few keys
   queryPatient = {
-    "FirstName": query['FirstName'],
-    "LastName": query['LastName'],
+    "FirstName": query['FirstName'].toUpperCase(),
+    "LastName": query['LastName'].toUpperCase(),
     "DateOfBirth": query['DateOfBirth']
   }
 
@@ -146,12 +182,15 @@ function searchPatients(query)
   for(var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i
   }
-//  console.log("keys:" + keys)
 
   for(var i = 1; i < values.length; i++) {
     var found = true;
     for(var k in queryPatient) {
-      if(queryPatient[k] != values[i][key_lut[k]]) {
+      var v = values[i][key_lut[k]]
+      // make case insensitive
+      if (k=='FirstName' || k=='LastName')
+        v = v.toUpperCase();
+      if(queryPatient[k] != v) {
         found = false;
         break;
       }

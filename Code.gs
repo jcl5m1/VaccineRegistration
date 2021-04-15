@@ -5,7 +5,7 @@ function doGet(e) {
   var params = JSON.stringify(e);
   // return HtmlService.createHtmlOutput(params);
   
-  var validPages = ['appointments', 'register','lookup','camera', 'profile','barcode'];
+  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
@@ -61,17 +61,17 @@ function processRegistrationForm(formObject){
   var namePrefix = formObject.LastName +"_"+formObject.FirstName+"_"+id
   var data = {
     'ID': id,
-    'FirstName': formObject.FirstName,
-    'LastName': formObject.LastName,
+    'FirstName': formObject.FirstName.toUpperCase(),
+    'LastName': formObject.LastName.toUpperCase(),
     'DateOfBirth': formObject.DateOfBirth,
     'Phone': formObject.Phone,
-    'Email': formObject.Email,
-    'Gender': formObject.Gender,
-    'Race': formObject.Race,
+    'Email': formObject.Email.toUpperCase(),
+    'Gender': formObject.Gender.toUpperCase(),
+    'Race': formObject.Race.toUpperCase(),
     'RelationshipToPatient': formObject.RelationshipToPatient,
-    'SignatureName': formObject.SignatureName,
-    'AddressStreet': formObject.AddressStreet,
-    'AddressCity': formObject.AddressCity,
+    'SignatureName': formObject.SignatureName.toUpperCase(),
+    'AddressStreet': formObject.AddressStreet.toUpperCase(),
+    'AddressCity': formObject.AddressCity.toUpperCase(),
     'AddressState': formObject.AddressState,
     'AddressZip': formObject.AddressZip,
     'Status': 'registered',
