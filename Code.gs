@@ -1,7 +1,12 @@
 var profileData;
 
 function doGet(e) {
-  
+
+  if (!(e)) {
+    console.log("run from editor complete")
+    return
+  }
+
   var params = JSON.stringify(e);
   // return HtmlService.createHtmlOutput(params);
   
