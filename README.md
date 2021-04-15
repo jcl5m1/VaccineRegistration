@@ -19,7 +19,7 @@ You can play with a [early prototype instance of the tool](https://script.google
 
 This section is very much work in progress.
 
-This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  Do not share the account creditials to anyone you would not trust to delete or copy the patient information safely.  
+This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  This app will request edit permissions for Drive, Spreadsheets, and Gmail.  If you are not comfortable with that, you may want to create a separate account for this project.  **Do not share the account creditials to anyone you would not trust to delete or copy the patient information safely.**  
 
 > **Reminder: This project is not HIPAA compliant**.  It is provided in hopes in may be useful where that is not required.
 
