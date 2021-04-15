@@ -33,14 +33,14 @@ function onCheckInData(result) {
 function showMatches(query) {
 
   // all upper without whitespace
-  query = query.toUpperCase();
+  query = query.toUpperCase().replace(' ','');
   var matches = []
 
   // case insensivite first or last name search
   for(var i = 0; i < data.length; i++) {
     var lastName = data[i]['LastName'].toUpperCase();
     var firstName = data[i]['FirstName'].toUpperCase();
-    var fullName = firstName + ' ' + lastName;
+    var fullName = firstName + lastName;
     var id = data[i]['ID'].toUpperCase();
 
     // soft match on name?
@@ -86,7 +86,7 @@ function detectBarcode(canvas) {
       switch(barcodes[i].format) {
         case 'pdf417':
           res = parseDriversLicense(barcodes[i].rawValue)
-          myform.query.value = res['FirstName']+res['LastName'];
+          myform.query.value = res['FirstName'] + ' ' + res['LastName'];
           onKeyUp(myform.query);
           break;
         case 'qr_code':
