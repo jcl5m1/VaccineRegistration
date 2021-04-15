@@ -1,4 +1,3 @@
-var folderId = '1pfDHBXsm6bGG3cYCdGgurmh5-iZT_VMu'
 
 function uploadImage(name, img) {
     var destination = DriveApp.getFolderById(folderId)
