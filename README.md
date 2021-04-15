@@ -23,7 +23,7 @@ This in an [App Script](https://developers.google.com/apps-script) project that 
 
 > **Reminder: This project is not HIPAA compliant**.  It is provided in hopes in may be useful where that is not required.
 
-It also uses a Chrome extension, to help with synching with Github.  So, these instructions will assume you are using the [Chrome Browser](https://www.google.com/chrome).
+The (optional) steps below use a Chrome extension to help synchronize code with Github.  These instructions assume you are using the [Google Chrome Browser](https://www.google.com/chrome).
 
 1. Download and install [Google Chrome Browser](https://www.google.com/chrome)
 2. If you don't already have a Google account you want to use as host, you can [create a new Google Account](https://accounts.google.com/signup).
