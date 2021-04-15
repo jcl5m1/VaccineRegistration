@@ -1,6 +1,13 @@
 # Vaccine Registration Tool
 
-This project is a free lightweight mobile-friendly web tool for registering, scheduling, notifying, managing, and reporting COVID-19 vaccinations.  It attempts to provide a digital workflow reducing the burden of manual paperwork and processes for small/medium vaccination clinics that may not have the IT infrastructure to build thier own tools. Centralized infrastructure can be challenging to access, use, adapt and may not account for onsite workflows.  As vaccination distribution grows, these tools hope to help smaller clinics operate more efficiently allowing more vacinations per staff.  As technology or transportion limited individuals become a larger percentage of the target population, staff responsiblies will only increase taking time away from administering vaccinations.
+> **IMPORTANT:** This project is **not HIPAA compliant**.  However, "[the HHS Office
+for Civil Rights (OCR) will not impose penalties for noncompliance with regulatory
+requirements under the HIPAA Rules](https://public-inspection.federalregister.gov/2021-03348.pdf?utm_campaign=pi+subscription+mailing+list&utm_source=federalregister.gov&utm_medium=email) against covered health care providers or their business
+associates in connection with the good faith use of online or web-based scheduling applications
+for the scheduling of individual appointments for COVID-19 vaccinations during the COVID-19
+nationwide public health emergency".
+
+This project is a free lightweight mobile-friendly web tool for registering, scheduling, notifying, managing, and reporting COVID-19 vaccinations.   It attempts to provide a digital workflow reducing the burden of manual paperwork and processes for small/medium vaccination clinics that may not have the IT infrastructure to build thier own tools. Centralized infrastructure can be challenging to access, use, adapt and may not account for onsite workflows.  As vaccination distribution grows, these tools hope to help smaller clinics operate more efficiently allowing more vacinations per staff.  As technology or transportion limited individuals become a larger percentage of the target population, staff responsiblies will only increase taking time away from administering vaccinations.
 
 It only requires a free Google account to host the project using Google Sheets as the database, Google Drive to store images, and Gmail for messages.  All of the data is stored in (and most of the configuration can be done by editting) a Google Sheet. This means the data is easily edittable and exportable to other EMR systems. It is built using [App Script](https://developers.google.com/apps-script) to automatically create web forms/pages for creating, displaying, and updating data in the spreadsheet. Photos of ID cards can be caputred using the mobile phone camera, stored in Google Drive, and are associated with patient records.
 
@@ -12,7 +19,9 @@ You can play with a [early prototype instance of the tool](https://script.google
 
 This section is very much work in progress.
 
-This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  Do not share the account creditials to anyone you would not trust to delete or copy the patient information safely.  **Reminder: This project IS NOT HIPAA compliant**.  It is provided in hopes in may be useful where that is not needed.
+This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  Do not share the account creditials to anyone you would not trust to delete or copy the patient information safely.  
+
+> **Reminder: This project is not HIPAA compliant**.  It is provided in hopes in may be useful where that is not required.
 
 It also uses a Chrome extension, to help with synching with Github.  So, these instructions will assume you are using the [Chrome Browser](https://www.google.com/chrome).
 
