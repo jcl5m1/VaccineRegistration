@@ -1,4 +1,5 @@
 var profileData;
+var urlParameters;
 
 function doGet(e) {
 
@@ -7,10 +8,10 @@ function doGet(e) {
     return
   }
 
-  var params = JSON.stringify(e);
+  urlParameters = e.parameter;
   // return HtmlService.createHtmlOutput(params);
   
-  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode', 'questionaire'];
+  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode', 'questionaire','waitlist'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
@@ -141,9 +142,27 @@ function processFeedbackForm(formObject){
     'Description': formObject.Description
   })
 
-  // store patient info
+  // store ticket
   res = appendSheetData("Tickets",[res])
 }
+
+function processWaitlistForm(formObject){
+  var id = hashTimestamp();
+  var res = dictToValueArray("Waitlist",{
+    'Status': 'new',
+    'Timestamp': Date.now(),
+    'CreatedBy': formObject.CreatedBy,
+    'FirstName': formObject.FirstName,
+    'LastName': formObject.LastName,
+    'Phone': formObject.Phone,
+    'Email': formObject.Email,
+    'Notes': formObject.Notes,
+  })
+
+  // store waitlist
+  res = appendSheetData("Waitlist",[res])
+}
+
 
 function processCameraForm(formObject){
   debugLog("upload", formObject.ImageInsuranceFront.name)

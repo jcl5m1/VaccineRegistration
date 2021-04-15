@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body onload="onLoad()">
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+
+     <form
+     id="myform"
+     onsubmit="google.script.run.processWaitlistForm(this)"
+     method="GET"
+     action="<?=url?>">
+    <h1>Waitlist:</h1>
+    <input type='text' name="page" hidden value='waitlist'>
+    CreatedBy: <input type='text' name="CreatedBy"><br>
+    Patient First Name: <input type='text' name="FirstName"><br>
+    Patient Last Name: <input type='text' name="LastName"><br>
+    Patient Phone: <input type='text' name="Phone"><br>
+    Patient Email: <input type='text' name="Email"><br>
+    Notes: <input type='text' name="Notes"><br>
+    <button>Submit</button>
+    <button type='button' onclick="generateTest()">Generate</button>
+  </form>
+  <br><br>
+  <div id="waitlist"></div>
+  </body>
+  <script>
+
+    function onLoad(){
+      <?
+      var createdBy = '';
+      if ('CreatedBy' in urlParameters){
+        createdBy = urlParameters['CreatedBy'];
+      }
+      ?>
+      myform.CreatedBy.value = <?=createdBy?>;
+      google.script.run.withSuccessHandler(onWaitlistData).getSheetDataAsDict('Waitlist')
+    }
+
+    function formatTimestamp(ts){
+      var date = new Date(parseInt(ts));
+      // Hours part from the timestamp
+      var hours = date.getHours();
+      // Minutes part from the timestamp
+      var minutes = "0" + date.getMinutes();
+      // Seconds part from the timestamp
+      var seconds = "0" + date.getSeconds();
+
+      var day = "0" + date.getDate();
+      var month = "0" + (date.getMonth()+1);
+      var year = date.getFullYear();
+
+      // Will display time in 10:30:23 format
+      var formattedTime =  year + "-" + month.substr(-2) + "-" + day.substr(-2) + " " + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+      return formattedTime;
+    }
+
+    function formatPhone(n){
+      return n.substr(0,3) + '-' + n.substr(3,3) + '-' + n.substr(6,n.length-6)
+    }
+
+    function onWaitlistData(results){
+      console.log(results.length);
+
+      html = '<table width=100%>';
+      for(var i in results) {
+        var color = (i%2==0) ? '#eee' : '#fff';
+        var r = results[i]
+        var ts = formatTimestamp(r['Timestamp'])
+        var phone = formatPhone(r['Phone'])
+        html += "<tr bgcolor='" + color + "'>";
+        html += "<td>" + ts + "<br> CreatedBy:" + r['CreatedBy'] + "</td>";
+        html += "<td>" + r['FirstName'] + " " + r['LastName'] + "<br>"
+        html += "<a href='tel:" + phone +"'>" + phone + "</a> " + r['Email'] + "</td>";
+        html += "<td> Status:<br>" + r['Status'] + "</td>";
+        html += "<td> Begin CheckIn </td>";
+        html += "</tr>";
+        // html += "<tr bgcolor='" + color + "'><td>" + i + "</td></tr>";
+      }
+      html += "</table>"
+
+      document.getElementById('waitlist').innerHTML = html;
+    }
+
+    function generateTest(){
+        myform.FirstName.value = randomString(8);
+        myform.LastName.value = randomString(8);
+        myform.Phone.value = Math.floor(Math.random() * 10000000000);
+        myform.Email.value = randomString(8)+'@'+randomString(8)+".com";
+    }
+
+    function randomString(length) {
+      var result           = [];
+      var characters       = 'abcdefghijklmnopqrstuvwxyz';
+      var charactersLength = characters.length;
+      for ( var i = 0; i < length; i++ ) {
+        var c = characters.charAt(Math.floor(Math.random() * charactersLength))
+        result.push(c);
+      }
+      return result.join('').toUpperCase();
+    }
+  </script>
+</html>
