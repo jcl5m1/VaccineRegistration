@@ -174,17 +174,21 @@ function searchPatients(query)
   // only extract a few keys
   queryPatient = {}
 
-  if ('ID' in query)
+  if ('ID' in query) {
     queryPatient['ID'] = query['ID']
+  }
 
-  if ('FirstName' in query)
+  if ('FirstName' in query){
     queryPatient['FirstName'] = query['FirstName'].toUpperCase()
+  }
 
-  if ('LastName' in query)
+  if ('LastName' in query) {
     queryPatient['LastName'] = query['LastName'].toUpperCase()
+  }
  
-  if ('DateOfBirth' in query)
+  if ('DateOfBirth' in query){
     queryPatient['DateOfBirth'] = query['DateOfBirth']
+  }
 
   var key_lut = {}
   for(var i = 0; i < keys.length; i++) {
@@ -198,6 +202,8 @@ function searchPatients(query)
       // make case insensitive
       if (k=='FirstName' || k=='LastName')
         v = v.toUpperCase();
+      if (queryPatient[k].length == 0)
+        continue
       if(queryPatient[k] != v) {
         found = false;
         break;

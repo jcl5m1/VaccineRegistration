@@ -11,6 +11,7 @@
     method="GET"
     action="<?=url?>">
     <input type="hidden" name="page" value="profile">
+    <input type="hidden" name="ID" value="">
     (optional) Autofill with ID barcode: <input type="file" accept="image/*" 
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
       <canvas hidden id="canvas" width="0" height="0"></canvas><br>
@@ -27,7 +28,7 @@
         myform.DateOfBirth.value = '1976-10-27';
       }
 
-
+// TODO move barcode processing to importable file
 function detectBarcode(canvas) {
   if (window.BarcodeDetector == undefined) {
     console.error('Barcode Detection not supported');
@@ -47,8 +48,12 @@ function detectBarcode(canvas) {
           myform.DateOfBirth.value = res['DateofBirth'];
           myform.submit();
           break;
+        case 'qr_code':
+          myform.ID.value = barcodes[i].rawValue;
+          myform.submit();
+          break;
         default:
-          console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
+          console.log(barcodes[i].format + ": " + barcodes[i].rawValue);
       }
     }  
   }).catch((e) => {

@@ -11,7 +11,7 @@
     method="GET"
     action="<?=url?>"
     onsubmit="google.script.run.processCameraForm(this);">
-      Photo of ID Card barcode on back:
+      Take a photo of barcode on the back of State Issued ID card, or Patient QR code:
       <input type="hidden" name="page" value="camera">
       <input name="ImageIDBack" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
       <canvas hidden id="canvas" width="0" height="0"></canvas><br>
