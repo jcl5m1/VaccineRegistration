@@ -172,11 +172,19 @@ function searchPatients(query)
   keys = values[0];
 
   // only extract a few keys
-  queryPatient = {
-    "FirstName": query['FirstName'].toUpperCase(),
-    "LastName": query['LastName'].toUpperCase(),
-    "DateOfBirth": query['DateOfBirth']
-  }
+  queryPatient = {}
+
+  if ('ID' in query)
+    queryPatient['ID'] = query['ID']
+
+  if ('FirstName' in query)
+    queryPatient['FirstName'] = query['FirstName'].toUpperCase()
+
+  if ('LastName' in query)
+    queryPatient['LastName'] = query['LastName'].toUpperCase()
+ 
+  if ('DateOfBirth' in query)
+    queryPatient['DateOfBirth'] = query['DateOfBirth']
 
   var key_lut = {}
   for(var i = 0; i < keys.length; i++) {

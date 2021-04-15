@@ -7,14 +7,14 @@
     <script type="text/javascript" src="barcode.js"></script>
     <?var url = getScriptUrl();?>
     <a href='<?=url?>'>Home</a><br>
-    <h1>Register</h1>
+    <h1>New Registration</h1>
     <form id="myform" 
     onsubmit="google.script.run.processRegistrationForm(this)"
     method="GET"
     action="<?=url?>">
       <input type="hidden" name="page" value="profile">
       <input type="hidden" name="prev" value="register">
-      <b>Patient Information</b><br>
+      <h2>Patient Information</h2>
       (optional) Autofill with ID barcode: <input type="file" accept="image/*" 
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
       <canvas hidden id="canvas" width="0" height="0"></canvas><br>
@@ -28,7 +28,9 @@
         <option value="other">Other</option>
       </select><br>
       Race: <input type="text" required name="Race"><br>
+      Ethnicity: <input type="text" required name="Ethnicity"><br>
       <br>
+      <h2>Parent/Gaurdian/Self</h2>
       What is your relationship to Patient? <select name="RelationshipToPatient">
         <option value="self">Self</option>
         <option value="gaurdian">Parent/Gaurdian</option>
@@ -46,13 +48,21 @@
       Zip: <input type="text" name="AddressZip"><br>
 
       <br>
-      <b>Health Insurance Card</b><br>
+      <h2>Insurance:</h2>
+      
       Photo of FRONT:
       <input type="file" accept="image/*" 
       name="ImageInsuranceFront" capture="environment"><br>
       Photo of BACK:
       <input type="file" accept="image/*" 
       name="ImageInsuranceBack" capture="environment"><br>
+
+      Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
+      Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+      Insurance Company: <input type='text' name='InsuranceCompany'><br>
+      Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
+      Group Number: <input type='text' name='InsuranceGroupNumber'><br>
+      Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
       <br>
       Any special notes?<br>
       <textarea name="Notes" rows="4" cols="50"></textarea><br>
@@ -77,12 +87,19 @@
       myform.Email.value = record.Email;
       myform.Gender.value = record.Gender;
       myform.Race.value = record.Race;
+      myform.Ethnicity.value = record.Ethnicity;
       myform.RelationshipToPatient.value = record.RelationshipToPatient;
       myform.SignatureName.value = record.SignatureName;
       myform.AddressStreet.value = record.AddressStreet;
       myform.AddressCity.value = record.AddressCity;
       myform.AddressState.value = record.AddressState;
       myform.AddressZip.value = record.AddressZip;
+      myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
+      myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
+      myform.InsuranceCompany.value = record.InsuranceCompany;
+      myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
+      myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
+      myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
     }
 
 

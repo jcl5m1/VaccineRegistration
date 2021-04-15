@@ -6,60 +6,80 @@
   <body>
     <?var url = getScriptUrl();?>
     <a href='<?=url?>'>Home</a><br>
-    <h1>COVID Questionaire</h1>
-    <form id="myForm"
+    <h1>COVID-19 Vaccine Questionaire</h1>
+    <form id="myform"
     action="<?=url?>">
-<ol>
+
   <input type="hidden" name="page" value="questionaire">
   <input type="hidden" name="prev" value="questionaire">
-  <li>Has the patient ever received a dose of COVID-19 vaccine (Pfizer, Moderna, other)?
-  <input type="radio" name="prevDose" value="yes" required> Yes
-  <input type="radio" name="prevDose" value="no" required> No
-  </li>
+  <ol>
+  <table border=0>
+  <tr bgcolor='#eee'><td width=80%>
+    <li>Has the patient ever received a dose of COVID-19 vaccine (Pfizer, Moderna, other)?</li>
+    </td><td>
+    <input type="radio" name="prevDose" value="yes" required> Yes
+    <input type="radio" name="prevDose" value="no" required> No
+  </td></tr>
+  <tr bgcolor='#eee'><td>
   If so, which one?  <input type="text" name="prevDoseType"><br>
   If so, what was the date of first dose? <input type="date" name='prevDoseDate'><br>
-  <br>
-
-  <li>Has the patient ever had a severe allergic reaction (anaphylaxis) to anything? 
-  <input type="radio" name="anaphylaxis" value="yes" required> Yes
-  <input type="radio" name="anaphylaxis" value="no" required> No
-  </li>
+  </td><td>
+  </td></tr>
+  <tr><td>
+    <li>Has the patient ever had a severe allergic reaction (anaphylaxis) to anything? </li>
+    </td><td>
+    <input type="radio" name="anaphylaxis" value="yes" required> Yes
+    <input type="radio" name="anaphylaxis" value="no" required> No
+  </td></tr>
+  <tr bgcolor='#eee'><td>
+    <li>Has the patient ever had a severe allergic reaction after receiving a COVID-19 vaccine, another vaccine, or injectable medication?</li>
+    </td><td>
+    <input type="radio" name="vaccineReaction" value="yes" required> Yes
+    <input type="radio" name="vaccineReaction" value="no" required> No
+  </td></tr>
+  <tr><td>
   
-  <li>Has the patient ever had a severe allergic reaction after receiving a COVID-19 vaccine, another vaccine, or injectable medication?
-  <input type="radio" name="vaccineReaction" value="yes" required> Yes
-  <input type="radio" name="vaccineReaction" value="no" required> No
-  </li>
-  
-  <li>Has patient had a severe allergic reaction to a component of the COVID-19 vaccine, including polysorbate or polyethelene glycol (PEG), which is found in some medications, such as laxatives and preparations for colonoscopy procedures?
-  <input type="radio" name="componentReaction" value="yes" required> Yes
-  <input type="radio" name="componentReaction" value="no" required> No
-  </li>
+    <li>Has patient had a severe allergic reaction to a component of the COVID-19 vaccine, including polysorbate or polyethelene glycol (PEG), which is found in some medications, such as laxatives and preparations for colonoscopy procedures?</li>
+    </td><td>
+    <input type="radio" name="componentReaction" value="yes" required> Yes
+    <input type="radio" name="componentReaction" value="no" required> No
+  </td></tr>
+  <tr bgcolor='#eee'><td>
 
-  <li>Has the patient received passive antibody therapy (monoclonal antibodies or convalescent serum) as treatment for COVID-19?
-  <input type="radio" name="antibodyTreatment" value="yes" required> Yes
-  <input type="radio" name="antibodyTreatment" value="no" required> No
-  </li>
+    <li>Has the patient received passive antibody therapy (monoclonal antibodies or convalescent serum) as treatment for COVID-19?</li>
+    </td><td>
+    <input type="radio" name="antibodyTreatment" value="yes" required> Yes
+    <input type="radio" name="antibodyTreatment" value="no" required> No
+  </td></tr>
+  <tr><td>
 
-  <li>Has the patient received any vaccine in the last 14 days (excluding COVID vaccine)? 
-  <input type="radio" name="otherVaccine" value="yes" required> Yes
-  <input type="radio" name="otherVaccine" value="no" required> No
-  </li>
+    <li>Has the patient received any vaccine in the last 14 days (excluding COVID vaccine)? </li>
+    </td><td>
+    <input type="radio" name="otherVaccine" value="yes" required> Yes
+    <input type="radio" name="otherVaccine" value="no" required> No
+  </td></tr>
+  <tr bgcolor='#eee'><td>
 
-  <li>Does patient have a weakened immune system caused by something such as HIV infection or cancer or do you take immunosuppressive drugs or therapies? 
-  <input type="radio" name="immunoSuppressed" value="yes" required> Yes
-  <input type="radio" name="immunoSuppressed" value="no" required> No
-  </li>
+    <li>Does patient have a weakened immune system caused by something such as HIV infection or cancer or do you take immunosuppressive drugs or therapies? </li>
+    </td><td>
+    <input type="radio" name="immunoSuppressed" value="yes" required> Yes
+    <input type="radio" name="immunoSuppressed" value="no" required> No
+  </td></tr>
+  <tr><td>
 
-  <li>Does patient have a bleeding disorder or are you taking a blood thinner?
-  <input type="radio" name="bloodThinner" value="yes" required> Yes
-  <input type="radio" name="bloodThinner" value="no" required> No
-  </li>
+    <li>Does patient have a bleeding disorder or are you taking a blood thinner?</li>
+    </td><td>
+    <input type="radio" name="bloodThinner" value="yes" required> Yes
+    <input type="radio" name="bloodThinner" value="no" required> No
+  </td></tr>
+  <tr bgcolor='#eee'><td>
 
-  <li>Is the patient in quarantine or isolation for COVID-19?
-  <input type="radio" name="inIsolation" value="yes" required> Yes
-  <input type="radio" name="inIsolation" value="no" required> No
-  </li>
-
+    <li>Is the patient in quarantine or isolation for COVID-19?</li>
+    </td><td>
+    <input type="radio" name="inIsolation" value="yes" required> Yes
+    <input type="radio" name="inIsolation" value="no" required> No
+  </td></tr>
+</table>
 </ol>
   <button onclick="onSubmit(this.form)">Submit</button>
 
@@ -67,6 +87,7 @@
     <label id="results"></label>
   </body>
   <script>
+
 
     function onSubmit(elem){
       if(!elem.checkValidity()) {

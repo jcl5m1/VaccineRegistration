@@ -3,80 +3,80 @@
   <head>
     <base target="_top">
   </head>
-  <body onload="hideAll()">
+  <body onload="google.script.run.withSuccessHandler(onAppointmentData).getSheetDataAsDict('Appointments')">
     <? 
-      var appointments = getSheetDataAsDict('Appointments');
       var url = getScriptUrl();
     ?>
     <a href='<?=url?>'>Home</a><br>
-    <h1>Scheduled Appointments:</h1>
+    <h1>Your Registered Appointments:</h1>
     None Yet
-    <h1>Available Appointments:</h1>
-    <p>Last checked: <?= new Date().toLocaleString() ?></p>
+    <h1>Select Available Appointment:</h1>
+    Last checked: <?= new Date().toLocaleString() ?><br><br><br>
+    
+    <div id="selectDate">
+      <select name='date' onchange='onDateSelect(this)'>
+        <option value='' disabled selected>(loading appointments)</option>
+      </select>
+    </div><br>
+    <div id="dayInfo"></div>
+  </body>
+  <script>
 
-    Select Day: <input type="date" onchange="onDateSelect(this)"><br><br>
-    <?
+  var days = {};
+  var hasAvailability = {};
+  var appointments;
+
+  function onAppointmentData(results) {
+    appointments = results;
+    html = "<select name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
+
     //load appointments group by day
-    days = {};
     for (var i in appointments) {
-      appointment = appointments[i];
-      day  = appointment['Date'];
+      var appointment = appointments[i];
+      var day = appointment['Date'];
       if (!(day in days))
         days[day] = []
-      days[day].push(appointment)
+      days[day].push(appointment);
+      if(appointment['Remaining'] > 0)
+        hasAvailability[day] = true;
     }
 
+    // construct date drop down with availability
     for (var day in days) {
-      appointments = days[day]
-      appointment = appointments[0]
-      ?> 
-      <div id=<?=day?>>
-      <b><?=day?></b><br>
-      <?=appointment['Name']?><br>
-      <a href="https://www.google.com/maps/search/?api=1&query=<?=appointment['Location']?>" target=new><?=appointment['Location']?></a><br>
-      <select name="appointment" id="appointment">
-      <option disabled selected value>select a time</option>
-      <?
-      for (var i in appointments) {
-        appointment = appointments[i]
-        time = appointment['Time']
-
-        //format time to 12hr
-        hrs = parseInt(time.split(':')[0])
-        suffix = (hrs >= 12) ? " PM" : " AM"
-        hrs = (hrs >= 13) ? hrs-12: hrs
-        time = '' + hrs + ':' + time.split(':')[1] + suffix
-        
-        disabled = ''
-        if (appointment['Remaining'] == 0)
-          disabled = 'disabled'
-        id = appointment['ID']
-
-        ?>
-        <option value="<?=id?>" <?=disabled?>><?=time?></option>
-        <?
-
-      }
-      ?>
-      </select></div>
-      <br><br><?
+      var appointments = days[day];
+      var appointment = appointments[0];
+      var disabled = (day in hasAvailability) ? '' : 'disabled';
+      html += "<option value='" + day + "' " + disabled + ">" + day+ "</option>";
     }
-?>
-<script>
-  function hideAll(){
-    <?
-    for (var day in days) {
-      ?>
-     document.getElementById(<?=day?>).style.visibility = "hidden";
-      <?
-    }
-    ?>
+    html += "</select>"
+    document.getElementById("selectDate").innerHTML = html;
   }
+
   function onDateSelect(e){
-    hideAll();
-    console.log(e.value);
-    document.getElementById(e.value).style.visibility = "visible";
+    var day = e.value;
+    var appts = days[day];
+    var appointment = appts[0];// use the first appointment  of this day as for display
+    html = "<b>" +  appointment['Name'] + "</b><br>";
+    html += "<a href='https://www.google.com/maps/search/?api=1&query=" + appointment['Location'] +"' target=new>" + appointment['Location'] + "</a><br>";
+    html += "<select name='appointment' id='appointment'><option disabled selected value>select a time</option>";
+    for (var i in appts) {
+      var appointment = appts[i];
+      time = appointment['Time'];
+
+      //format time to 12hr
+      hrs = parseInt(time.split(':')[0]);
+      suffix = (hrs >= 12) ? " PM" : " AM";
+      hrs = (hrs >= 13) ? hrs-12: hrs;
+      time = '' + hrs + ':' + time.split(':')[1] + suffix;
+
+      disabled = '';
+      if (appointment['Remaining'] == 0)
+        disabled = 'disabled';
+      id = appointment['ID'];
+      html += "<option value='" + id + "' " + disabled + ">"+time+"</option>";
+    }
+    html += "</select>";
+    document.getElementById("dayInfo").innerHTML = html;
   }
-</script>
-  </body>
+  </script>
 </html>

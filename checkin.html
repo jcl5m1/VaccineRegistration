@@ -9,7 +9,7 @@
     <h1>Check-In (Staff Only)</h1>
     Search: <input type="text" onkeyup="onKeyUp(this)">
     <br><br>
-    <label id="results"></label>
+    <div id="results"></div>
   </body>
 <script>
 var data;
@@ -26,18 +26,36 @@ function onCheckInData(result) {
 }
 
 function showMatches(query) {
-  html = '';
   query = query.toUpperCase();
+  var matches = []
+
+  // case insensivite first or last name search
   for(var i = 0; i < data.length; i++) {
-    var found = true;
     var lastName = data[i]['LastName'].toUpperCase();
     var firstName = data[i]['FirstName'].toUpperCase();
-
     if (lastName.includes(query) || firstName.includes(query))
-      html += "<div><table><td width=300>" + lastName + ', ' + firstName + "</td><td>Status:</td><td>Waiver: </td><td><button type='button'>CheckIn</button></td></table></div>";
+      matches.push(data[i]);
   }
-  if (html.length == 0)
-    html = 'No Results'
+
+  if(matches.length == 0) {
+    html = 'No Results';
+  }
+  else {
+    html = '';
+    for(var i in matches){
+      var lastName = matches[i]['LastName'];
+      var firstName = matches[i]['FirstName'];
+      var status = "none";
+      var waiver = 'false';
+      var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
+      html += "<div><table bgcolor=" + bgcolor + " width=100%><td width=300>" + lastName + ', ' + firstName + "</td>"
+      html += "<td>Status:" + status + "</td>";
+      html += "<td>Waiver:" + waiver + "</td>";
+      html += "<td><a href='<?=url?>?page=profile&ID=" + matches[i]['ID'] + "'>Profile</a></td>";
+      html += "<td><button type='button'>CheckIn</button></td>";
+      html += "</table></div>"
+    }
+  }
   document.getElementById('results').innerHTML = html;
 }
 

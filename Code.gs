@@ -42,6 +42,7 @@ function generateRegistrationTest(){
     Email: randomString(5)+"@"+randomString(5)+".com",
     Gender: randomOption(['male','female','other']),
     Race: randomString(8,true),
+    Ethnicity: randomString(8,true),
     RelationshipToPatient: randomOption(['self','gaurdian']),
     SignatureName: randomString(8,true)+" "+randomString(8,true),
     AddressStreet: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
@@ -49,7 +50,13 @@ function generateRegistrationTest(){
     AddressState: randomString(2).toUpperCase(),
     AddressZip: Math.floor(Math.random()*100000),
     ImageInsuranceFront: {name: ''},
-    ImageInsuranceBack: {name: ''}
+    ImageInsuranceBack: {name: ''},
+    InsurancePolicyHolder: randomString(8,true) + " " + randomString(8,true),
+    InsurancePolicyHolderDateOfBirth: randomDate(),
+    InsuranceCompany: randomString(8,true),
+    InsuranceClaimAddress: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
+    InsuranceGroupNumber: Math.floor(Math.random()*10000000000),
+    InsuranceSubscriberID: Math.floor(Math.random()*10000000000),
   };
   return res;
 }
@@ -68,6 +75,7 @@ function processRegistrationForm(formObject){
     'Email': formObject.Email.toUpperCase(),
     'Gender': formObject.Gender.toUpperCase(),
     'Race': formObject.Race.toUpperCase(),
+    'Ethnicity': formObject.Ethnicity.toUpperCase(),
     'RelationshipToPatient': formObject.RelationshipToPatient,
     'SignatureName': formObject.SignatureName.toUpperCase(),
     'AddressStreet': formObject.AddressStreet.toUpperCase(),
@@ -77,8 +85,16 @@ function processRegistrationForm(formObject){
     'Status': 'registered',
     'Source': 'webapp',
     'ImageIDBack': namePrefix + "_IDBack.jpg",
+
     'ImageInsuranceFront': namePrefix + "_InsuranceFront.jpg",
     'ImageInsuranceBack': namePrefix + "_InsuranceBack.jpg",
+    'InsurancePolicyHolder': formObject.InsurancePolicyHolder.toUpperCase(),
+    'InsurancePolicyHolderDateOfBirth': formObject.InsurancePolicyHolderDateOfBirth,
+    'InsuranceCompany': formObject.InsuranceCompany.toUpperCase(),
+    'InsuranceClaimAddress': formObject.InsuranceClaimAddress.toUpperCase(),
+    'InsuranceGroupNumber': formObject.InsuranceGroupNumber.toUpperCase(),
+    'InsuranceSubscriberID': formObject.InsuranceSubscriberID.toUpperCase(),
+
     'Notes': formObject.Notes,
   }
   var res = dictToValueArray("Patients",data)
