@@ -19,9 +19,9 @@ You can play with a [early prototype instance of the tool](https://script.google
 
 This section is very much work in progress.
 
-This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  This app will request edit permissions for Drive, Spreadsheets, and Gmail.  If you are not comfortable with that, you may want to create a separate account for this project.  **Do not share the account creditials to anyone you would not trust to delete or copy the patient information safely.**  
+This in an [App Script](https://developers.google.com/apps-script) project that runs on Google Docs.  Hosting an instance requires a free Google Account.   You can reuse an account you have. However, this account will be the administrator with full priveldges to the data and scripts.  This app will request edit permissions for Drive, Spreadsheets, and Gmail.  If you are not comfortable with that, you may want to create a separate account for hosting this project.  
 
-> **Reminder: This project is not HIPAA compliant**.  It is provided in hopes in may be useful where that is not required.
+> **Reminder: This project is not HIPAA compliant**.  It is provided in hopes in may be useful where that is not required. Do not share the Google account creditials with anyone you would not trust to delete or copy the patient information safely.
 
 The (optional, but recommended) steps below use a Chrome extension to help synchronize code with Github.  These instructions assume you are using the [Google Chrome Browser](https://www.google.com/chrome). The App Script IDE does not sync changes between browsers in real-time. Open browser windows on other computers can hold onto an old state of the project.  If you resume editting on an old browser state, **you will overwrite any new edits**. Syncing to Github is recommended for keeping multiple editors in sync.
 
