@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body onload='google.script.run.withSuccessHandler(onDocusignConnect).docusignConnect()'>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Consent Form - Docusign</h1>
+    <div id="result"></div>
+  </body>
+  <script>
+    function onDocusignConnect(result){
+      console.log(result)
+
+      if ('authUrl' in result) {
+        html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
+        document.getElementById("result").innerHTML = html
+        return
+      }
+
+      // logout button    
+      html = "<form onsubmit='google.script.run.logoutDocusign()' method='GET' action='<?=url?>'>"
+      html += "<input hidden type='text' name='page' value='consent'>"
+      html += "<button >Logout of Docusign</button></form><br>"
+
+      // show account info    
+      html += '<table border=0>'
+      var i = 0
+      for(var key in result ){
+        var color = (i%2==0) ? '#eee':'#fff'
+        i += 1;
+        html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td>${result[key]}</td></tr>`
+      }
+      html += '</table>'
+      document.getElementById("result").innerHTML = html
+    }
+  </script>
+</html>

@@ -11,7 +11,7 @@ function doGet(e) {
   urlParameters = e.parameter;
   // return HtmlService.createHtmlOutput(params);
   
-  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode', 'questionaire','waitlist'];
+  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode', 'questionaire','waitlist','consent'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']

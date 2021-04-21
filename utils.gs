@@ -1,8 +1,20 @@
-//helper function to steer messages
+//helper function that prints the calling line number.  it also auto converts objects with JSON.stringify
 function debug(message){
-  console.log(message);
+  var line = getCallerLine(getErrorObject())
+  if(typeof message === 'object' && message !== null)
+    message = JSON.stringify(message);
+  console.log(line + ': ' + message);
 }
 
+function getCallerLine(err) {
+  var caller_line = err.stack.split("\n")[2];
+  var index = caller_line.indexOf("at ");
+  return caller_line.slice(index+3, caller_line.length);
+}
+
+function getErrorObject(){
+    try { throw Error('') } catch(err) { return err; }
+}
 
 function getScriptUrl() {
  var url = ScriptApp.getService().getUrl();
