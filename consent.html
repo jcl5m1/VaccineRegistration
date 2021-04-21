@@ -3,33 +3,52 @@
   <head>
     <base target="_top">
   </head>
-  <body onload='google.script.run.withSuccessHandler(onDocusignConnect).docusignConnect()'>
+  <body>
     <?var url = getScriptUrl();?>
     <a href='<?=url?>'>Home</a><br>
     <h1>Consent Form - Docusign</h1>
+
+    <b>NOTE:</b> This page requires a Docusign account with API keys defined in config.gs (<a href="https://developers.docusign.com/">https://developers.docusign.com/</a>)<br><br>
+
     TODO: Migrate from OAuth to JWT so it doesn't require Docusign account holder to be present.<br>
     TODO: consider PandaDoc integration as well which has a free unlimited eSign account?<br>
     TODO: consider AdobeSign integration<br>
     TODO: Change Waiver to Consent in spreadsheet and other views <br>
-    TODO: Send consent form for signature - email and then embedded <br>
-    TODO: check consent form signature status - subscribe to completion <br>
+    TODO: subscribe to signature completion? <br>
     TODO: upload signed consent form to google drive with patient name<br><br><br>
+
+
+    <from name='requestSignature'>
+    <b>Request Signature:</b><br>
+    Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe'><br>
+    Recipient Email: <input type="text" id='RecipientEmail' size="50"><br>
+    <button type="button" 
+      onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
+    </form><br><br>
+
+
+    <from name='checkStatus'>
+    <b>Check Envelope Status:</b><br>
+    EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
+    <button type="button" 
+      onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
+    </form><br><br>
     <div id="result"></div>
   </body>
   <script>
-    function onDocusignConnect(result){
+    function onDocusignAPIComplete(result){
       console.log(result)
-
+      // docusignAPI is requesting login, show authorization link
       if ('authUrl' in result) {
         html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
         document.getElementById("result").innerHTML = html
         return
       }
 
-      // logout button    
+      // logout button, form submit refreshes the page
       html = "<form onsubmit='google.script.run.logoutDocusign()' method='GET' action='<?=url?>'>"
       html += "<input hidden type='text' name='page' value='consent'>"
-      html += "<button >Logout of Docusign</button></form><br>"
+      html += "<button>Logout of Docusign</button></form><br>"
 
       // convert dict to table   
       html += '<table border=0>'

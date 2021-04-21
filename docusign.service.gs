@@ -4,6 +4,9 @@
  * https://developers.docusign.com/esign-rest-api/guides/authentication/oauth2-code-grant
  */
 
+// Docusign dashboard: https://appdemo.docusign.com/home
+
+
 var CLIENT_ID = DOCUSIGN_INTEGRATION_KEY;
 var CLIENT_SECRET = DOCUSIGN_SECRET_KEY;
 
@@ -12,58 +15,71 @@ var CLIENT_SECRET = DOCUSIGN_SECRET_KEY;
 // "account.docusign.com".
 var OAUTH_HOST = 'account-d.docusign.com';
 
+var docusignService = null;
+
+function testDocusign(){
+
+    // send form for signature
+    // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
+    // var name = DOCUSIGN_TEST_RECIPIENT_NAME
+    // var res = requestDocusignSignatureUsingConfigTemplate(name, email);
+    // debug(res)
+    // debug(res.status == 'sent'? 'pass':'fail')
+
+
+    // check status of envelope
+    var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
+    var res = getDocusignEnvelopeStatus(envelopeID)
+    debug(res)
+    debug(res.status == 'completed'? 'pass':'fail')
+}
+
 /**
  * Authorizes and makes a request to the Docusign API.
  */
-function docusignConnect() {
-  var service = getService();
-  if (service.hasAccess()) {
-
-    // send form for signature
-    // var email = "test+"+Date.now()+"@gmail.com"
-    // var name = "John Doe"
-    // var res = requestDocusignSignatureUsingTemplate(service, DOCUSIGN_EMAIL_SUBJECT, DOCUSIGN_TEMPLATE_ID, name, email);
-
-    // check status of envelope
-    var envelopeID = '71741d0a-bf3f-4755-86d5-dddb629ba1cd'
-//    var envelopeID = '0da3c930-913e-49ee-af94-b87a18f40763'
-    var res = getDocusignEnvelopeStatus(service, envelopeID)
-    debug(res)
-    return res
-
+function checkDocusignLogin() {
+  if(docusignService == null)
+    docusignService = getService();
+  if (docusignService.hasAccess()) {
+    return {service: docusignService}
   } else {
-    var authorizationUrl = service.getAuthorizationUrl();
-    debug(authorizationUrl)
+    var authorizationUrl = docusignService.getAuthorizationUrl();
     return {"authUrl": authorizationUrl }
   }
 }
 
 // call docusign REST api for account info
-function getDocusignAccountInfo(service){
+function getDocusignAccountInfo(){
   // default result without any additional parameters is account info
-  return callDocusignAPI(service)
+  return callDocusignAPI()
 }
 
-// call docusign REST API to create a new envelope and send to signer
-function requestDocusignSignatureUsingTemplate(service, subject, templateID, name, email) {
+// call docusign REST API to create a new envelope and send to signer using config template ID and subjet
+function requestDocusignSignatureUsingConfigTemplate(name, email) {
   payload = {
-  "emailSubject": subject,
+  "emailSubject": DOCUSIGN_EMAIL_SUBJECT,
   "status": "sent",
-  "templateId": templateID,
+  "templateId": DOCUSIGN_TEMPLATE_ID,
   "templateRoles": [
       {
       "email": email,
       "name": name,
-      "roleName": "Patient"
+      "roleName": DOCUSIGN_TEMPLATE_ROLE,
       } 
     ]
   }
-  return callDocusignAPI(service,"envelopes", 'post', payload)
+  return callDocusignAPI("envelopes", 'post', payload)
 }
 
 // call docusign REST API to get envelope info
-function getDocusignEnvelopeStatus(service, envelopeID) {
-  var res = callDocusignAPI(service,'envelopes/' + envelopeID)
+function getDocusignEnvelopeStatus(envelopeID) {
+  var res = callDocusignAPI('envelopes/' + envelopeID)
+  
+  if('authUrl' in res) {
+    return res
+  }
+
+  // strip out only the required subset of data to client, more secure since remaining data stays on server side
   return {
     envelopeId: res.envelopeId,    
     status: res.status,
@@ -73,7 +89,15 @@ function getDocusignEnvelopeStatus(service, envelopeID) {
 }
 
 // call docusign REST API 
-function callDocusignAPI(service, command, method, payload){
+function callDocusignAPI(command, method, payload){
+
+  // login into docusign if needed for multiple events
+    var res = checkDocusignLogin();
+    if('authUrl' in res) {
+      return res
+    }
+
+    var service = docusignService
     var storage = service.getStorage();
     var accountId = storage.getValue('account_id');
     var baseUri = storage.getValue('base_uri');
@@ -165,7 +189,7 @@ function authCallback(request) {
 
     return HtmlService.createHtmlOutput('Login Success!  You can close this window and refresh the original page.');
   } else {
-    return HtmlService.createHtmlOutput('Login Denied.');
+    return HtmlService.createHtmlOutput('Login Failed.');
   }
 }
 
