@@ -56,7 +56,11 @@
       for(var key in result ){
         var color = (i%2==0) ? '#eee':'#fff'
         i += 1;
-        html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td>${result[key]}</td></tr>`
+        var value = result[key]
+        if(value.includes('http'))
+          html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td><a href='${result[key]}'>${result[key]}</a></td></tr>`
+        else
+          html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td>${value}</td></tr>`
       }
       html += '</table>'
       document.getElementById("result").innerHTML = html

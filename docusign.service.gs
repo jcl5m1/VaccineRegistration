@@ -26,12 +26,17 @@ function testDocusign(){
     // debug(res)
     // debug(res.status == 'sent'? 'pass':'fail')
 
+    // // check status of envelope
+    // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
+    // var res = getDocusignEnvelopeStatus(envelopeID)
+    // debug(res)
+    // debug(res.status == 'completed'? 'pass':'fail')
 
-    // check status of envelope
-    var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
-    var res = getDocusignEnvelopeStatus(envelopeID)
-    debug(res)
-    debug(res.status == 'completed'? 'pass':'fail')
+    // download envelope as PDF into Google Drive
+    // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
+    // var res = downloadDocusignEnvelopeAsPDF(envelopeID,envelopeID+".pdf")
+    // debug(res)
+    // debug("name" in res ? 'pass':'fail')
 }
 
 /**
@@ -52,6 +57,29 @@ function checkDocusignLogin() {
 function getDocusignAccountInfo(){
   // default result without any additional parameters is account info
   return callDocusignAPI()
+}
+
+function downloadDocusignEnvelopeAsPDF(envelopeID, name) {
+
+  //check if file already exists first
+  var file = getFileByName(name)
+
+  // file not found, download it from docusign
+  if(file == null) {
+    debug("downloading from docusign: " + name)
+    //var res = callDocusignAPI('envelopes/' + envelopeID + '/documents','get',null, false)
+    var res = callDocusignAPI('envelopes/' + envelopeID + '/documents/combined','get',null, true)
+    file = uploadAsType(name, res, 'application/pdf');
+  }
+
+  return {
+    name: file.getName(),
+    mimeType: file.getMimeType(),
+    dateCreated: file.getDateCreated(),
+    downloadUrl: file.getDownloadUrl(),
+    envelopeID: envelopeID, 
+    id: file.getId(),
+  }
 }
 
 // call docusign REST API to create a new envelope and send to signer using config template ID and subjet
@@ -79,17 +107,34 @@ function getDocusignEnvelopeStatus(envelopeID) {
     return res
   }
 
-  // strip out only the required subset of data to client, more secure since remaining data stays on server side
+  // if the envelope is complete, download to google drive and populate download link
+  var downloadUrl = ''
+  if(res.status == 'completed'){
+    file = downloadDocusignEnvelopeAsPDF(envelopeID, envelopeID+".pdf")
+    if(file) {
+      downloadUrl = file.downloadUrl
+    }
+  }
+
+  // strip out only the required subset of data to client, a bit more secure since remaining data stays on server side
   return {
     envelopeId: res.envelopeId,    
     status: res.status,
-    sentDatTime: res.sentDateTime,
+    sentDateTime: res.sentDateTime,
+    downloadUrl: downloadUrl,
     completedDateTime: res.completedDateTime
   }
 }
 
 // call docusign REST API 
-function callDocusignAPI(command, method, payload){
+function callDocusignAPI(command, method, payload, as_blob){
+
+  //default parameter value
+  if(as_blob == null)
+    as_blob = false;
+
+  if(payload == null)
+    payload = undefined;  // fetch doesn't like null
 
   // login into docusign if needed for multiple events
     var res = checkDocusignLogin();
@@ -118,7 +163,11 @@ function callDocusignAPI(command, method, payload){
         muteHttpExceptions: true
       }
     )
-    return JSON.parse(response.getContentText());
+
+    if(as_blob)
+      return response.getBlob();
+    else
+      return JSON.parse(response.getContentText())
 }
 
 /**
