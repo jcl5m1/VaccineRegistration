@@ -67,7 +67,7 @@ function regex_test(){
 
 function makeVisionAPIRequest(imgUrl) {
   // Make a POST request to Vision API with a JSON payload.      
-  var visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate?key=' + APIKey;
+  var visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate?key=' + GOOGLE_CLOUD_VISION_API_KEY;
   var JSON_REQ = buildJSONRequestImgUrl(imgUrl);
   var options = {
     'method': 'post',
@@ -80,7 +80,7 @@ function makeVisionAPIRequest(imgUrl) {
 
 function makeVisionAPIRequestWithBase64Blob(base64blob) {
   // Make a POST request to Vision API with a JSON payload.      
-  var visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate?key=' + APIKey;
+  var visionApiUrl = 'https://vision.googleapis.com/v1/images:annotate?key=' + GOOGLE_CLOUD_VISION_API_KEY;
   var JSON_REQ = buildJSONRequestWithBase64Blob(base64blob);
   var options = {
     'method': 'post',

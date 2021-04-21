@@ -1,6 +1,6 @@
 
 function uploadImage(name, img) {
-    var destination = DriveApp.getFolderById(folderId)
+    var destination = DriveApp.getFolderById(GOOGLE_DRIVE_FOLDER_ID)
     var contentType = 'image/jpeg'
     var blob = img.getAs(contentType)
     blob.setName(name)
@@ -9,13 +9,13 @@ function uploadImage(name, img) {
 
 //assumes only 1 file by name
 function getImageByName(name) {
-  return DriveApp.getFolderById(folderId).getFilesByName(name).next();
+  return DriveApp.getFolderById(GOOGLE_DRIVE_FOLDER_ID).getFilesByName(name).next();
 }
 
 function testDrive(){
 
   // list folder
-  // var files = DriveApp.getFolderById(folderId).getFiles();
+  // var files = DriveApp.getFolderById(GOOGLE_DRIVE_FOLDER_ID).getFiles();
   // while (files.hasNext()) {
   //   var file = files.next();
   //   Logger.log(file.getName());

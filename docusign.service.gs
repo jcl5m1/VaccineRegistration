@@ -4,8 +4,8 @@
  * https://developers.docusign.com/esign-rest-api/guides/authentication/oauth2-code-grant
  */
 
-var CLIENT_ID = docusignIntegrationKey;
-var CLIENT_SECRET = docusignSecretKey;
+var CLIENT_ID = DOCUSIGN_INTEGRATION_KEY;
+var CLIENT_SECRET = DOCUSIGN_SECRET_KEY;
 
 // To connect to developer sandbox accounts, use the host
 // "account-d.docusign.com". For production accounts, use
@@ -20,13 +20,13 @@ function docusignConnect() {
   if (service.hasAccess()) {
 
     // send form for signature
-    // var email = "jcl5m1+"+Date.now()+"@gmail.com"
+    // var email = "test+"+Date.now()+"@gmail.com"
     // var name = "John Doe"
-    // var res = requestDocusignSignatureUsingTemplate(service, docusignEmailSubject, docusignTemplateID, name, email);
+    // var res = requestDocusignSignatureUsingTemplate(service, DOCUSIGN_EMAIL_SUBJECT, DOCUSIGN_TEMPLATE_ID, name, email);
 
     // check status of envelope
-//    var envelopeID = '71741d0a-bf3f-4755-86d5-dddb629ba1cd'
-    var envelopeID = '0da3c930-913e-49ee-af94-b87a18f40763'
+    var envelopeID = '71741d0a-bf3f-4755-86d5-dddb629ba1cd'
+//    var envelopeID = '0da3c930-913e-49ee-af94-b87a18f40763'
     var res = getDocusignEnvelopeStatus(service, envelopeID)
     debug(res)
     return res
@@ -65,6 +65,7 @@ function requestDocusignSignatureUsingTemplate(service, subject, templateID, nam
 function getDocusignEnvelopeStatus(service, envelopeID) {
   var res = callDocusignAPI(service,'envelopes/' + envelopeID)
   return {
+    envelopeId: res.envelopeId,    
     status: res.status,
     sentDatTime: res.sentDateTime,
     completedDateTime: res.completedDateTime

@@ -67,12 +67,12 @@ function getColumnByKey(values, key){
 
 // get range of values from Google sheet
 function getSheetData(rangeName) {
-  return Sheets.Spreadsheets.Values.get(spreadsheetId, rangeName).values;
+  return Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, rangeName).values;
 }
 
 // get range of values from Google sheet
 function getSheetDataAsDict(rangeName) {
-  values = Sheets.Spreadsheets.Values.get(spreadsheetId, rangeName).values;
+  values = Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, rangeName).values;
   keys = values[0]
   var result = []
   for(var r = 1; r < values.length; r++) {
@@ -87,7 +87,7 @@ function getSheetDataAsDict(rangeName) {
 
 //look up header to convert dict to array
 function dictToValueArray(range, data) {
- var values = Sheets.Spreadsheets.Values.get(spreadsheetId, range).values
+ var values = Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, range).values
   keys = values[0];
   var result = []
   for(var i = 0; i < keys.length; i++) {
@@ -105,10 +105,10 @@ function appendSheetData(range, values) {
   valueRange.values = values;
 
   var appendRequest = Sheets.newAppendCellsRequest();
-  appendRequest.sheetId = spreadsheetId;
+  appendRequest.sheetId = GOOGLE_SPREADSHEET_ID;
   appendRequest.rows = [valueRange];
 
-  var result = Sheets.Spreadsheets.Values.append(valueRange,spreadsheetId,range, {
+  var result = Sheets.Spreadsheets.Values.append(valueRange,GOOGLE_SPREADSHEET_ID,range, {
     valueInputOption: 'USER_ENTERED'
   });
   return result;
@@ -120,10 +120,10 @@ function updateSheetData(range, values) {
   valueRange.values = values;
 
   var appendRequest = Sheets.newAppendCellsRequest();
-  appendRequest.sheetId = spreadsheetId;
+  appendRequest.sheetId = GOOGLE_SPREADSHEET_ID;
   appendRequest.rows = [valueRange];
 
-  var result = Sheets.Spreadsheets.Values.update(valueRange,spreadsheetId,range, {
+  var result = Sheets.Spreadsheets.Values.update(valueRange,GOOGLE_SPREADSHEET_ID,range, {
     valueInputOption: 'USER_ENTERED'
   });
   return result;
