@@ -1,5 +1,5 @@
 // Put private key and configruation information in this file.  
-// Once you add your information, DO NOT CHECK THIS INTO GITHUB
+// Once you add your information, DO NOT CHECK THIS INTO GITHUB because it may become publicly visible
 
 //Google drive id of your project folder
 var GOOGLE_DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID'
