@@ -18,6 +18,7 @@
     TODO: upload signed consent form to google drive with patient name<br><br><br>
 
 
+    <a href='https://appdemo.docusign.com/home'>Docusign Dashboard</a><br><br>
     <from name='requestSignature'>
     <b>Request Signature:</b><br>
     Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe'><br>
@@ -25,7 +26,6 @@
     <button type="button" 
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
     </form><br><br>
-
 
     <from name='checkStatus'>
     <b>Check Envelope Status:</b><br>
