@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-        <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Look Up Registration</h1>
-    <form id="myform"
-    method="GET"
-    action="<?=url?>">
-    <input type="hidden" name="page" value="profile">
-    <input type="hidden" name="ID" value="">
-    (optional) Scan QR Code/State ID barcode: <input type="file" accept="image/*" 
+
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Look Up Registration</h1>
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="profile">
+		<input type="hidden" name="ID" value="">
+    (optional) Scan QR Code/State ID barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
-      <canvas hidden id="canvas" width="0" height="0"></canvas><br>
+		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
       First Name: <input type="text" name="FirstName"><br>
       Last Name: <input type="text" name="LastName"><br>
       Date of Birth <input type="date" name="DateOfBirth"><br>
-      <button type="submit">Search</button>
-      <button type="button" onclick="generateLookupTest()">Generate</button>
-    </form>
-    <script>
-      function generateLookupTest(){
+		<button type="submit">Search</button>
+		<button type="button" onclick="generateLookupTest()">Generate</button>
+	</form>
+	<script>
+		function generateLookupTest(){
         myform.FirstName.value = 'Ixzraxzgnp';
         myform.LastName.value = 'Lmkujptcir';
         myform.DateOfBirth.value = '1976-10-27';
@@ -267,6 +267,7 @@ function parseDriversLicense(text){
   }
   return result;
 }
-    </script>
-  </body>
+	</script>
+</body>
+
 </html>

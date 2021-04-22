@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Consent Form - Docusign</h1>
 
-    <b>NOTE:</b> This page requires a Docusign account with API keys defined in config.gs (<a href="https://developers.docusign.com/">https://developers.docusign.com/</a>)<br><br>
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Consent Form - Docusign</h1>
+
+	<b>NOTE:</b> This page requires a Docusign account with API keys defined in config.gs (<a
+		href="https://developers.docusign.com/">https://developers.docusign.com/</a>)<br><br>
 
     TODO: consider PandaDoc integration as well which has a free unlimited eSign account?<br>
     TODO: consider AdobeSign integration<br>
@@ -16,60 +19,57 @@
     TODO: subscribe to signature completion? <br>
     TODO: upload signed consent form to google drive with patient name<br><br>
 
-    <a href='https://appdemo.docusign.com/home' target=new>Docusign Dashboard</a><br><br>
+	<a href='https://appdemo.docusign.com/home' target=new>Docusign Dashboard</a><br><br>
 
-    <from name='EmbeddedSignature'>
-    <b>Embedded Signature Form:</b><br>
+	<from name='EmbeddedSignature'>
+		<b>Embedded Signature Form:</b><br>
     Recipient Name: <input type="text" id='EmbeddedRecipientName' size="50" value='Myldfebe Ygaysefh' required><br>
     Recipient Email: <input type="text" id='EmbeddedRecipientEmail' size="50" value='mpzpz@lzjnt.com' required><br>
-    <button type="button" 
+		<button type="button"
       onclick="onGenerateEmbeddedForm()">Generate Consent Form</button><br>
     </form>
-    <div id='framecontainer' style="display: none;">
-    <iframe  
-      id="EmbeddedDocusignFrame" 
-      onLoad="onIFrameLoad(this)">
-    </iframe>
-    </div>
-    <br><br>
+		<div id='framecontainer' style="display: none;">
+			<iframe id="EmbeddedDocusignFrame" onLoad="onIFrameLoad(this)">
+			</iframe>
+		</div>
+		<br><br>
 
-    <from name='RequestSignature'>
-    <b>Request Signature via Email:</b><br>
+		<from name='RequestSignature'>
+			<b>Request Signature via Email:</b><br>
     Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe' required><br>
     Recipient Email: <input type="text" id='RecipientEmail' size="50" required><br>
-    <button type="button" 
+			<button type="button"
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
     </form><br>
 
-    <from name='CheckStatus'>
-    <b>Check Envelope Status:</b><br>
+			<from name='CheckStatus'>
+				<b>Check Envelope Status:</b><br>
     EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
-    <button type="button" 
+				<button type="button"
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
     </form>
 
-    <h2>Status</h2>
-    <div id="result"></div>
-  </body>
+				<h2>Status</h2>
+				<div id="result"></div>
+</body>
 
 <style>
-#framecontainer{
-  position:absolute;
-  top:0px;
-  left:0px;
-  right:0px;
-  bottom:0px;
-  background-color: white;
-}
-#EmbeddedDocusignFrame {
-    height: 100%;
-    width: 100%;
-}
+	#framecontainer {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		background-color: white;
+	}
 
+	#EmbeddedDocusignFrame {
+		height: 100%;
+		width: 100%;
+	}
 </style>
-  <script>
-
-    var lastIFrameURL = '';
+<script>
+	var lastIFrameURL = '';
     //wait gif for visual feedback
     var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
@@ -157,5 +157,6 @@
       html += '</table>'
       document.getElementById("result").innerHTML = html
     }
-  </script>
+</script>
+
 </html>

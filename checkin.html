@@ -1,23 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')">
-    <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Check-In (Staff Only)</h1>
-    <form id="myform">
-    Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
-    Scan QR code/ID barcode: <input type="file" accept="image/*" 
+
+<head>
+	<base target="_top">
+</head>
+
+<body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')">
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Check-In (Staff Only)</h1>
+	<form id="myform">
+		Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
+    Scan QR code/ID barcode: <input type="file" accept="image/*"
     name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
-    <canvas hidden id="canvas" width="0" height="0"></canvas>
-    </form>
-    <br><br>
-    <div id="results"></div>
-  </body>
+		<canvas hidden id="canvas" width="0" height="0"></canvas>
+	</form>
+	<br><br>
+	<div id="results"></div>
+</body>
 <script>
-var data;
+	var data;
 
 function onKeyUp(e) {
   document.getElementById('results').innerHTML = e.value;
@@ -328,4 +330,5 @@ function parseDriversLicense(text){
 }
 
 </script>
+
 </html>

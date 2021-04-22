@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    <script type="text/javascript" src="barcode.js"></script>
-    <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>New Registration</h1>
-    <form id="myform" 
-    onsubmit="google.script.run.processRegistrationForm(this)"
-    method="GET"
-    action="<?=url?>">
-      <input type="hidden" name="page" value="profile">
-      <input type="hidden" name="prev" value="register">
-      <h2>Patient Information</h2>
-      (optional) Scan State ID Barcode: <input type="file" accept="image/*" 
+
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<script type="text/javascript" src="barcode.js"></script>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>New Registration</h1>
+	<form id="myform" onsubmit="google.script.run.processRegistrationForm(this)" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="profile">
+		<input type="hidden" name="prev" value="register">
+		<h2>Patient Information</h2>
+		(optional) Scan State ID Barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
-      <canvas hidden id="canvas" width="0" height="0"></canvas><br>
+		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
 
       First Name: <input type="text" required name="FirstName"><br>
       Last Name: <input type="text" required name="LastName"><br>
@@ -27,8 +26,8 @@
         <option value="female">Female</option>
         <option value="other">Other</option>
       </select><br>
-      Race: 
-      <select name="Race">
+      Race:
+		<select name="Race">
         <option value="White">White</option>
         <option value="BlackOrAfricanAmerican">Black or African American</option>
         <option value="AmericanIndianOrAlaskaNative">American Indian or Alaska Native</option>
@@ -38,52 +37,52 @@
         <option value="DeclineToSpecify">Decline to Specify</option>
       </select><br>
       Ethnicity:
-      <select name="Ethnicity">
+		<select name="Ethnicity">
         <option value="HispanicOrLatino">Hispanic or Latino</option>
         <option value="NonHispanicOrLatino">Non Hispanic or Latino</option>
         <option value="Other">Other</option>
         <option value="DeclineToSpecify">Decline to Specify</option>
       </select><br>
-      <br>
-      <h2>Parent/Gaurdian/Self</h2>
-      What is your relationship to Patient? <select name="RelationshipToPatient">
+		<br>
+		<h2>Parent/Gaurdian/Self</h2>
+		What is your relationship to Patient? <select name="RelationshipToPatient">
         <option value="self">Self</option>
         <option value="gaurdian">Parent/Gaurdian</option>
       </select><br>
       If you are not the patient, enter your name: <input type="text" name="SignatureName"><br>
-      <br>
-      <b>Preferred Contact Infomation:</b><br>
+		<br>
+		<b>Preferred Contact Infomation:</b><br>
       Phone: <input type="text" required name="Phone"><br>
       Email: <input type="text" name="Email"><br>
-      <br>
-      <b>Address:</b><br>
+		<br>
+		<b>Address:</b><br>
       Street: <input type="text" name="AddressStreet"><br>
       City: <input type="text" name="AddressCity"><br>
       State: <input type="text" name="AddressState"><br>
       Zip: <input type="text" name="AddressZip"><br>
 
-      <br>
-      <h2>Insurance:</h2>
-      Do you have insurance?       
-      <select name="InsuranceType" onchange="onSelectInsurace(this)">
+		<br>
+		<h2>Insurance:</h2>
+		Do you have insurance?
+		<select name="InsuranceType" onchange="onSelectInsurace(this)">
         <option disabled selected>--select--</option>
         <option value="Private">Yes (Private)</option>
         <option value="Medicare">Yes (Medicare)</option>
         <option value="None">No</option>
       </select><br>
-      <div id='insuranceField'></div>
-      <br>
+		<div id='insuranceField'></div>
+		<br>
       Any special notes?<br>
-      <textarea name="Notes" rows="4" cols="50"></textarea><br>
-      <button type="submit">Submit</button>
-      <button type="button" 
+		<textarea name="Notes" rows="4" cols="50"></textarea><br>
+		<button type="submit">Submit</button>
+		<button type="button"
       onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
-      <button type="button" onclick="debugForm(this.parentNode)">Debug</button>
-    </form>
+		<button type="button" onclick="debugForm(this.parentNode)">Debug</button>
+	</form>
 
 
-  <script>
-    function debugForm(formObject) {
+	<script>
+		function debugForm(formObject) {
         for(var e in formObject.elements) {
           console.log(e);
         }
@@ -406,6 +405,7 @@ function parseDriversLicense(text){
   }
   return result;
 }
-    </script>
-  </body>
+	</script>
+</body>
+
 </html>

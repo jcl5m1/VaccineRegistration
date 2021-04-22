@@ -10,26 +10,26 @@ function doGet(e) {
 
   urlParameters = e.parameter;
   // return HtmlService.createHtmlOutput(params);
-  
-  var validPages = ['appointments', 'register', 'lookup','camera', 'checkin', 'profile', 'barcode', 'questionaire','waitlist','consent'];
+
+  var validPages = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
 
-  if(prev == 'register') {
+  if (prev == 'register') {
     //give time for append to finish.
     // TODO better to check?  dunno how to persist state across page changes
     Utilities.sleep(2000);
   }
 
-  if(page == 'profile') {
+  if (page == 'profile') {
     profileData = searchPatients(e.parameter);
   }
 
   if (validPages.indexOf(page) !== -1) {
     return HtmlService
-        .createTemplateFromFile(page)
-        .evaluate();
+      .createTemplateFromFile(page)
+      .evaluate();
   }
 
   //default page comes last
@@ -39,41 +39,41 @@ function doGet(e) {
 
 }
 
-function generateRegistrationTest(){
+function generateRegistrationTest() {
   var res = {
-    FirstName: randomString(8,true),
-    LastName: randomString(8,true),
+    FirstName: randomString(8, true),
+    LastName: randomString(8, true),
     DateOfBirth: randomDate(),
-    Phone: Math.floor(Math.random()*10000000000),
-    Email: randomString(5)+"@"+randomString(5)+".com",
-    Gender: randomOption(['male','female','other']),
-    Race: randomOption(["White","BlackOrAfricanAmerican","AmericanIndianOrAlaskaNative","Asian","NativeHawaiianOrOtherPacificIslander","Other","DeclineToSpecify"]),
-    Ethnicity: randomOption(["HispanicOrLatino","NonHispanicOrLatino","Other","DeclineToSpecify"]),
-    RelationshipToPatient: randomOption(['self','gaurdian']),
-    SignatureName: randomString(8,true)+" "+randomString(8,true),
-    AddressStreet: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
-    AddressCity: randomString(10,true),
+    Phone: Math.floor(Math.random() * 10000000000),
+    Email: randomString(5) + "@" + randomString(5) + ".com",
+    Gender: randomOption(['male', 'female', 'other']),
+    Race: randomOption(["White", "BlackOrAfricanAmerican", "AmericanIndianOrAlaskaNative", "Asian", "NativeHawaiianOrOtherPacificIslander", "Other", "DeclineToSpecify"]),
+    Ethnicity: randomOption(["HispanicOrLatino", "NonHispanicOrLatino", "Other", "DeclineToSpecify"]),
+    RelationshipToPatient: randomOption(['self', 'gaurdian']),
+    SignatureName: randomString(8, true) + " " + randomString(8, true),
+    AddressStreet: Math.floor(Math.random() * 10000) + " " + randomString(10, true) + " St",
+    AddressCity: randomString(10, true),
     AddressState: randomString(2).toUpperCase(),
-    AddressZip: Math.floor(Math.random()*100000),
-    ImageInsuranceFront: {name: ''},
-    ImageInsuranceBack: {name: ''},
-    InsuranceType: randomOption(['Private','Medicare', 'None']),
-    InsurancePolicyHolder: randomString(8,true) + " " + randomString(8,true),
+    AddressZip: Math.floor(Math.random() * 100000),
+    ImageInsuranceFront: { name: '' },
+    ImageInsuranceBack: { name: '' },
+    InsuranceType: randomOption(['Private', 'Medicare', 'None']),
+    InsurancePolicyHolder: randomString(8, true) + " " + randomString(8, true),
     InsurancePolicyHolderDateOfBirth: randomDate(),
-    InsuranceCompany: randomString(8,true),
-    InsuranceClaimAddress: Math.floor(Math.random()*10000) + " " + randomString(10,true) + " St",
-    InsuranceGroupNumber: Math.floor(Math.random()*10000000000),
-    InsuranceSubscriberID: Math.floor(Math.random()*10000000000),
-    InsuranceSSN: Math.floor(Math.random()*1000000000),
+    InsuranceCompany: randomString(8, true),
+    InsuranceClaimAddress: Math.floor(Math.random() * 10000) + " " + randomString(10, true) + " St",
+    InsuranceGroupNumber: Math.floor(Math.random() * 10000000000),
+    InsuranceSubscriberID: Math.floor(Math.random() * 10000000000),
+    InsuranceSSN: Math.floor(Math.random() * 1000000000),
   };
   return res;
 }
 
 
-function processRegistrationForm(formObject){
+function processRegistrationForm(formObject) {
   var id = hashTimestamp();
 
-  var namePrefix = formObject.LastName +"_"+formObject.FirstName+"_"+id
+  var namePrefix = formObject.LastName + "_" + formObject.FirstName + "_" + id
   var data = {
     'ID': id,
     'FirstName': formObject.FirstName.toUpperCase(),
@@ -107,11 +107,11 @@ function processRegistrationForm(formObject){
 
     'Notes': formObject.Notes,
   }
-  var res = dictToValueArray("Patients",data)
+  var res = dictToValueArray("Patients", data)
 
   // TODO check if already registered
   // store patient info
-  res = appendSheetData("Patients",[res])
+  res = appendSheetData("Patients", [res])
 
   // TODO check if successfully registered
 
@@ -132,9 +132,9 @@ function processRegistrationForm(formObject){
 }
 
 
-function processFeedbackForm(formObject){
+function processFeedbackForm(formObject) {
   var id = hashTimestamp();
-  var res = dictToValueArray("Tickets",{
+  var res = dictToValueArray("Tickets", {
     'Status': 'new',
     'Timestamp': Date.now(),
     'CreatedBy': formObject.CreatedBy,
@@ -143,12 +143,12 @@ function processFeedbackForm(formObject){
   })
 
   // store ticket
-  res = appendSheetData("Tickets",[res])
+  res = appendSheetData("Tickets", [res])
 }
 
-function processWaitlistForm(formObject){
+function processWaitlistForm(formObject) {
   var id = hashTimestamp();
-  var res = dictToValueArray("Waitlist",{
+  var res = dictToValueArray("Waitlist", {
     'Status': 'new',
     'Timestamp': Date.now(),
     'CreatedBy': formObject.CreatedBy,
@@ -160,12 +160,12 @@ function processWaitlistForm(formObject){
   })
 
   // store waitlist
-  res = appendSheetData("Waitlist",[res])
+  res = appendSheetData("Waitlist", [res])
 }
 
 
-function processCameraForm(formObject){
+function processCameraForm(formObject) {
   debugLog("upload", formObject.ImageInsuranceFront.name)
-  if(formObject.ImageInsuranceFront.name)
-    uploadImage(Date.now()+"_camera.jpg", formObject.ImageInsuranceFront)
+  if (formObject.ImageInsuranceFront.name)
+    uploadImage(Date.now() + "_camera.jpg", formObject.ImageInsuranceFront)
 }

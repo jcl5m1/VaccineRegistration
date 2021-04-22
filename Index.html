@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=2.0"/>
-    <base target="_top">
-  </head>
-  <body>
-    <?var url = getScriptUrl();?>
-    <h1>COVID-19 Vaccine Registration</h1><br>
-    <h2>Paient/Public Pages</h2>
-    <ul>
-    <li><a href='<?=url?>?page=register'>New Registration</a></li>
-    <li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
-    <li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
-    <li><a href='<?=url?>?page=appointments'>Appointments</a></li>
-    </ul>
 
-    <h2>Staff Only Pages</h2>
-    <ul>
-    <li><a href='<?=url?>?page=checkin'>Check-In</a></li>
-    <li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
-    </ul>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=2.0" />
+	<base target="_top">
+</head>
 
-    <h2>Development/Test Pages</h2>
-    <ul>
-    <li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
-    <li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
-    <li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
-    </ul>
+<body>
+	<?var url = getScriptUrl();?>
+	<h1>COVID-19 Vaccine Registration</h1><br>
+	<h2>Paient/Public Pages</h2>
+	<ul>
+		<li><a href='<?=url?>?page=register'>New Registration</a></li>
+		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
+		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
+		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
+	</ul>
+
+	<h2>Staff Only Pages</h2>
+	<ul>
+		<li><a href='<?=url?>?page=checkin'>Check-In</a></li>
+		<li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
+	</ul>
+
+	<h2>Development/Test Pages</h2>
+	<ul>
+		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
+		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
+		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
+	</ul>
 
 
-  <br>
-  <form
-    onsubmit="google.script.run.processFeedbackForm(this)"
-    method="GET"
-    action="<?=url?>">
-    <br><br>
-    <a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
-    <h2>Feedback/Feature Request/Bug Reporting:</h2>
-    <a href='https://github.com/jcl5m1/VaccineRegistration/issues' target=new>Create a Github Issue</a> (github account required)<br><br>
+	<br>
+	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
+		<br><br>
+		<a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
+		<h2>Feedback/Feature Request/Bug Reporting:</h2>
+		<a href='https://github.com/jcl5m1/VaccineRegistration/issues' target=new>Create a Github Issue</a> (github
+		account required)<br><br>
 
-    <b>Create a Spreadsheet Ticket</b> (no account required) <br>
+		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
     Your Name: <input type='text' name="CreatedBy"><br>
     Type: <select name='Type'>
         <option value="support">Support Request</option>
@@ -48,8 +48,9 @@
         <option value="bug">Report Bug</option>
       </select><br>
       Description:<br>
-      <textarea name="Description" rows="4" cols="50"></textarea><br>
-      <button>Submit</button>
-  </form>
-  </body>
+		<textarea name="Description" rows="4" cols="50"></textarea><br>
+		<button>Submit</button>
+	</form>
+</body>
+
 </html>

@@ -17,37 +17,37 @@ var OAUTH_HOST = 'account-d.docusign.com';
 
 var docusignService = null;
 
-function testDocusignAPI(){
-    // get account info
-    var res = getDocusignAccountInfo();
-    debug(res)
-    debug("accountName" in res ? 'pass':'fail')
+function testDocusignAPI() {
+  // get account info
+  var res = getDocusignAccountInfo();
+  debug(res)
+  debug("accountName" in res ? 'pass' : 'fail')
 
-    // send form for signature
-    // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
-    // var name = DOCUSIGN_TEST_RECIPIENT_NAME
-    // var res = requestDocusignSignatureUsingConfigTemplate(name, email);
-    // debug(res)
-    // debug(res.status == 'sent'? 'pass':'fail')
+  // send form for signature
+  // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
+  // var name = DOCUSIGN_TEST_RECIPIENT_NAME
+  // var res = requestDocusignSignatureUsingConfigTemplate(name, email);
+  // debug(res)
+  // debug(res.status == 'sent'? 'pass':'fail')
 
-    // create embedded envlope
-    // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
-    // var name = DOCUSIGN_TEST_RECIPIENT_NAME
-    // var res = createEmbeddedDocusignEnvelope(name, email);
-    // debug(res)
-    // debug(res.status == 'sent'? 'pass':'fail')
+  // create embedded envlope
+  // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
+  // var name = DOCUSIGN_TEST_RECIPIENT_NAME
+  // var res = createEmbeddedDocusignEnvelope(name, email);
+  // debug(res)
+  // debug(res.status == 'sent'? 'pass':'fail')
 
-    // // check status of envelope
-    // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
-    // var res = getDocusignEnvelopeStatus(envelopeID)
-    // debug(res)
-    // debug(res.status == 'completed'? 'pass':'fail')
+  // // check status of envelope
+  // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
+  // var res = getDocusignEnvelopeStatus(envelopeID)
+  // debug(res)
+  // debug(res.status == 'completed'? 'pass':'fail')
 
-    // download envelope as PDF into Google Drive
-    // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
-    // var res = downloadDocusignEnvelopeAsPDF(envelopeID,envelopeID+".pdf")
-    // debug(res)
-    // debug("name" in res ? 'pass':'fail')
+  // download envelope as PDF into Google Drive
+  // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
+  // var res = downloadDocusignEnvelopeAsPDF(envelopeID,envelopeID+".pdf")
+  // debug(res)
+  // debug("name" in res ? 'pass':'fail')
 }
 
 // test JWT authorization flow
@@ -62,11 +62,16 @@ function testJWT() {
   debug(jwt)
   var res = tryDocusignJWT(jwt);
   debug(res)
-  debug("access_token" in res? "pass" :"fail")
+  debug("access_token" in res ? "pass" : "fail")
 
   // test main getService in JWT mode
   var service = getService()
-  debug(service.hasAccess()) 
+  debug(service.hasAccess())
+  if (service.hasAccess()) {
+    var res = getDocusignAccountInfo();
+    debug(res)
+    debug("accountName" in res ? 'pass' : 'fail')
+  }
 
 }
 
@@ -74,19 +79,19 @@ function testJWT() {
  * Authorizes and makes a request to the Docusign API.
  */
 function checkDocusignLogin() {
-  if(docusignService == null)
+  if (docusignService == null)
     docusignService = getService();
 
   if (docusignService.hasAccess()) {
-    return {service: docusignService}
+    return { service: docusignService }
   } else {
     var authorizationUrl = docusignService.getAuthorizationUrl();
-    return {"authUrl": authorizationUrl }
+    return { "authUrl": authorizationUrl }
   }
 }
 
 // call docusign REST api for account info
-function getDocusignAccountInfo(){
+function getDocusignAccountInfo() {
   // default result without any additional parameters is account info
   return callDocusignAPI()
 }
@@ -97,10 +102,10 @@ function downloadDocusignEnvelopeAsPDF(envelopeID, name) {
   var file = getFileByName(name)
 
   // file not found, download it from docusign
-  if(file == null) {
+  if (file == null) {
     debug("downloading from docusign: " + name)
     //var res = callDocusignAPI('envelopes/' + envelopeID + '/documents','get',null, false)
-    var res = callDocusignAPI('envelopes/' + envelopeID + '/documents/combined','get',null, true)
+    var res = callDocusignAPI('envelopes/' + envelopeID + '/documents/combined', 'get', null, true)
     file = uploadAsType(name, res, 'application/pdf');
   }
 
@@ -109,7 +114,7 @@ function downloadDocusignEnvelopeAsPDF(envelopeID, name) {
     mimeType: file.getMimeType(),
     dateCreated: file.getDateCreated(),
     downloadUrl: file.getDownloadUrl(),
-    envelopeID: envelopeID, 
+    envelopeID: envelopeID,
     id: file.getId(),
   }
 }
@@ -117,22 +122,22 @@ function downloadDocusignEnvelopeAsPDF(envelopeID, name) {
 // call docusign REST API to create a new envelope and send to signer using config template ID and subjet
 function requestDocusignSignatureUsingConfigTemplate(name, email) {
   payload = {
-  "emailSubject": DOCUSIGN_EMAIL_SUBJECT,
-  "status": "sent",
-  "templateId": DOCUSIGN_TEMPLATE_ID,
-  "templateRoles": [
+    "emailSubject": DOCUSIGN_EMAIL_SUBJECT,
+    "status": "sent",
+    "templateId": DOCUSIGN_TEMPLATE_ID,
+    "templateRoles": [
       {
-      "email": email,
-      "name": name,
-      "roleName": DOCUSIGN_TEMPLATE_ROLE,
-      } 
+        "email": email,
+        "name": name,
+        "roleName": DOCUSIGN_TEMPLATE_ROLE,
+      }
     ]
   }
   return callDocusignAPI("envelopes", 'post', payload)
 }
 
 
-function createEmbeddedDocusignEnvelope(name, email){
+function createEmbeddedDocusignEnvelope(name, email) {
 
   clientID = randomString(10).toUpperCase();
 
@@ -141,13 +146,13 @@ function createEmbeddedDocusignEnvelope(name, email){
     "emailSubject": DOCUSIGN_EMAIL_SUBJECT,
     "status": "sent",
     "templateId": DOCUSIGN_TEMPLATE_ID,
-      "templateRoles": [
+    "templateRoles": [
       {
-      "email": email,
-      "name": name,
-      "roleName": DOCUSIGN_TEMPLATE_ROLE,
-      "clientUserId": clientID,
-      } 
+        "email": email,
+        "name": name,
+        "roleName": DOCUSIGN_TEMPLATE_ROLE,
+        "clientUserId": clientID,
+      }
     ],
   }
 
@@ -170,7 +175,7 @@ function createEmbeddedDocusignEnvelope(name, email){
     "clientUserId": clientID,
   }
 
-  var res = callDocusignAPI("envelopes/"+envelopeID+'/views/recipient', 'post', payload);
+  var res = callDocusignAPI("envelopes/" + envelopeID + '/views/recipient', 'post', payload);
   if ('authUrl' in res)
     return res
 
@@ -183,23 +188,23 @@ function createEmbeddedDocusignEnvelope(name, email){
 // call docusign REST API to get envelope info
 function getDocusignEnvelopeStatus(envelopeID) {
   var res = callDocusignAPI('envelopes/' + envelopeID)
-  
-  if('authUrl' in res) {
+
+  if ('authUrl' in res) {
     return res
   }
 
   // if the envelope is complete, download to google drive and populate download link
   var downloadUrl = ''
-  if(res.status == 'completed'){
-    file = downloadDocusignEnvelopeAsPDF(envelopeID, envelopeID+".pdf")
-    if(file) {
+  if (res.status == 'completed') {
+    file = downloadDocusignEnvelopeAsPDF(envelopeID, envelopeID + ".pdf")
+    if (file) {
       downloadUrl = file.downloadUrl
     }
   }
 
   // strip out only the required subset of data to client, a bit more secure since remaining data stays on server side
   return {
-    envelopeId: res.envelopeId,    
+    envelopeId: res.envelopeId,
     status: res.status,
     sentDateTime: res.sentDateTime,
     downloadUrl: downloadUrl,
@@ -208,46 +213,48 @@ function getDocusignEnvelopeStatus(envelopeID) {
 }
 
 // call docusign REST API 
-function callDocusignAPI(command, method, payload, as_blob){
+function callDocusignAPI(command, method, payload, as_blob) {
 
   //default parameter value
-  if(as_blob == null)
+  if (as_blob == null)
     as_blob = false;
 
-  if(payload == null)
+  if (payload == null)
     payload = undefined;  // fetch doesn't like null
 
   // login into docusign if needed for multiple events
-    var res = checkDocusignLogin();
-    if('authUrl' in res) {
-      return res
+  var res = checkDocusignLogin();
+  debug(res)
+  if ('authUrl' in res) {
+    return res
+  }
+
+  var service = docusignService
+  var storage = service.getStorage();
+  var accountId = storage.getValue('account_id');
+  var baseUri = storage.getValue('base_uri');
+  var url = baseUri + '/restapi/v2.1/accounts/' + accountId;
+  if (command) {
+    url += '/' + command;
+  }
+  debug(url)
+  if (method == null)
+    method = 'get'
+
+  var response = UrlFetchApp.fetch(url,
+    {
+      method: method,
+      headers: { Authorization: 'Bearer ' + service.getAccessToken() },
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
     }
+  )
 
-    var service = docusignService
-    var storage = service.getStorage();
-    var accountId = storage.getValue('account_id');
-    var baseUri = storage.getValue('base_uri');
-    var url = baseUri + '/restapi/v2.1/accounts/' + accountId;
-    if(command) {
-      url += '/'+command;
-    }
-    debug(url)
-    if(method == null)
-      method = 'get'
-
-    var response = UrlFetchApp.fetch(url, 
-      { method: method, 
-        headers: { Authorization: 'Bearer ' + service.getAccessToken() },
-        contentType: 'application/json',
-        payload: JSON.stringify(payload),
-        muteHttpExceptions: true
-      }
-    )
-
-    if(as_blob)
-      return response.getBlob();
-    else
-      return JSON.parse(response.getContentText())
+  if (as_blob)
+    return response.getBlob();
+  else
+    return JSON.parse(response.getContentText())
 }
 
 /**
@@ -264,14 +271,14 @@ function getService() {
   var service = OAuth2.createService('DocuSign')
     // Set the endpoint URLs.
     .setAuthorizationBaseUrl('https://' + OAUTH_HOST + '/oauth/auth')
-    
+
     // Set the client ID
     .setClientId(CLIENT_ID)
 
     // Set the property store where authorized tokens should be persisted.
     .setPropertyStore(PropertiesService.getUserProperties());
 
-  if(DOCUSIGN_PRIVATE_KEY == null) {
+  if (DOCUSIGN_PRIVATE_KEY == null) {
     // OAuth setup
     service.setTokenUrl('https://' + OAUTH_HOST + '/oauth/token')
 
@@ -286,12 +293,12 @@ function getService() {
     // API.
     service.setTokenHeaders({
       'Authorization': 'Basic ' +
-          Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
+        Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
     });
     // Set the scope. The "signature" scope is used for all endpoints in the
     // eSignature REST API.
     service.setScope('signature')
-  } else{
+  } else {
 
     //JWT setup
     service.setPrivateKey(DOCUSIGN_PRIVATE_KEY)
@@ -300,10 +307,14 @@ function getService() {
     service.setSubject(DOCUSIGN_API_USERNAME)
 
     //OAuth2 library doesn't do JWT base64Encode correctly, using custom version
-    if(!service.hasAccess()) {
+    if (!service.hasAccess()) {
       debug("Authorizing using JWT...")
-      var jwt = generateDocusignJWT()
-      var token = tryDocusignJWT(jwt)
+      var jwt = generateDocusignJWT();
+      var token = tryDocusignJWT(jwt);
+      token.granted_time = Math.round(Date.now() / 1000);
+
+      debug('1619111551')
+      debug(token.granted_time)
       service.saveToken_(token);
       storeDocusignUserInfo(service)
     }
@@ -313,24 +324,24 @@ function getService() {
 
 // Get the user info to determine the ase URI and account ID needed for
 // future requests.
-function storeDocusignUserInfo(service){
-    var url = 'https://' + OAUTH_HOST + '/oauth/userinfo';
-    var response = UrlFetchApp.fetch(url, {
-      headers: {
-        Authorization: 'Bearer ' + service.getAccessToken()
-      }
-    });
-    var result = JSON.parse(response.getContentText());
+function storeDocusignUserInfo(service) {
+  var url = 'https://' + OAUTH_HOST + '/oauth/userinfo';
+  var response = UrlFetchApp.fetch(url, {
+    headers: {
+      Authorization: 'Bearer ' + service.getAccessToken()
+    }
+  });
+  var result = JSON.parse(response.getContentText());
 
-    // Find the default account.
-    var account = result.accounts.filter(function(account) {
-      return account.is_default;
-    })[0];
+  // Find the default account.
+  var account = result.accounts.filter(function (account) {
+    return account.is_default;
+  })[0];
 
-    // Store the base URI and account ID for later.
-    var storage = service.getStorage();
-    storage.setValue('account_id', account.account_id);
-    storage.setValue('base_uri', account.base_uri);
+  // Store the base URI and account ID for later.
+  var storage = service.getStorage();
+  storage.setValue('account_id', account.account_id);
+  storage.setValue('base_uri', account.base_uri);
 }
 
 /**
@@ -356,15 +367,14 @@ function logRedirectUri() {
 
 //get conset url for generating JWT
 //https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
-function getApplicationConsentURI(){
+function getApplicationConsentURI() {
   var redirect_uri = 'https://localhost:3000/auth/docusign/callback' // not important, just need a result page after approval
-  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;  
+  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;
   return uri;
 }
 
-
 // Sign token using RSASHA256 algorithm
-function createJWT (privateKey, expiresInHours, data) {
+function createJWT(privateKey, expiresInHours, data) {
   const header = {
     alg: 'RS256',
     typ: 'JWT',
@@ -385,31 +395,32 @@ function createJWT (privateKey, expiresInHours, data) {
     payload[key] = data[key];
   });
 
-  function base64Encode(text, json){
+  function base64Encode(text, json) {
     const data = json ? JSON.stringify(text) : text;
     return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
   };
 
-  const toSign = base64Encode(header, true) +'.' + base64Encode(payload, true);
-  const signatureBytes = Utilities.computeRsaSha256Signature(toSign,privateKey);
+  const toSign = base64Encode(header, true) + '.' + base64Encode(payload, true);
+  const signatureBytes = Utilities.computeRsaSha256Signature(toSign, privateKey);
   const signature = base64Encode(signatureBytes, false);
-  return toSign + '.' +signature;
+  return toSign + '.' + signature;
 };
 
-function generateDocusignJWT(){
+function generateDocusignJWT() {
   const payload = {
-      iss: DOCUSIGN_INTEGRATION_KEY,
-      sub: DOCUSIGN_API_USERNAME,
-      aud: OAUTH_HOST,
-      scope: "signature impersonation"
-    }
+    iss: DOCUSIGN_INTEGRATION_KEY,
+    sub: DOCUSIGN_API_USERNAME,
+    aud: OAUTH_HOST,
+    scope: "signature impersonation"
+  }
 
-  return createJWT(DOCUSIGN_PRIVATE_KEY,1,payload);
+  return createJWT(DOCUSIGN_PRIVATE_KEY, 1, payload);
 };
 
-function tryDocusignJWT(accessToken){
-  var response = UrlFetchApp.fetch('https://account-d.docusign.com/oauth/token', 
-    { 'method': 'post',
+function tryDocusignJWT(accessToken) {
+  var response = UrlFetchApp.fetch('https://account-d.docusign.com/oauth/token',
+    {
+      'method': 'post',
       'payload': {
         'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
         'assertion': accessToken,

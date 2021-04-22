@@ -1,36 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body onload="onLoad()">
-    <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
 
-     <form
-     id="myform"
-     onsubmit="google.script.run.processWaitlistForm(this)"
-     method="GET"
-     action="<?=url?>">
-    <h1>Waitlist:</h1>
-    <input type='text' name="page" hidden value='waitlist'>
-    <table>
-      <tr><td>CreatedBy: </td><td><input type='text' name="CreatedBy" required></td></tr>
-      <tr><td>Patient First Name: </td><td><input type='text' name="FirstName" required></td></tr>
-      <tr><td>Patient Last Name: </td><td><input type='text' name="LastName" required></td></tr>
-      <tr><td>Patient Phone: </td><td><input type='text' name="Phone" required></td></tr>
-      <tr><td>Patient Email: </td><td><input type='text' name="Email"></td></tr>
-      <tr><td>Notes: </td><td><input type='text' name="Notes"></td></tr>
-    </table>
-    <button>Submit</button>
-    <button type='button' onclick="generateTest()">Generate</button>
-  </form>
-  <br><br>
-  <div id="waitlist"></div>
-  </body>
-  <script>
+<head>
+	<base target="_top">
+</head>
 
-    function onLoad(){
+<body onload="onLoad()">
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+
+	<form id="myform" onsubmit="google.script.run.processWaitlistForm(this)" method="GET" action="<?=url?>">
+		<h1>Waitlist:</h1>
+		<input type='text' name="page" hidden value='waitlist'>
+		<table>
+			<tr>
+				<td>CreatedBy: </td>
+				<td><input type='text' name="CreatedBy" required></td>
+			</tr>
+			<tr>
+				<td>Patient First Name: </td>
+				<td><input type='text' name="FirstName" required></td>
+			</tr>
+			<tr>
+				<td>Patient Last Name: </td>
+				<td><input type='text' name="LastName" required></td>
+			</tr>
+			<tr>
+				<td>Patient Phone: </td>
+				<td><input type='text' name="Phone" required></td>
+			</tr>
+			<tr>
+				<td>Patient Email: </td>
+				<td><input type='text' name="Email"></td>
+			</tr>
+			<tr>
+				<td>Notes: </td>
+				<td><input type='text' name="Notes"></td>
+			</tr>
+		</table>
+		<button>Submit</button>
+		<button type='button' onclick="generateTest()">Generate</button>
+	</form>
+	<br><br>
+	<div id="waitlist"></div>
+</body>
+<script>
+	function onLoad(){
       <?
       var createdBy = '';
       if ('CreatedBy' in urlParameters){
@@ -109,5 +124,6 @@
       }
       return result.join('').toUpperCase();
     }
-  </script>
+</script>
+
 </html>

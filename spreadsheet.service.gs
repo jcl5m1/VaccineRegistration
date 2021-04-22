@@ -2,7 +2,7 @@
 
 function test() {
   values = getSheetData('Appointments');
-  res = getCellByKey(values,1,"Registered");
+  res = getCellByKey(values, 1, "Registered");
   console.log("appointment read: " + res)
   // if(res!=12) {
   //   throw new Error("get sheet and cell failed");
@@ -16,19 +16,19 @@ function test() {
 
 
   record = dictToValueArray("Patients",
-  {
-    "ID": hashTimestamp(),
-    "FirstName": "angela",
-    "LastName": "wong",
-    "Status": "registered",
-    "DateOfBirth": "1960-01-01"
-  })
-  res = appendSheetData("Patients",[record])
+    {
+      "ID": hashTimestamp(),
+      "FirstName": "angela",
+      "LastName": "wong",
+      "Status": "registered",
+      "DateOfBirth": "1960-01-01"
+    })
+  res = appendSheetData("Patients", [record])
   console.log("append result:" + res)
 
   Utilities.sleep(1000)
-  res = searchPatients({"FirstName": "angela",'LastName': 'wong', 'DateOfBirth': '1960-01-01'});
-  if(res)
+  res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
+  if (res)
     console.log("searchPatients:" + JSON.stringify(res));
   else
     console.log("fail");
@@ -36,32 +36,32 @@ function test() {
 }
 
 // save to spreadsheet tab
-function debugLog(type, message){
-  var res = dictToValueArray("Log",{
+function debugLog(type, message) {
+  var res = dictToValueArray("Log", {
     'Timestamp': Date.now(),
     'Type': type,
     'Message': message
   })
-  return appendSheetData("Log",[res])
+  return appendSheetData("Log", [res])
 }
 
 // get cell from 2D array, using header row key
-function getCellByKey(values, row, key){
+function getCellByKey(values, row, key) {
   var index = values[0].indexOf(key);
-  return getCell(values,row,index);
+  return getCell(values, row, index);
 }
 
 //get cell from 2D array
-function getCell(values, row, index){
+function getCell(values, row, index) {
   return values[row][index];
 }
 
 // get column by key using header row
-function getColumnByKey(values, key){
+function getColumnByKey(values, key) {
   var results = [];
   var index = values[0].indexOf(key);
   for (var i = 1; i < values.length; i++)
-    results.push(getCell(values,i,index));
+    results.push(getCell(values, i, index));
   return results;
 }
 
@@ -75,9 +75,9 @@ function getSheetDataAsDict(rangeName) {
   values = Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, rangeName).values;
   keys = values[0]
   var result = []
-  for(var r = 1; r < values.length; r++) {
+  for (var r = 1; r < values.length; r++) {
     var data = {}
-    for(var i = 0; i < keys.length;i++){
+    for (var i = 0; i < keys.length; i++) {
       data[keys[i]] = values[r][i]
     }
     result.push(data)
@@ -87,11 +87,11 @@ function getSheetDataAsDict(rangeName) {
 
 //look up header to convert dict to array
 function dictToValueArray(range, data) {
- var values = Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, range).values
+  var values = Sheets.Spreadsheets.Values.get(GOOGLE_SPREADSHEET_ID, range).values
   keys = values[0];
   var result = []
-  for(var i = 0; i < keys.length; i++) {
-    if(keys[i] in data)
+  for (var i = 0; i < keys.length; i++) {
+    if (keys[i] in data)
       result.push(data[keys[i]])
     else
       result.push('')
@@ -108,7 +108,7 @@ function appendSheetData(range, values) {
   appendRequest.sheetId = GOOGLE_SPREADSHEET_ID;
   appendRequest.rows = [valueRange];
 
-  var result = Sheets.Spreadsheets.Values.append(valueRange,GOOGLE_SPREADSHEET_ID,range, {
+  var result = Sheets.Spreadsheets.Values.append(valueRange, GOOGLE_SPREADSHEET_ID, range, {
     valueInputOption: 'USER_ENTERED'
   });
   return result;
@@ -123,14 +123,14 @@ function updateSheetData(range, values) {
   appendRequest.sheetId = GOOGLE_SPREADSHEET_ID;
   appendRequest.rows = [valueRange];
 
-  var result = Sheets.Spreadsheets.Values.update(valueRange,GOOGLE_SPREADSHEET_ID,range, {
+  var result = Sheets.Spreadsheets.Values.update(valueRange, GOOGLE_SPREADSHEET_ID, range, {
     valueInputOption: 'USER_ENTERED'
   });
   return result;
 }
 
 
-function dateFromDateTime(datetTime){
+function dateFromDateTime(datetTime) {
   return dateTime.split(' ')[0];
 }
 
@@ -140,11 +140,11 @@ function getCheckInDataset(date) {
   var values = getSheetData(sheetName);
   keys = values[0];
   var key_lut = {};
-  for(var i = 0; i < keys.length; i++) {
+  for (var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i;
   }
   var checkInDataset = [];
-  for(var i = 1; i < values.length; i++) {
+  for (var i = 1; i < values.length; i++) {
     dose = 0;
     // if (date == dateFromDateTime(values[i]['Dose1DateTime']))
     //   dose = 1;
@@ -153,9 +153,9 @@ function getCheckInDataset(date) {
 
     var record = {
       'FirstName': values[i][key_lut['FirstName']],
-      'LastName':  values[i][key_lut['LastName']],
-      'ID':  values[i][key_lut['ID']],
-      'Dose':  dose,
+      'LastName': values[i][key_lut['LastName']],
+      'ID': values[i][key_lut['ID']],
+      'Dose': dose,
       'Waiver': values[i][key_lut['Waiver']],
     }
 
@@ -165,8 +165,7 @@ function getCheckInDataset(date) {
 }
 
 // search for patient profile using name and DOB
-function searchPatients(query)
-{
+function searchPatients(query) {
   var sheetName = 'Patients'
   var values = getSheetData(sheetName)
   keys = values[0];
@@ -178,40 +177,40 @@ function searchPatients(query)
     queryPatient['ID'] = query['ID']
   }
 
-  if ('FirstName' in query){
+  if ('FirstName' in query) {
     queryPatient['FirstName'] = query['FirstName'].toUpperCase()
   }
 
   if ('LastName' in query) {
     queryPatient['LastName'] = query['LastName'].toUpperCase()
   }
- 
-  if ('DateOfBirth' in query){
+
+  if ('DateOfBirth' in query) {
     queryPatient['DateOfBirth'] = query['DateOfBirth']
   }
 
   var key_lut = {}
-  for(var i = 0; i < keys.length; i++) {
+  for (var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i
   }
 
-  for(var i = 1; i < values.length; i++) {
+  for (var i = 1; i < values.length; i++) {
     var found = true;
-    for(var k in queryPatient) {
+    for (var k in queryPatient) {
       var v = values[i][key_lut[k]]
       // make case insensitive
-      if (k=='FirstName' || k=='LastName')
+      if (k == 'FirstName' || k == 'LastName')
         v = v.toUpperCase();
       if (queryPatient[k].length == 0)
         continue
-      if(queryPatient[k] != v) {
+      if (queryPatient[k] != v) {
         found = false;
         break;
       }
     }
-    if(found) {
+    if (found) {
       var result = {}
-      for(var j = 0; j < keys.length; j++) {
+      for (var j = 0; j < keys.length; j++) {
         result[keys[j]] = values[i][j];
       }
       return result;

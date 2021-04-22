@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-    <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Parse Medicare Card</h1>
 
-<button type="button" 
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Parse Medicare Card</h1>
+
+	<button type="button"
       onclick="google.script.run.withSuccessHandler(console.log).getIP()">GetIP</button>
 
-    <form id="myform" 
-    method="GET"
-    action="<?=url?>"
-    onsubmit="google.script.run.processCameraForm(this);">
-      Photo of Card :
-      <input type="hidden" name="page" value="camera">
-      <input name="ImageInsuranceFront" type="file" accept="image/*" onchange="updatePhoto(this,600)" capture="environment"><br>
-      <canvas id="myCanvas" width="10" height="10"></canvas><br>
+	<form id="myform" method="GET" action="<?=url?>" onsubmit="google.script.run.processCameraForm(this);">
+		Photo of Card :
+		<input type="hidden" name="page" value="camera">
+		<input name="ImageInsuranceFront" type="file" accept="image/*" onchange="updatePhoto(this,600)" capture="environment"><br>
+		<canvas id="myCanvas" width="10" height="10"></canvas><br>
       Beneficiary: <input type="text" name="Beneficiary"><br>
       MedicareClaimNumber: <input type="text" name="MedicareClaimNumber"><br>
-      <button type="submit">Submit</button>
-    </form>
-    <label id = "ocrResult"></label>
-  <script>
-
-
-
-function updatePhoto(e, maxSize){
+		<button type="submit">Submit</button>
+	</form>
+	<label id = "ocrResult"></label>
+	<script>
+		function updatePhoto(e, maxSize){
   resizeImage({
       file: e.files[0],
       maxSize: maxSize
@@ -161,8 +157,9 @@ var resizeImage = function (settings) {
     });
 };
     /* End Utility function to convert a canvas to a BLOB      */
-    </script>
-  </body>
+	</script>
+</body>
+
 </html>
 
 <!-- 

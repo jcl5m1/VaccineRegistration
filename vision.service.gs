@@ -8,10 +8,10 @@ function getIP() {
   return ip;
 }
 
-function testVisionAPI(){
+function testVisionAPI() {
   var name = '1617767629200_camera.jpg'
   res = makeVisionAPIRequestWithDriveFilename(name)
-  for(var i in res){
+  for (var i in res) {
     console.log(JSON.stringify(res[i]))
   }
 }
@@ -23,21 +23,22 @@ function makeVisionAPIRequestWithDriveFilename(name) {
 
 // loads the drive image into a blob and does base64 encoding into the JSON object
 // slow for large images
-function buildJSONRequestWithBase64Blob(base64blob){
+function buildJSONRequestWithBase64Blob(base64blob) {
   return JSON.stringify({
-    "requests":[
+    "requests": [
       {
-        "image":{
-          "content":base64blob
+        "image": {
+          "content": base64blob
         },
-        "features":[
+        "features": [
           {
-            "type":"DOCUMENT_TEXT_DETECTION",
-            "maxResults":1
+            "type": "DOCUMENT_TEXT_DETECTION",
+            "maxResults": 1
           }
         ]
       }
-    ]});
+    ]
+  });
 }
 
 function buildJSONRequestImgUrl(imgUrl) {
@@ -57,9 +58,9 @@ function buildJSONRequestImgUrl(imgUrl) {
 }
 
 
-function regex_test(){
+function regex_test() {
   var text = "MEDICARE HEALTH INSURANCE 1-800-MEDICARE (1-800-633-4227) SAMPLE NAME OF BENEFICIARY JOHN DOE MEDICARE CLAIM NUMBER SEX 000-00-0000-A MALE IS ENTITLED TO EFFECTIVE DATE HOSPITAL (PART A) 01-01-2007 MEDICAL (PART B) 01-01-2007 SIGN HERE";
-  var beneficiary = extractText(text,'BENEFICIARY','MEDICARE')
+  var beneficiary = extractText(text, 'BENEFICIARY', 'MEDICARE')
   var medicareClaimNumber = text.match(/\d\d\d-\d\d-\d\d\d\d-[AB]/g)[0];
   console.log(beneficiary);
   console.log(medicareClaimNumber);

@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-        <?var url = getScriptUrl();?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Parse Barcode Test</h1>
-    <form id="myform" 
-    method="GET"
-    action="<?=url?>"
-    onsubmit="google.script.run.processCameraForm(this);">
-      Take a photo of barcode on the back of State Issued ID card, or Patient QR code:
-      <input type="hidden" name="page" value="camera">
-      <input name="ImageIDBack" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
-      <canvas hidden id="canvas" width="0" height="0"></canvas><br>
-      <button type="submit">Submit</button>
-    </form>
 
-<footer></footer> 
-<script>
+<head>
+	<base target="_top">
+</head>
 
-function detectBarcode(canvas) {
+<body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Parse Barcode Test</h1>
+	<form id="myform" method="GET" action="<?=url?>" onsubmit="google.script.run.processCameraForm(this);">
+		Take a photo of barcode on the back of State Issued ID card, or Patient QR code:
+		<input type="hidden" name="page" value="camera">
+		<input name="ImageIDBack" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
+		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
+		<button type="submit">Submit</button>
+	</form>
+
+	<footer></footer>
+	<script>
+		function detectBarcode(canvas) {
   if (window.BarcodeDetector == undefined) {
     var footer = document.getElementsByTagName('footer')[0];
     footer.innerHTML = "Barcode Detection not supported";
@@ -267,8 +265,9 @@ function parseDriversLicense(text){
   }
   return result;
 }
-  </script>
+	</script>
 
 
-  </body>
+</body>
+
 </html>

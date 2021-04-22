@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body onload="google.script.run.withSuccessHandler(onAppointmentData).getSheetDataAsDict('Appointments')">
-    <? 
+
+<head>
+	<base target="_top">
+</head>
+
+<body onload="google.script.run.withSuccessHandler(onAppointmentData).getSheetDataAsDict('Appointments')">
+	<? 
       var url = getScriptUrl();
     ?>
-    <a href='<?=url?>'>Home</a><br>
-    <h1>Your Registered Appointments:</h1>
-    None Yet
-    <h1>Select Available Appointment:</h1>
-    Last checked: <?= new Date().toLocaleString() ?><br><br><br>
-    
-    <div id="selectDate">
-      <select name='date' onchange='onDateSelect(this)'>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Your Registered Appointments:</h1>
+	None Yet
+	<h1>Select Available Appointment:</h1>
+	Last checked: <?= new Date().toLocaleString() ?><br><br><br>
+
+	<div id="selectDate">
+		<select name='date' onchange='onDateSelect(this)'>
         <option value='' disabled selected>(loading appointments)</option>
       </select>
-    </div><br>
-    <div id="dayInfo"></div>
-  </body>
-  <script>
-
-  var days = {};
+	</div><br>
+	<div id="dayInfo"></div>
+</body>
+<script>
+	var days = {};
   var hasAvailability = {};
   var appointments;
 
@@ -78,5 +79,6 @@
     html += "</select>";
     document.getElementById("dayInfo").innerHTML = html;
   }
-  </script>
+</script>
+
 </html>

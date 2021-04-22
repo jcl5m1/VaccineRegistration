@@ -22,4 +22,18 @@ var DOCUSIGN_TEST_ENVELOPE_ID = 'YOUR_TEST_ID'
 
 //3rd party utilities/links
 var WAIT_GIF_URL = 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif';
-var QR_CODE_URL ='https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl='
+var QR_CODE_URL = 'https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl='
+
+// required for JWT Auth flow
+
+var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME';  //https://admindemo.docusign.com/users
+
+/* 
+RSA keys required for JWT Grant Authentication (server can impersonate an authorized user without user present to login to Docusign), docusign generates a RSA PRIVATE KEY.  However, App Script's Utilities.computeRsaSha256Signature requires a PRIVATE KEY for encrypting the JWT.  Converting the private key is a manual step using openssl.  Sad.  Possible to do this in App Script?
+
+https://stackoverflow.com/questions/36614051/computersasha256signature-returns-invalid-argument-key-error-when-key-is-publ/36700930#36700930
+
+Also appscript requires new lines to be converted to \n. Muliline string requires the additional \. Easiest with a text editor.
+*/
+
+var DOCUSIGN_PUBLIC_KEY = 'null'; // non-RSA PRIVATE KEY
