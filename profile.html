@@ -9,7 +9,7 @@
     <h1>Profile</h1>
     TODO: restrict profile shown based on public vs staff<br>
     <? if(profileData) {?>
-      <img src="https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl=<?=profileData['ID']?>"><br>
+      <img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
       <table border=0>
       <? 
       // convert dict to table

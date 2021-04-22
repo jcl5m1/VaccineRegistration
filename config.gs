@@ -20,3 +20,6 @@ var DOCUSIGN_TEST_RECIPIENT_EMAIL = "YOUR_TEST_EMAIL"
 var DOCUSIGN_TEST_RECIPIENT_NAME = "YOUR_TEST_NAME"
 var DOCUSIGN_TEST_ENVELOPE_ID = 'YOUR_TEST_ID'
 
+//3rd party utilities/links
+var WAIT_GIF_URL = 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif';
+var QR_CODE_URL ='https://image-charts.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl='

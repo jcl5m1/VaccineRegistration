@@ -50,7 +50,7 @@
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
     </form><br><br>
 
-
+    <h2>Status</h2>
     <div id="result"></div>
   </body>
 
@@ -73,8 +73,7 @@
 
     var lastIFrameURL = '';
     //wait gif for visual feedback
-    var WAIT_GIF_URL = 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif';
-    var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='${WAIT_GIF_URL}' style=" margin: auto;"></div></body>`;
+    var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
     function onIFrameLoad(elem){
       // hacky - trying to close iframe after signature finish, the iframe loads again with the same docusign URL.
