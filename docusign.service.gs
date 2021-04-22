@@ -301,6 +301,7 @@ function getService() {
 
     //OAuth2 library doesn't do JWT base64Encode correctly, using custom version
     if(!service.hasAccess()) {
+      debug("Authorizing using JWT...")
       var jwt = generateDocusignJWT()
       var token = tryDocusignJWT(jwt)
       service.saveToken_(token);
@@ -352,7 +353,6 @@ function authCallback(request) {
 function logRedirectUri() {
   Logger.log(OAuth2.getRedirectUri());
 }
-
 
 //get conset url for generating JWT
 //https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
