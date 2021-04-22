@@ -33,8 +33,6 @@ function testDocusign(){
     // debug(res)
     // debug(res.status == 'sent'? 'pass':'fail')
 
-
-
     // // check status of envelope
     // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
     // var res = getDocusignEnvelopeStatus(envelopeID)
@@ -48,10 +46,14 @@ function testDocusign(){
     // debug("name" in res ? 'pass':'fail')
 }
 
+// test JWT authorization flow
 function testJWT() {
-  //use browser to open link providing consent
-  getApplicationConsentURI();
+  //open link in browser to provide consent for server to impersonate user
+  // ignore site can't be reached error as long as code appears in the URL
+  var res = getApplicationConsentURI();
+  debug(res)
 
+  // generate the encrypted JWT, then use the JWT to request an access token
   var jwt = generateDocusignJWT();
   var res = tryDocusignJWT(jwt);
   debug(res)
@@ -323,9 +325,8 @@ function logRedirectUri() {
 //https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
 function getApplicationConsentURI(){
   var redirect_uri = 'https://localhost:3000/auth/docusign/callback' // not important, just need a result page after approval
-  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;
-  
-  debug(uri)
+  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;  
+  return uri;
 }
 
 
