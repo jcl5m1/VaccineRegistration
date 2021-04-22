@@ -10,15 +10,13 @@
 
     <b>NOTE:</b> This page requires a Docusign account with API keys defined in config.gs (<a href="https://developers.docusign.com/">https://developers.docusign.com/</a>)<br><br>
 
-    TODO: Migrate from OAuth to JWT so it doesn't require Docusign account holder to be present.<br>
     TODO: consider PandaDoc integration as well which has a free unlimited eSign account?<br>
     TODO: consider AdobeSign integration<br>
     TODO: Change Waiver to Consent in spreadsheet and other views <br>
     TODO: subscribe to signature completion? <br>
-    TODO: upload signed consent form to google drive with patient name<br><br><br>
+    TODO: upload signed consent form to google drive with patient name<br><br>
 
     <a href='https://appdemo.docusign.com/home' target=new>Docusign Dashboard</a><br><br>
-
 
     <from name='EmbeddedSignature'>
     <b>Embedded Signature Form:</b><br>
@@ -41,14 +39,14 @@
     Recipient Email: <input type="text" id='RecipientEmail' size="50" required><br>
     <button type="button" 
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
-    </form><br><br>
+    </form><br>
 
     <from name='CheckStatus'>
     <b>Check Envelope Status:</b><br>
     EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
     <button type="button" 
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
-    </form><br><br>
+    </form>
 
     <h2>Status</h2>
     <div id="result"></div>

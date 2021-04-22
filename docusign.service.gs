@@ -17,7 +17,11 @@ var OAUTH_HOST = 'account-d.docusign.com';
 
 var docusignService = null;
 
-function testDocusign(){
+function testDocusignAPI(){
+    // get account info
+    var res = getDocusignAccountInfo();
+    debug(res)
+    debug("accountName" in res ? 'pass':'fail')
 
     // send form for signature
     // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
@@ -55,9 +59,15 @@ function testJWT() {
 
   // generate the encrypted JWT, then use the JWT to request an access token
   var jwt = generateDocusignJWT();
+  debug(jwt)
   var res = tryDocusignJWT(jwt);
   debug(res)
   debug("access_token" in res? "pass" :"fail")
+
+  // test main getService in JWT mode
+  var service = getService()
+  debug(service.hasAccess()) 
+
 }
 
 /**
@@ -66,6 +76,7 @@ function testJWT() {
 function checkDocusignLogin() {
   if(docusignService == null)
     docusignService = getService();
+
   if (docusignService.hasAccess()) {
     return {service: docusignService}
   } else {
@@ -216,7 +227,6 @@ function callDocusignAPI(command, method, payload, as_blob){
     var storage = service.getStorage();
     var accountId = storage.getValue('account_id');
     var baseUri = storage.getValue('base_uri');
-
     var url = baseUri + '/restapi/v2.1/accounts/' + accountId;
     if(command) {
       url += '/'+command;
@@ -251,43 +261,58 @@ function logoutDocusign() {
  * Configures the service.
  */
 function getService() {
-  return OAuth2.createService('DocuSign')
+  var service = OAuth2.createService('DocuSign')
     // Set the endpoint URLs.
     .setAuthorizationBaseUrl('https://' + OAUTH_HOST + '/oauth/auth')
-    .setTokenUrl('https://' + OAUTH_HOST + '/oauth/token')
-
-    // Set the client ID and secret.
+    
+    // Set the client ID
     .setClientId(CLIENT_ID)
-    .setClientSecret(CLIENT_SECRET)
+
+    // Set the property store where authorized tokens should be persisted.
+    .setPropertyStore(PropertiesService.getUserProperties());
+
+  if(DOCUSIGN_PRIVATE_KEY == null) {
+    // OAuth setup
+    service.setTokenUrl('https://' + OAUTH_HOST + '/oauth/token')
 
     // Set the name of the callback function that should be invoked to
     // complete the OAuth flow.
-    .setCallbackFunction('authCallback')
+    service.setCallbackFunction('authCallback')
 
-    // Set the property store where authorized tokens should be persisted.
-    .setPropertyStore(PropertiesService.getUserProperties())
-
-    // Set the scope. The "signature" scope is used for all endpoints in the
-    // eSignature REST API.
-    .setScope('signature')
+    // Set the client secret.
+    service.setClientSecret(CLIENT_SECRET)
 
     // Set the "Authorization" header when requesting tokens, as required by the
     // API.
-    .setTokenHeaders({
+    service.setTokenHeaders({
       'Authorization': 'Basic ' +
           Utilities.base64Encode(CLIENT_ID + ':' + CLIENT_SECRET)
     });
+    // Set the scope. The "signature" scope is used for all endpoints in the
+    // eSignature REST API.
+    service.setScope('signature')
+  } else{
+
+    //JWT setup
+    service.setPrivateKey(DOCUSIGN_PRIVATE_KEY)
+    service.setScope('signature impersonation')
+    service.setTokenUrl(OAUTH_HOST)
+    service.setSubject(DOCUSIGN_API_USERNAME)
+
+    //OAuth2 library doesn't do JWT base64Encode correctly, using custom version
+    if(!service.hasAccess()) {
+      var jwt = generateDocusignJWT()
+      var token = tryDocusignJWT(jwt)
+      service.saveToken_(token);
+      storeDocusignUserInfo(service)
+    }
+  }
+  return service;
 };
 
-/**
- * Handles the OAuth callback.
- */
-function authCallback(request) {
-  var service = getService();
-  var authorized = service.handleCallback(request);
-  if (authorized) {
-    // Get the user info to determine the ase URI and account ID needed for
-    // future requests.
+// Get the user info to determine the ase URI and account ID needed for
+// future requests.
+function storeDocusignUserInfo(service){
     var url = 'https://' + OAUTH_HOST + '/oauth/userinfo';
     var response = UrlFetchApp.fetch(url, {
       headers: {
@@ -305,7 +330,16 @@ function authCallback(request) {
     var storage = service.getStorage();
     storage.setValue('account_id', account.account_id);
     storage.setValue('base_uri', account.base_uri);
+}
 
+/**
+ * Handles the OAuth callback.
+ */
+function authCallback(request) {
+  var service = getService();
+  var authorized = service.handleCallback(request);
+  if (authorized) {
+    storeDocusignUserInfo(service)
     return HtmlService.createHtmlOutput("<div style=\"display: flex; height: 100vh;\"><div style=\"margin: auto;\">Login Success! You can close this window and refresh the original page.</div></div>");
   } else {
     return HtmlService.createHtmlOutput("<div style=\"display: flex; height: 100vh;\"><div style=\"margin: auto;\">Login Failed!</div></div>");
@@ -318,7 +352,6 @@ function authCallback(request) {
 function logRedirectUri() {
   Logger.log(OAuth2.getRedirectUri());
 }
-
 
 
 //get conset url for generating JWT
@@ -357,7 +390,6 @@ function createJWT (privateKey, expiresInHours, data) {
     return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
   };
 
-
   const toSign = base64Encode(header, true) +'.' + base64Encode(payload, true);
   const signatureBytes = Utilities.computeRsaSha256Signature(toSign,privateKey);
   const signature = base64Encode(signatureBytes, false);
@@ -365,19 +397,14 @@ function createJWT (privateKey, expiresInHours, data) {
 };
 
 function generateDocusignJWT(){
-
-  var authUri = 'account-d.docusign.com';
-  var apiUsername = '6ddaf671-512f-448b-98bb-c9f818716de5'
-
   const payload = {
       iss: DOCUSIGN_INTEGRATION_KEY,
-      sub: apiUsername,
-      aud: authUri,
+      sub: DOCUSIGN_API_USERNAME,
+      aud: OAUTH_HOST,
       scope: "signature impersonation"
     }
 
   return createJWT(DOCUSIGN_PRIVATE_KEY,1,payload);
-
 };
 
 function tryDocusignJWT(accessToken){
