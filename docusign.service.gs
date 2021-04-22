@@ -294,9 +294,9 @@ function authCallback(request) {
     storage.setValue('account_id', account.account_id);
     storage.setValue('base_uri', account.base_uri);
 
-    return HtmlService.createHtmlOutput('Login Success!  You can close this window and refresh the original page.');
+    return HtmlService.createHtmlOutput("<div style=\"display: flex; height: 100vh;\"><div style=\"margin: auto;\">Login Success! You can close this window and refresh the original page.</div></div>");
   } else {
-    return HtmlService.createHtmlOutput('Login Failed.');
+    return HtmlService.createHtmlOutput("<div style=\"display: flex; height: 100vh;\"><div style=\"margin: auto;\">Login Failed!</div></div>");
   }
 }
 

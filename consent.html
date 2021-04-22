@@ -106,6 +106,9 @@
     function onCreatedEmbeddedDocusignEnvelope(result){
       // docusignAPI is requesting login, show authorization link
       if ('authUrl' in result) {
+        // hide the waiting frame if it is visible
+        document.getElementById('framecontainer').style.display = "none";
+
         html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
         document.getElementById("result").innerHTML = html;
         return;
@@ -123,6 +126,10 @@
 
     function onDocusignAPIComplete(result){
       console.log(result)
+
+      // hide the waiting frame if it is visible
+      document.getElementById('framecontainer').style.display = "none";
+
       // docusignAPI is requesting login, show authorization link
       if ('authUrl' in result) {
         html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
@@ -130,8 +137,6 @@
         return
       }
 
-      // hide the waiting frame if it is visible
-      document.getElementById('framecontainer').style.display = "none";
 
       // logout button, form submit refreshes the page
       html = "<form onsubmit='google.script.run.logoutDocusign()' method='GET' action='<?=url?>'>"
