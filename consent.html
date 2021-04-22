@@ -17,25 +17,110 @@
     TODO: subscribe to signature completion? <br>
     TODO: upload signed consent form to google drive with patient name<br><br><br>
 
-
     <a href='https://appdemo.docusign.com/home'>Docusign Dashboard</a><br><br>
-    <from name='requestSignature'>
-    <b>Request Signature:</b><br>
-    Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe'><br>
-    Recipient Email: <input type="text" id='RecipientEmail' size="50"><br>
+
+
+    <from name='EmbeddedSignature'>
+    <b>Embedded Signature Form:</b><br>
+    Recipient Name: <input type="text" id='EmbeddedRecipientName' size="50" value='Myldfebe Ygaysefh' required><br>
+    Recipient Email: <input type="text" id='EmbeddedRecipientEmail' size="50" value='mpzpz@lzjnt.com' required><br>
+    <button type="button" 
+      onclick="onGenerateEmbeddedForm()">Generate Consent Form</button><br>
+    </form>
+    <div id='framecontainer' style="display: none;">
+    <iframe  
+      id="EmbeddedDocusignFrame" 
+      onLoad="onIFrameLoad(this)">
+    </iframe>
+    </div>
+    <br><br>
+
+    <from name='RequestSignature'>
+    <b>Request Signature via Email:</b><br>
+    Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe' required><br>
+    Recipient Email: <input type="text" id='RecipientEmail' size="50" required><br>
     <button type="button" 
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
     </form><br><br>
 
-    <from name='checkStatus'>
+    <from name='CheckStatus'>
     <b>Check Envelope Status:</b><br>
     EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
     <button type="button" 
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
     </form><br><br>
+
+
     <div id="result"></div>
   </body>
+
+<style>
+#framecontainer{
+  position:absolute;
+  top:0px;
+  left:0px;
+  right:0px;
+  bottom:0px;
+  background-color: white;
+}
+#EmbeddedDocusignFrame {
+    height: 100%;
+    width: 100%;
+}
+
+</style>
   <script>
+
+    var lastIFrameURL = '';
+    //wait gif for visual feedback
+    var WAIT_GIF_URL = 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif';
+    var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='${WAIT_GIF_URL}' style=" margin: auto;"></div></body>`;
+
+    function onIFrameLoad(elem){
+      // hacky - trying to close iframe after signature finish, the iframe loads again with the same docusign URL.
+      // is there a better way to do this?
+      if(lastIFrameURL.includes('docusign')){
+        // fetch the signed pdf from docusign
+        document.getElementById('EmbeddedDocusignFrame').src = 'data:text/html;charset=utf-8,' + encodeURI(wait_html);
+        google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value);
+      }
+      lastIFrameURL = elem.src;
+      console.log("onIFrameLoad: " + elem.src);
+    }
+
+    function onGenerateEmbeddedForm(){
+      if(lastIFrameURL.includes('docusign')) {
+        console.log("already submitted form - reload page")
+        return;
+      }
+
+      var name = document.getElementById('EmbeddedRecipientName').value;
+      var email = document.getElementById('EmbeddedRecipientEmail').value;
+      google.script.run.withSuccessHandler(onCreatedEmbeddedDocusignEnvelope).createEmbeddedDocusignEnvelope(name, email);
+
+      //generate full window waiting iframe which will get new src when docusign load
+      document.getElementById('EmbeddedDocusignFrame').src = 'data:text/html;charset=utf-8,' + encodeURI(wait_html);
+      document.getElementById('framecontainer').style.display = "block";
+    }
+
+    function onCreatedEmbeddedDocusignEnvelope(result){
+      // docusignAPI is requesting login, show authorization link
+      if ('authUrl' in result) {
+        html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
+        document.getElementById("result").innerHTML = html;
+        return;
+      }
+
+      //set the status tool to this envelopeID
+      document.getElementById('EnvelopeID').value = result.envelopeID;
+
+      // show docusign signing url in frame
+      document.getElementById('EmbeddedDocusignFrame').src = result.url;
+
+      //can't use full browser becuase redirect fails due to  'X-Frame-Options' set to 'sameorigin' for scripts.google.com.
+      //window.location.href = result.url
+    }
+
     function onDocusignAPIComplete(result){
       console.log(result)
       // docusignAPI is requesting login, show authorization link
@@ -44,6 +129,9 @@
         document.getElementById("result").innerHTML = html
         return
       }
+
+      // hide the waiting frame if it is visible
+      document.getElementById('framecontainer').style.display = "none";
 
       // logout button, form submit refreshes the page
       html = "<form onsubmit='google.script.run.logoutDocusign()' method='GET' action='<?=url?>'>"

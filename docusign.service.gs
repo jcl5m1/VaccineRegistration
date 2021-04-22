@@ -26,6 +26,15 @@ function testDocusign(){
     // debug(res)
     // debug(res.status == 'sent'? 'pass':'fail')
 
+    // create envlope
+    var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
+    var name = DOCUSIGN_TEST_RECIPIENT_NAME
+    var res = createEmbeddedDocusignEnvelope(name, email);
+    debug(res)
+    debug(res.status == 'sent'? 'pass':'fail')
+
+
+
     // // check status of envelope
     // var envelopeID = DOCUSIGN_TEST_ENVELOPE_ID
     // var res = getDocusignEnvelopeStatus(envelopeID)
@@ -97,6 +106,55 @@ function requestDocusignSignatureUsingConfigTemplate(name, email) {
     ]
   }
   return callDocusignAPI("envelopes", 'post', payload)
+}
+
+
+function createEmbeddedDocusignEnvelope(name, email){
+
+  clientID = randomString(10).toUpperCase();
+
+  // create envelope
+  payload = {
+    "emailSubject": DOCUSIGN_EMAIL_SUBJECT,
+    "status": "sent",
+    "templateId": DOCUSIGN_TEMPLATE_ID,
+      "templateRoles": [
+      {
+      "email": email,
+      "name": name,
+      "roleName": DOCUSIGN_TEMPLATE_ROLE,
+      "clientUserId": clientID,
+      } 
+    ],
+  }
+
+  var res = callDocusignAPI("envelopes", 'post', payload)
+  if ('authUrl' in res)
+    return res
+
+  var envelopeID = res.envelopeId
+
+  // can't use script.google.com because it set 'X-Frame-Options' to 'sameorigin'
+  // and won't allow a redirect to it.  so, using iframe as work around
+  returnUrl = "https://none";
+
+  // create a recipent view URL
+  payload = {
+    "returnUrl": returnUrl,
+    "authenticationMethod": "None",
+    "email": email,
+    "userName": name,
+    "clientUserId": clientID,
+  }
+
+  var res = callDocusignAPI("envelopes/"+envelopeID+'/views/recipient', 'post', payload);
+  if ('authUrl' in res)
+    return res
+
+  res.clientID = clientID;
+  res.envelopeID = envelopeID;
+  return res;
+
 }
 
 // call docusign REST API to get envelope info
