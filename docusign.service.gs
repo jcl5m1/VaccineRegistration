@@ -26,12 +26,12 @@ function testDocusign(){
     // debug(res)
     // debug(res.status == 'sent'? 'pass':'fail')
 
-    // create envlope
-    var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
-    var name = DOCUSIGN_TEST_RECIPIENT_NAME
-    var res = createEmbeddedDocusignEnvelope(name, email);
-    debug(res)
-    debug(res.status == 'sent'? 'pass':'fail')
+    // create embedded envlope
+    // var email = DOCUSIGN_TEST_RECIPIENT_EMAIL
+    // var name = DOCUSIGN_TEST_RECIPIENT_NAME
+    // var res = createEmbeddedDocusignEnvelope(name, email);
+    // debug(res)
+    // debug(res.status == 'sent'? 'pass':'fail')
 
 
 
@@ -46,6 +46,16 @@ function testDocusign(){
     // var res = downloadDocusignEnvelopeAsPDF(envelopeID,envelopeID+".pdf")
     // debug(res)
     // debug("name" in res ? 'pass':'fail')
+}
+
+function testJWT() {
+  //use browser to open link providing consent
+  getApplicationConsentURI();
+
+  var jwt = generateDocusignJWT();
+  var res = tryDocusignJWT(jwt);
+  debug(res)
+  debug("access_token" in res? "pass" :"fail")
 }
 
 /**
@@ -305,4 +315,79 @@ function authCallback(request) {
  */
 function logRedirectUri() {
   Logger.log(OAuth2.getRedirectUri());
+}
+
+
+
+//get conset url for generating JWT
+//https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
+function getApplicationConsentURI(){
+  var redirect_uri = 'https://localhost:3000/auth/docusign/callback' // not important, just need a result page after approval
+  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;
+  
+  debug(uri)
+}
+
+
+// Sign token using RSASHA256 algorithm
+function createJWT (privateKey, expiresInHours, data) {
+  const header = {
+    alg: 'RS256',
+    typ: 'JWT',
+  };
+
+  const now = Date.now();
+  const expires = new Date(now);
+  expires.setHours(expires.getHours() + expiresInHours);
+
+  // iat = issued time, exp = expiration time
+  const payload = {
+    exp: Math.round(expires.getTime() / 1000),
+    iat: Math.round(now / 1000),
+  };
+
+  // add user payload
+  Object.keys(data).forEach(function (key) {
+    payload[key] = data[key];
+  });
+
+  function base64Encode(text, json){
+    const data = json ? JSON.stringify(text) : text;
+    return Utilities.base64EncodeWebSafe(data).replace(/=+$/, '');
+  };
+
+
+  const toSign = base64Encode(header, true) +'.' + base64Encode(payload, true);
+  const signatureBytes = Utilities.computeRsaSha256Signature(toSign,privateKey);
+  const signature = base64Encode(signatureBytes, false);
+  return toSign + '.' +signature;
+};
+
+function generateDocusignJWT(){
+
+  var authUri = 'account-d.docusign.com';
+  var apiUsername = '6ddaf671-512f-448b-98bb-c9f818716de5'
+
+  const payload = {
+      iss: DOCUSIGN_INTEGRATION_KEY,
+      sub: apiUsername,
+      aud: authUri,
+      scope: "signature impersonation"
+    }
+
+  return createJWT(DOCUSIGN_PRIVATE_KEY,1,payload);
+
+};
+
+function tryDocusignJWT(accessToken){
+  var response = UrlFetchApp.fetch('https://account-d.docusign.com/oauth/token', 
+    { 'method': 'post',
+      'payload': {
+        'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        'assertion': accessToken,
+      },
+      'muteHttpExceptions': true
+    }
+  )
+  return JSON.parse(response.getContentText())
 }
