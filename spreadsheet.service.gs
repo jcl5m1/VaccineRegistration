@@ -175,20 +175,14 @@ function searchPatients(query) {
 
   if ('ID' in query) {
     queryPatient['ID'] = query['ID']
-  }
-
-  if ('FirstName' in query) {
+  } else {
+    // if not using ID, require other components
     queryPatient['FirstName'] = query['FirstName'].toUpperCase()
-  }
-
-  if ('LastName' in query) {
     queryPatient['LastName'] = query['LastName'].toUpperCase()
-  }
-
-  if ('DateOfBirth' in query) {
     queryPatient['DateOfBirth'] = query['DateOfBirth']
   }
 
+ 
   var key_lut = {}
   for (var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i

@@ -11,16 +11,6 @@
         "userSymbol": "Drive",
         "version": "v2",
         "serviceId": "drive"
-      },
-      {
-        "userSymbol": "Gmail",
-        "version": "v1",
-        "serviceId": "gmail"
-      },
-      {
-        "userSymbol": "Calendar",
-        "version": "v3",
-        "serviceId": "calendar"
       }
     ],
     "libraries": [
@@ -41,6 +31,7 @@
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/drive",
-    "https://www.googleapis.com/auth/script.external_request"
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/script.send_mail"
   ]
 }
