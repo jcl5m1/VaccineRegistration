@@ -75,37 +75,38 @@ function processRegistrationForm(formObject) {
 
   var namePrefix = formObject.LastName + "_" + formObject.FirstName + "_" + id
   var data = {
-    'ID': id,
-    'FirstName': formObject.FirstName.toUpperCase(),
-    'LastName': formObject.LastName.toUpperCase(),
-    'DateOfBirth': formObject.DateOfBirth,
-    'Phone': formObject.Phone,
-    'Email': formObject.Email.toUpperCase(),
-    'Gender': formObject.Gender.toUpperCase(),
-    'Race': formObject.Race.toUpperCase(),
-    'Ethnicity': formObject.Ethnicity.toUpperCase(),
-    'RelationshipToPatient': formObject.RelationshipToPatient,
-    'SignatureName': formObject.SignatureName.toUpperCase(),
-    'AddressStreet': formObject.AddressStreet.toUpperCase(),
-    'AddressCity': formObject.AddressCity.toUpperCase(),
-    'AddressState': formObject.AddressState,
-    'AddressZip': formObject.AddressZip,
-    'Status': 'registered',
-    'Source': 'webapp',
-    'ImageIDBack': namePrefix + "_IDBack.jpg",
+    ID: id,
+    Timestamp: Date.now(),
+    FirstName: formObject.FirstName.toUpperCase(),
+    LastName: formObject.LastName.toUpperCase(),
+    DateOfBirth: formObject.DateOfBirth,
+    Phone: formObject.Phone,
+    Email: formObject.Email.toUpperCase(),
+    Gender: formObject.Gender.toUpperCase(),
+    Race: formObject.Race.toUpperCase(),
+    Ethnicity: formObject.Ethnicity.toUpperCase(),
+    RelationshipToPatient: formObject.RelationshipToPatient,
+    SignatureName: formObject.SignatureName.toUpperCase(),
+    AddressStreet: formObject.AddressStreet.toUpperCase(),
+    AddressCity: formObject.AddressCity.toUpperCase(),
+    AddressState: formObject.AddressState,
+    AddressZip: formObject.AddressZip,
+    Status: 'registered',
+    Source: 'webapp',
+    ImageIDBack: namePrefix + "_IDBack.jpg",
 
-    'InsuranceType': formObject.InsuranceType,
-    'ImageInsuranceFront': namePrefix + "_InsuranceFront.jpg",
-    'ImageInsuranceBack': namePrefix + "_InsuranceBack.jpg",
-    'InsurancePolicyHolder': formObject.InsurancePolicyHolder.toUpperCase(),
-    'InsurancePolicyHolderDateOfBirth': formObject.InsurancePolicyHolderDateOfBirth,
-    'InsuranceCompany': formObject.InsuranceCompany.toUpperCase(),
-    'InsuranceClaimAddress': formObject.InsuranceClaimAddress.toUpperCase(),
-    'InsuranceGroupNumber': formObject.InsuranceGroupNumber.toUpperCase(),
-    'InsuranceSubscriberID': formObject.InsuranceSubscriberID.toUpperCase(),
-    'InsuranceSSN': formObject.InsuranceSSN,
+    InsuranceType: formObject.InsuranceType,
+    ImageInsuranceFront: namePrefix + "_InsuranceFront.jpg",
+    ImageInsuranceBack: namePrefix + "_InsuranceBack.jpg",
+    InsurancePolicyHolder: formObject.InsurancePolicyHolder.toUpperCase(),
+    InsurancePolicyHolderDateOfBirth: formObject.InsurancePolicyHolderDateOfBirth,
+    InsuranceCompany: formObject.InsuranceCompany.toUpperCase(),
+    InsuranceClaimAddress: formObject.InsuranceClaimAddress.toUpperCase(),
+    InsuranceGroupNumber: formObject.InsuranceGroupNumber.toUpperCase(),
+    InsuranceSubscriberID: formObject.InsuranceSubscriberID.toUpperCase(),
+    InsuranceSSN: formObject.InsuranceSSN,
 
-    'Notes': formObject.Notes,
+    Notes: formObject.Notes,
   }
   var res = dictToValueArray("Patients", data)
 
@@ -135,11 +136,11 @@ function processRegistrationForm(formObject) {
 function processFeedbackForm(formObject) {
   var id = hashTimestamp();
   var res = dictToValueArray("Tickets", {
-    'Status': 'new',
-    'Timestamp': Date.now(),
-    'CreatedBy': formObject.CreatedBy,
-    'Type': formObject.Type,
-    'Description': formObject.Description
+    Status: 'new',
+    Timestamp: Date.now(),
+    CreatedBy: formObject.CreatedBy,
+    Type: formObject.Type,
+    Description: formObject.Description
   })
 
   // store ticket
@@ -149,14 +150,15 @@ function processFeedbackForm(formObject) {
 function processWaitlistForm(formObject) {
   var id = hashTimestamp();
   var res = dictToValueArray("Waitlist", {
-    'Status': 'new',
-    'Timestamp': Date.now(),
-    'CreatedBy': formObject.CreatedBy,
-    'FirstName': formObject.FirstName,
-    'LastName': formObject.LastName,
-    'Phone': formObject.Phone,
-    'Email': formObject.Email,
-    'Notes': formObject.Notes,
+    Status: 'NEW',
+    ID: id,
+    Timestamp: Date.now(),
+    CreatedBy: formObject.CreatedBy.toUpperCase(),
+    FirstName: formObject.FirstName.toUpperCase(),
+    LastName: formObject.LastName.toUpperCase(),
+    Phone: formObject.Phone,
+    Email: formObject.Email.toUpperCase(),
+    Notes: formObject.Notes,
   })
 
   // store waitlist

@@ -1,18 +1,15 @@
 
 
-function test() {
+function testSpreadsheet() {
   values = getSheetData('Appointments');
   res = getCellByKey(values, 1, "Registered");
-  console.log("appointment read: " + res)
-  // if(res!=12) {
-  //   throw new Error("get sheet and cell failed");
-  // }
+  debug( res > 0 ? "pass" : "fail")
 
-  // res = getColumnByKey(values,"Registered");
-  // console.log(res)
+  res = getColumnByKey(values,"Registered");
+  debug(res.length > 0 ? "pass" : "fail")
 
-  // res = getSheetDataAsDict('Appointments');
-  // console.log(res)
+  res = getSheetDataAsDict('Appointments');
+  debug(res.length > 0 ? "pass" : "fail")
 
 
   record = dictToValueArray("Patients",
@@ -24,14 +21,13 @@ function test() {
       "DateOfBirth": "1960-01-01"
     })
   res = appendSheetData("Patients", [record])
-  console.log("append result:" + res)
-
+  debug('spreadsheetId' in res ? "pass" : "fail")
   Utilities.sleep(1000)
   res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
-  if (res)
-    console.log("searchPatients:" + JSON.stringify(res));
-  else
-    console.log("fail");
+  debug(res['FirstName']== 'angela' ? "pass" : "fail")
+
+  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HPYPJ0CUWYZGG', 'Dose1DateTime', 'test value')
+  debug('spreadsheetId' in res ? "pass" : "fail")
 
 }
 
@@ -182,7 +178,7 @@ function searchPatients(query) {
     queryPatient['DateOfBirth'] = query['DateOfBirth']
   }
 
- 
+
   var key_lut = {}
   for (var i = 0; i < keys.length; i++) {
     key_lut[keys[i]] = i
@@ -210,5 +206,57 @@ function searchPatients(query) {
       return result;
     }
   }
+  return undefined
+}
+
+function R1C1toA1(row, column) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const base = chars.length;
+  var columnRef = '';
+
+  column += 1
+  row += 1
+  if (column < 1) {
+    columnRef = chars[0];
+  } else {
+    var maxRoot = 0;
+    while (Math.pow(base, maxRoot + 1) < column) {
+      maxRoot++;
+    }
+
+    var remainder = column;
+    for (var root = maxRoot; root >= 0; root--) {
+      var value = Math.floor(remainder / Math.pow(base, root));
+      remainder -= (value * Math.pow(base, root));
+      columnRef += chars[value - 1];
+    }
+  }
+
+  // Use Math.max to ensure minimum row is 1
+  return columnRef + Math.max(row, 1)
+};
+
+// set a cell, using sheet, id, and column name
+function setSheetValueUsingHeaders(sheetName, id_header, id, value_header, value) {
+  var data = getSheetData(sheetName)
+  var keys = data[0];
+  var id_idx = keys.indexOf(id_header)
+  var value_idx = keys.indexOf(value_header)
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][id_idx] == id) {
+      var range = sheetName + '!' + R1C1toA1(i, value_idx)
+      var resource = { values: [[value]] }
+      var options = { valueInputOption: 'USER_ENTERED' }
+      var res = Sheets.Spreadsheets.Values.update(resource, GOOGLE_SPREADSHEET_ID, range, options);
+
+      // provide input in return value, to give callback more info
+      var input = {}
+      input[id_header] = id
+      input[value_header] = value
+      res.input = input
+      return res
+    }
+  }
+
   return undefined
 }

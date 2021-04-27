@@ -94,17 +94,29 @@
         if ('Email' in r)
           email = r['Email']
 
-        html += "<tr bgcolor='" + color + "'>";
-        html += "<td>" + ts + "<br> CreatedBy:" + createdBy + "</td>";
-        html += "<td>" + firstName + " " + lastName + "<br>"
-        html += "<a href='tel:" + phone +"'>" + phone + "</a> " + email + "</td>";
-        html += "<td> Status:<br>" + r['Status'] + "</td>";
-        html += "<td> Begin CheckIn </td>";
+        html += `<tr bgcolor='${color}'>`;
+        html += `<td>${ts}<br> CreatedBy: ${createdBy}</td>`;
+        html += `<td>${firstName} ${lastName}<br>`;
+        html += `<a href='tel: ${phone}'>${phone}</a> ${email} </td>`;
+        html += `<td> Status: <b><div id='${r['ID']}status'>${r['Status'].toUpperCase()} </div></b></td>`;
+        html += `<td> <div onclick="updateStatus('${r['ID']}','INVITED')">Invite</div></td>`;
+        html += `<td> <div onclick="updateStatus('${r['ID']}','CANCELLED')">Cancel</div></td>`;
         html += "</tr>";
       }
       html += "</table>"
 
       document.getElementById('waitlist').innerHTML = html;
+    }
+
+    function onUpdateStatus(result) {
+      if(result['updatedCells'] == 1)
+        document.getElementById(result.input.ID+'status').innerHTML = result.input.Status.toUpperCase();
+      else
+        console.log(result)
+    }
+
+    function updateStatus(id, status){
+      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, 'Status', status)
     }
 
     function generateTest(){
