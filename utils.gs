@@ -21,10 +21,56 @@ function getScriptUrl() {
   return url;
 }
 
-// strong gaurantee of UUID
+
+function testUUID(){
+//  debug(Utilities.getUuid())
+  debug(hashTimestamp())
+}
+
+// time based UUID+random, provides good uniqueness gaurantee
 function hashTimestamp() {
   randSuffix = 1000000000;
-  return (Date.now() * randSuffix + Math.round(Math.random() * randSuffix)).toString(36).toUpperCase();
+  // removing vowels reduces chance of bad words and numerical confusion
+  var charDict = {
+    '0':'0',
+    '1':'1',
+    '2':'2',
+    '3':'3',
+    '4':'4',
+    '5':'5',
+    '6':'6',
+    '7':'7',
+    '8':'8',
+    '9':'9',
+    A:'B',
+    B:'C',
+    C:'D',
+    D:'F',
+    E:'G',
+    F:'H',
+    G:'J',
+    H:'K',
+    I:'L',
+    J:'M',
+    K:'N',
+    L:'P',
+    M:'Q',
+    N:'R',
+    O:'S',
+    P:'T',
+    Q:'V',
+    R:'W',
+    S:'Y',
+    T:'Z'
+    }
+
+  var hash = (Date.now() * randSuffix + Math.round(Math.random() * randSuffix)).toString(Object.keys(charDict).length).toUpperCase();
+  var res=''
+  var i = hash.length;
+  while (i--) {
+    res = charDict[hash[i]]+res;
+  }
+  return res
 }
 
 function randomDate() {
