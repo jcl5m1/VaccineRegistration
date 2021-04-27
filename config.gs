@@ -36,4 +36,4 @@ https://stackoverflow.com/questions/36614051/computersasha256signature-returns-i
 Also appscript requires new lines to be converted to \n. Muliline string requires the additional \. Easiest with a text editor.
 */
 
-var DOCUSIGN_PUBLIC_KEY = 'null'; // non-RSA PRIVATE KEY
+var DOCUSIGN_PUBLIC_KEY = null; // non-RSA PRIVATE KEY
