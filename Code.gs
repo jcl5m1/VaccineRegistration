@@ -136,7 +136,8 @@ function processRegistrationForm(formObject) {
 function processFeedbackForm(formObject) {
   var id = hashTimestamp();
   var res = dictToValueArray("Tickets", {
-    Status: 'new',
+    ID: id,
+    Status: 'NEW',
     Timestamp: Date.now(),
     CreatedBy: formObject.CreatedBy,
     Type: formObject.Type,
@@ -150,8 +151,8 @@ function processFeedbackForm(formObject) {
 function processWaitlistForm(formObject) {
   var id = hashTimestamp();
   var res = dictToValueArray("Waitlist", {
-    Status: 'NEW',
     ID: id,
+    Status: 'NEW',
     Timestamp: Date.now(),
     CreatedBy: formObject.CreatedBy.toUpperCase(),
     FirstName: formObject.FirstName.toUpperCase(),
