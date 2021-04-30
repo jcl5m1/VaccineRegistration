@@ -48,7 +48,7 @@ function doGet(e) {
 function onLogin(form) {
   if (form.password == master_password) {
     var template =  HtmlService.createTemplateFromFile('Index');
-    template.user_key = staff_key
+    template.user_key = STAFF_KEY
     return template.evaluate()
       .setSandboxMode(HtmlService.SandboxMode.NATIVE)
       .getContent();

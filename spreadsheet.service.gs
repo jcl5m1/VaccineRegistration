@@ -173,7 +173,7 @@ function searchPatients(query) {
   // Currently limiting profile scope by key order
   // This can be updated in config.gs to define the limited profile view with
   // An array of accepted keys
-  if (query.user_key == staff_key) {
+  if (query.user_key == STAFF_KEY) {
     profile_scope = keys.length 
   } else {
     // ID, First, Last, DoB, Phone
