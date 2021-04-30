@@ -6,12 +6,21 @@
 </head>
 
 <body>
-	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
+    <?var url = getScriptUrl();?>
+    <!-- Return to staff home page or paitient home page -->
+     <? if( user_key == getStaffKey()) {?>
+    <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
+    <?} else {?>
+    <a href='<?=url?>?user_key=<?=user_key?>'>Home</a><br>
+    <? } ?>
+    
+    <!-- Begin Questionaire Form -->
 	<h1>COVID-19 Vaccine Questionaire</h1>
 	<form id="myform" action="<?=url?>">
 		<input type="hidden" name="page" value="questionaire">
 		<input type="hidden" name="prev" value="questionaire">
+		<input type="hidden" name="user_key" value=<?=user_key?>>
+
 		<ol>
 			<table border=0>
 				<tr bgcolor='#eee'>

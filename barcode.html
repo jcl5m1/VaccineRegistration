@@ -6,12 +6,20 @@
 </head>
 
 <body>
-	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
+  <?var url = getScriptUrl();?>
+  <!-- Return to staff home page or paitient home page -->
+   <? if( user_key == getStaffKey()) {?>
+  <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
+  <?} else {?>
+  <a href='<?=url?>?user_key=<?=user_key?>'>Home</a><br>
+  <? } ?>
+  
+  <!-- Begin Parse Barcode Test-->
 	<h1>Parse Barcode Test</h1>
 	<form id="myform" method="GET" action="<?=url?>" onsubmit="google.script.run.processCameraForm(this);">
 		Take a photo of barcode on the back of State Issued ID card, or Patient QR code:
 		<input type="hidden" name="page" value="camera">
+    <input type="hidden" name="user_key" value=<?=user_key?>>
 		<input name="ImageIDBack" type="file" accept="image/*" onchange="updatePhoto(this,1200)" capture="environment"><br>
 		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
 		<button type="submit">Submit</button>

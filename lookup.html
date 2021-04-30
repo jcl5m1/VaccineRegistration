@@ -7,11 +7,19 @@
 
 <body>
 	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
+  <!-- Return to staff home page or paitient home page -->
+  <? if( user_key == getStaffKey()) {?>
+  <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
+  <?} else {?>
+  <a href='<?=url?>?user_key=<?=user_key?>'>Home</a><br>
+  <? } ?>
+
+  <!-- Begin Look Up Registrations Form -->
 	<h1>Look Up Registration</h1>
 	<form id="myform" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="profile">
 		<input type="hidden" name="ID" value="">
+    <input type="hidden" name="user_key" value=<?=user_key?>>
     (optional) Scan QR Code/State ID barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
 		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
