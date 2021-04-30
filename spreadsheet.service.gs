@@ -206,7 +206,7 @@ function searchPatients(query) {
         continue
       if (queryPatient[k] != v) {
         found = false;
-        break`
+        break
       }
     }
     // If found, iterate over profile information up the length set by `profile_scope`
