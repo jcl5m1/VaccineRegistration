@@ -11,12 +11,11 @@
 <body>
   <?var url = getScriptUrl();?>
   <?var staff_key = getStaffKey();?>
-
   <!-- Display registration header or staff page header -->
   <? if( user_key == getStaffKey()) {?>
   <h1>COVID-19 Vaccine Staff Dashboard</h1><br>
- <?} else {?>
-    <h1>COVID-19 Vaccine Registration</h1><br>
+  <?} else {?>
+  <h1>COVID-19 Vaccine Registration</h1><br>
   <? } ?>
 
   <h2>Patient Pages</h2>
@@ -44,17 +43,14 @@
   <li><a href='<?=url?>?page=staff_login'>Staff Login</a></li>
   </ul>
   <? } ?>
-
-
   <h2>Development Pages</h2>
   <ul>
   <li><a href='<?=url?>?page=camera&user_key=<?=staff_key?>'>Parse Image Testing</a></li>
   <li><a href='<?=url?>?page=barcode&user_key=<?=staff_key?>'>Parse Barcode Testing</a></li>
-  <li><a href='<?=url?>?page=email&user_key=<?=staff_key?'>Email Testing</a></li>
-  <li><a href='<?=url?>?page=consent&user_key=<?=staff_key?'>Consent Form Testing - Docusign</a></li>
-  <li><a href='<?=url?>?page=google_login&user_key=<?=staff_key?>'>Google Account Login Testing</a></li>
-
+  <li><a href='<?=url?>?page=email&user_key=<?=staff_key?>'>Email Testing</a></li>
+  <li><a href='<?=url?>?page=consent&user_key=<?=staff_key?>'>Consent Form Testing - Docusign</a></li>
   </ul>
+
 
   <!-- Github Feedback -->
 
