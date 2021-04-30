@@ -21,6 +21,13 @@ function getScriptUrl() {
   return url;
 }
 
+function getStaffKey() {
+ return staff_key
+}
+
+function getUserKey() {
+ return user_key
+}
 
 function testUUID(){
 //  debug(Utilities.getUuid())
