@@ -2,8 +2,8 @@
 <html>
 
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=2.0" />
-	<base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=2.0" />
+  <base target="_top">
   <?!= include('CSS'); ?>
 
 </head>
@@ -20,19 +20,19 @@
 
   <h2>Patient Pages</h2>
   <ul>
-  <li><a href='<?=url?>?page=register&user_key=<?=user_key?>'>New Registration</a></li>
-  <li><a href='<?=url?>?page=questionaire&user_key=<?=user_key?>'>COVID Questionaire</a></li>
-  <li><a href='<?=url?>?page=lookup&user_key=<?=user_key?>'>Lookup Registration</a></li>
-  <li><a href='<?=url?>?page=appointments&user_key=<?=user_key?>'>Appointments</a></li>
+    <li><a href='<?=url?>?page=register&user_key=<?=user_key?>'>New Registration</a></li>
+    <li><a href='<?=url?>?page=questionaire&user_key=<?=user_key?>'>COVID Questionaire</a></li>
+    <li><a href='<?=url?>?page=lookup&user_key=<?=user_key?>'>Lookup Registration</a></li>
+    <li><a href='<?=url?>?page=appointments&user_key=<?=user_key?>'>Appointments</a></li>
   </ul>
 
   <!-- Display staff only pages or staff login page -->
   <? if( user_key == getStaffKey()) {?>
-   <h2>Staff Pages</h2>
+  <h2>Staff Pages</h2>
   <ul>
-  <li><a href='<?=url?>?page=checkin&user_key=<?=staff_key?>'>Check-In (Staff)</a></li>
-  <li><a href='<?=url?>?page=waitlist&user_key=<?=staff_key?>'>Waitlist</a></li>
-  <li><a href='<?=url?>?page=Index?&user_key=public'>Log Out Staff</a></li>
+    <li><a href='<?=url?>?page=checkin&user_key=<?=staff_key?>'>Check-In (Staff)</a></li>
+    <li><a href='<?=url?>?page=waitlist&user_key=<?=staff_key?>'>Waitlist</a></li>
+    <li><a href='<?=url?>?page=Index?&user_key=public'>Log Out Staff</a></li>
 
   </ul>
 
@@ -40,40 +40,40 @@
 
   <h2>Staff</h2>
   <ul>
-  <li><a href='<?=url?>?page=staff_login'>Staff Login</a></li>
+    <li><a href='<?=url?>?page=staff_login'>Staff Login</a></li>
   </ul>
   <? } ?>
   <h2>Development Pages</h2>
   <ul>
-  <li><a href='<?=url?>?page=camera&user_key=<?=staff_key?>'>Parse Image Testing</a></li>
-  <li><a href='<?=url?>?page=barcode&user_key=<?=staff_key?>'>Parse Barcode Testing</a></li>
-  <li><a href='<?=url?>?page=email&user_key=<?=staff_key?>'>Email Testing</a></li>
-  <li><a href='<?=url?>?page=consent&user_key=<?=staff_key?>'>Consent Form Testing - Docusign</a></li>
+    <li><a href='<?=url?>?page=camera&user_key=<?=staff_key?>'>Parse Image Testing</a></li>
+    <li><a href='<?=url?>?page=barcode&user_key=<?=staff_key?>'>Parse Barcode Testing</a></li>
+    <li><a href='<?=url?>?page=email&user_key=<?=staff_key?>'>Email Testing</a></li>
+    <li><a href='<?=url?>?page=consent&user_key=<?=staff_key?>'>Consent Form Testing - Docusign</a></li>
   </ul>
 
 
   <!-- Github Feedback -->
 
-	<br>
-	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
-		<br><br>
-		<a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
-		<h2>Feedback/Feature Request/Bug Reporting:</h2>
-		<a href='https://github.com/jcl5m1/VaccineRegistration/issues' target=new>Create a Github Issue</a> (github
-		account required)<br><br>
+  <br>
+  <form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
+    <br><br>
+    <a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
+    <h2>Feedback/Feature Request/Bug Reporting:</h2>
+    <a href='https://github.com/jcl5m1/VaccineRegistration/issues' target=new>Create a Github Issue</a> (github
+    account required)<br><br>
 
-		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
+    <b>Create a Spreadsheet Ticket</b> (no account required) <br>
     Your Name: <input type='text' name="CreatedBy"><br>
     Type: <select name='Type'>
-        <option value="support">Support Request</option>
-        <option value="feedback">General Feedback</option>
-        <option value="feature">Feature Request</option>
-        <option value="bug">Report Bug</option>
-      </select><br>
-      Description:<br>
-		<textarea name="Description" rows="4" cols="50"></textarea><br>
-		<button>Submit</button>
-	</form>
+      <option value="support">Support Request</option>
+      <option value="feedback">General Feedback</option>
+      <option value="feature">Feature Request</option>
+      <option value="bug">Report Bug</option>
+    </select><br>
+    Description:<br>
+    <textarea name="Description" rows="4" cols="50"></textarea><br>
+    <button>Submit</button>
+  </form>
 </body>
 
 </html>
