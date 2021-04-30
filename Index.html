@@ -9,30 +9,54 @@
 </head>
 
 <body>
-	<?var url = getScriptUrl();?>
-	<h1>COVID-19 Vaccine Registration</h1><br>
-	<h2>Paient/Public Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=register'>New Registration</a></li>
-		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
-		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
-		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
-	</ul>
+  <?var url = getScriptUrl();?>
+  <?var staff_key = getStaffKey();?>
 
-	<h2>Staff Only Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=checkin'>Check-In</a></li>
-		<li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
-	</ul>
+  <!-- Display registration header or staff page header -->
+  <? if( user_key == getStaffKey()) {?>
+  <h1>COVID-19 Vaccine Staff Dashboard</h1><br>
+ <?} else {?>
+    <h1>COVID-19 Vaccine Registration</h1><br>
+  <? } ?>
 
-	<h2>Development/Test Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
-		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
-		<li><a href='<?=url?>?page=email'>Email Testing</a></li>
-		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
-	</ul>
+  <h2>Patient Pages</h2>
+  <ul>
+  <li><a href='<?=url?>?page=register&user_key=<?=user_key?>'>New Registration</a></li>
+  <li><a href='<?=url?>?page=questionaire&user_key=<?=user_key?>'>COVID Questionaire</a></li>
+  <li><a href='<?=url?>?page=lookup&user_key=<?=user_key?>'>Lookup Registration</a></li>
+  <li><a href='<?=url?>?page=appointments&user_key=<?=user_key?>'>Appointments</a></li>
+  </ul>
 
+  <!-- Display staff only pages or staff login page -->
+  <? if( user_key == getStaffKey()) {?>
+   <h2>Staff Pages</h2>
+  <ul>
+  <li><a href='<?=url?>?page=checkin&user_key=<?=staff_key?>'>Check-In (Staff)</a></li>
+  <li><a href='<?=url?>?page=waitlist&user_key=<?=staff_key?>'>Waitlist</a></li>
+  <li><a href='<?=url?>?page=Index?&user_key=public'>Log Out Staff</a></li>
+
+  </ul>
+
+  <?} else {?>
+
+  <h2>Staff</h2>
+  <ul>
+  <li><a href='<?=url?>?page=staff_login'>Staff Login</a></li>
+  </ul>
+  <? } ?>
+
+
+  <h2>Development Pages</h2>
+  <ul>
+  <li><a href='<?=url?>?page=camera&user_key=<?=staff_key?>'>Parse Image Testing</a></li>
+  <li><a href='<?=url?>?page=barcode&user_key=<?=staff_key?>'>Parse Barcode Testing</a></li>
+  <li><a href='<?=url?>?page=email&user_key=<?=staff_key?'>Email Testing</a></li>
+  <li><a href='<?=url?>?page=consent&user_key=<?=staff_key?'>Consent Form Testing - Docusign</a></li>
+  <li><a href='<?=url?>?page=google_login&user_key=<?=staff_key?>'>Google Account Login Testing</a></li>
+
+  </ul>
+
+  <!-- Github Feedback -->
 
 	<br>
 	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
