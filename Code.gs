@@ -44,8 +44,6 @@ function doGet(e) {
 
 }
 
-}
-
 // Check if login form given password matches master password
 function onLogin(form) {
   if (form.password == master_password) {
