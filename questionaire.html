@@ -7,6 +7,7 @@
 
 <body>
     <?var url = getScriptUrl();?>
+	<?var staff_key = getStaffKey();?>
     <!-- Return to staff home page or paitient home page -->
      <? if( user_key == getStaffKey()) {?>
     <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
