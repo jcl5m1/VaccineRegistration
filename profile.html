@@ -6,10 +6,18 @@
 </head>
 
 <body>
-	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
+    <?var url = getScriptUrl();?>
+
+    <!-- Return to staff home page or paitient home page -->
+     <? if( user_key == getStaffKey()) {?>
+    <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
+    <?} else {?>
+    <a href='<?=url?>?user_key=<?=user_key?>'>Home</a><br>
+    <? } ?>
+    
+    <!-- Begin Profile Table -->
 	<h1>Profile</h1>
-	TODO: restrict profile shown based on public vs staff<br>
+
 	<? if(profileData) {?>
 	<img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
 	<table border=0>

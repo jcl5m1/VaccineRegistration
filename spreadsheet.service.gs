@@ -169,6 +169,17 @@ function searchPatients(query) {
   // only extract a few keys
   queryPatient = {}
 
+
+  // Currently limiting profile scope by key order
+  // This can be updated in config.gs to define the limited profile view with
+  // An array of accepted keys
+  if (query.user_key == staff_key) {
+    profile_scope = keys.length 
+  } else {
+    // ID, First, Last, DoB, Phone
+    profile_scope = 5
+  }
+
   if ('ID' in query) {
     queryPatient['ID'] = query['ID']
   } else {
@@ -195,12 +206,13 @@ function searchPatients(query) {
         continue
       if (queryPatient[k] != v) {
         found = false;
-        break;
+        break`
       }
     }
+    // If found, iterate over profile information up the length set by `profile_scope`
     if (found) {
       var result = {}
-      for (var j = 0; j < keys.length; j++) {
+      for (var j = 0; j < profile_scope; j++) {
         result[keys[j]] = values[i][j];
       }
       return result;
