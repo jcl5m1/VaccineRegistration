@@ -37,3 +37,11 @@ Also appscript requires new lines to be converted to \n. Muliline string require
 */
 
 var DOCUSIGN_PUBLIC_KEY = null; // non-RSA PRIVATE KEY
+
+// This is the master password for all staff to login with.
+var MASTER_PASSWORD = 'YOUR_MASTER_PASSWORD'
+
+// This can be any random number used as a master key to authenticate staff.
+// Note: This is note the staff_password and is not used as input.
+var STAFF_KEY = 'YOUR_STAFF_KEY'
+

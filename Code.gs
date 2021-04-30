@@ -9,12 +9,15 @@ function doGet(e) {
   }
 
   urlParameters = e.parameter;
-  // return HtmlService.createHtmlOutput(params);
-
-  var validPages = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email'];
+  var validPages = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'staff_login'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
+  if ('user_key' in e.parameter) {
+    var user_key = e.parameter['user_key']
+  } else {
+    var user_key = 'patient'
+  }
 
   if (prev == 'register') {
     //give time for append to finish.
@@ -22,22 +25,45 @@ function doGet(e) {
     Utilities.sleep(2000);
   }
 
+  // If not a valid page, return the index.
+  if (validPages.indexOf(page) == -1) {
+    page = 'Index'
+  } 
+
+  // Serve HTML page with selected page.
+  html_template = HtmlService
+    .createTemplateFromFile(page);
+  html_template.user_key = user_key
+
+  // If page is profile page, get the patient data/
   if (page == 'profile') {
-    profileData = searchPatients(e.parameter);
+    html_template.profileData = searchPatients(e.parameter);
   }
 
-  if (validPages.indexOf(page) !== -1) {
-    return HtmlService
-      .createTemplateFromFile(page)
-      .evaluate();
-  }
-
-  //default page comes last
-  return HtmlService
-    .createTemplateFromFile('Index')
-    .evaluate();
+  return html_template.evaluate();
 
 }
+
+}
+
+// Check if login form given password matches master password
+function onLogin(form) {
+  if (form.password == master_password) {
+    var template =  HtmlService.createTemplateFromFile('Index');
+    template.user_key = staff_key
+    return template.evaluate()
+      .setSandboxMode(HtmlService.SandboxMode.NATIVE)
+      .getContent();
+  } else {
+    throw "You could not be found in the database please try again.";
+  }
+}
+
+function include(filename) {
+  return HtmlService.createTemplateFromFile(filename)
+    .evaluate()
+    .getContent();
+ }
 
 function generateRegistrationTest() {
   var res = {
