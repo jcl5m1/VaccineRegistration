@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+</head>
+
+<body>
+
+    <script>
+        function onLoginFailure(error) {
+            var loginBtn = document.getElementById('loginBtn');
+            loginBtn.disabled = false;
+            loginBtn.value = 'Login';
+            onFailure(error);
+        }
+    </script>
+    <div class="loginPanel">
+        <form>
+            <p>
+                <b>Username: </b>
+                <input type="text" name="password" />
+            </p>
+            <input type="button" id="loginBtn" value="Login" onclick="this.disabled = true; this.value = 'Loading...';google.script.run
+      .withSuccessHandler(loadPage)
+      .withFailureHandler(onLoginFailure)
+      .onLogin(this.parentNode)" />
+        </form>
+    </div>
+    </div>
+</body>
+
+</html>

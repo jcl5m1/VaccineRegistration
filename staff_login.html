@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+</head>
+
+<body>
+    <?var url = getScriptUrl();?>
+    <!-- Return to staff home page or paitient home page -->
+    <? if( user_key == getStaffKey()) {?>
+    <a href='<?=url?>?user_key=<?=staff_key?>'>Staff Home</a><br>
+    <?} else {?>
+    <a href='<?=url?>?user_key=<?=user_key?>'>Home</a><br>
+    <? } ?>
+
+    <!-- Begin Staff Login -->
+    <?!= include('CSS'); ?>
+    <script>
+        function loadPage(htmlOut) {
+            var div = document.getElementById('content');
+            div.innerHTML = htmlOut;
+            document.getElementById('errors').innerHTML = "";
+        }
+        function onFailure(error) {
+            var errors = document.getElementById('errors');
+            errors.innerHTML = error.message;
+        }
+
+    </script>
+    <div id="errors"></div>
+    <div id="content">
+        <?!= include('_login_panel'); ?>
+    </div>
+
+</html>
