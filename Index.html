@@ -31,7 +31,8 @@
 		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
 	</ul>
 
-
+  Active User Email: <?=getUserEmail() ?><br>
+  Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
 	<br>
 	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
 		<br><br>

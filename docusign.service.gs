@@ -137,9 +137,11 @@ function requestDocusignSignatureUsingConfigTemplate(name, email) {
 }
 
 
-function createEmbeddedDocusignEnvelope(name, email) {
+function createEmbeddedDocusignEnvelope(name, email, id) {
 
-  clientID = randomString(10).toUpperCase();
+  // clientId = id
+  // if(clientId == null)
+  clientId = randomString(10).toUpperCase();
 
   // create envelope
   payload = {
@@ -151,7 +153,7 @@ function createEmbeddedDocusignEnvelope(name, email) {
         "email": email,
         "name": name,
         "roleName": DOCUSIGN_TEMPLATE_ROLE,
-        "clientUserId": clientID,
+        "clientUserId": clientId,
       }
     ],
   }
@@ -160,7 +162,7 @@ function createEmbeddedDocusignEnvelope(name, email) {
   if ('authUrl' in res)
     return res
 
-  var envelopeID = res.envelopeId
+  var envelopeId = res.envelopeId
 
   // can't use script.google.com because it set 'X-Frame-Options' to 'sameorigin'
   // and won't allow a redirect to it.  so, using iframe as work around
@@ -172,15 +174,17 @@ function createEmbeddedDocusignEnvelope(name, email) {
     "authenticationMethod": "None",
     "email": email,
     "userName": name,
-    "clientUserId": clientID,
+    "clientUserId": clientId,
   }
 
-  var res = callDocusignAPI("envelopes/" + envelopeID + '/views/recipient', 'post', payload);
+  // executor needs to be logged in
+  var res = callDocusignAPI("envelopes/" + envelopeId + '/views/recipient', 'post', payload);
   if ('authUrl' in res)
     return res
 
-  res.clientID = clientID;
-  res.envelopeID = envelopeID;
+  res.clientId = clientId;
+  res.envelopeId = envelopeId;
+  res.status = 'sent'
   return res;
 
 }

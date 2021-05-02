@@ -109,14 +109,14 @@
     }
 
     function onUpdateStatus(result) {
-      if(result['updatedCells'] == 1)
+      if(result['Status']['updatedCells'] == 1)
         document.getElementById(result.input.ID+'status').innerHTML = result.input.Status.toUpperCase();
       else
         console.log(result)
     }
 
     function updateStatus(id, status){
-      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, 'Status', status)
+      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, {'Status': status})
     }
 
     function generateTest(){

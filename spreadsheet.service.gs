@@ -26,8 +26,8 @@ function testSpreadsheet() {
   res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
   debug(res['FirstName']== 'angela' ? "pass" : "fail")
 
-  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HPYPJ0CUWYZGG', 'Dose1DateTime', 'test value')
-  debug('spreadsheetId' in res ? "pass" : "fail")
+  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HPYPJ0CUWYZGG', {'Dose1DateTime':'test value'})
+  debug('spreadsheetId' in res['Dose1DateTime'] ? "pass" : "fail")
 
 }
 
@@ -236,26 +236,33 @@ function R1C1toA1(row, column) {
   return columnRef + Math.max(row, 1)
 };
 
-// set a cell, using sheet, id, and column name
-function setSheetValueUsingHeaders(sheetName, id_header, id, value_header, value) {
+
+// set cells using sheetID, id column, id value, and dictionary {column_name:new_value,...}
+function setSheetValueUsingHeaders(sheetName, id_header, id, values) {
   var data = getSheetData(sheetName)
   var keys = data[0];
   var id_idx = keys.indexOf(id_header)
-  var value_idx = keys.indexOf(value_header)
-  for (var i = 1; i < data.length; i++) {
-    if (data[i][id_idx] == id) {
-      var range = sheetName + '!' + R1C1toA1(i, value_idx)
-      var resource = { values: [[value]] }
-      var options = { valueInputOption: 'USER_ENTERED' }
-      var res = Sheets.Spreadsheets.Values.update(resource, GOOGLE_SPREADSHEET_ID, range, options);
+  for (var row_idx = 1; row_idx < data.length; row_idx++) { 
+    // find the row match in the id_header column
+    if (data[row_idx][id_idx] != id) 
+      continue
 
-      // provide input in return value, to give callback more info
-      var input = {}
-      input[id_header] = id
-      input[value_header] = value
-      res.input = input
-      return res
+    var res = {}
+    var options = { valueInputOption: 'USER_ENTERED' }
+
+    // one call per cell, how to do potentially disjoint cells?
+    for(var col in values) {
+      var col_idx = keys.indexOf(col)
+      var range = sheetName + '!' + R1C1toA1(row_idx, col_idx)
+      var resource = { values: [[values[col]]] }
+      res[col] = Sheets.Spreadsheets.Values.update(resource, GOOGLE_SPREADSHEET_ID, range, options);
     }
+
+    // provide input in return value, to give callback more info
+    var input = values
+    input[id_header] = id
+    res.input = input
+    return res
   }
 
   return undefined

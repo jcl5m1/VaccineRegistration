@@ -9,9 +9,20 @@
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>COVID-19 Vaccine Questionaire</h1>
+  <p>Debug Profile ID: <?= profileData == null ? '' : profileData['ID'] ?></p>
 	<form id="myform" action="<?=url?>">
-		<input type="hidden" name="page" value="questionaire">
+		<input type="hidden" name="page" value="consent">
 		<input type="hidden" name="prev" value="questionaire">
+    <?
+      if(profileData != null) {
+        ?>
+    		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
+    		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
+    		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
+    		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
+        <?
+      }
+    ?>
 		<ol>
 			<table border=0>
 				<tr bgcolor='#eee'>
@@ -121,12 +132,25 @@
 				</tr>
 			</table>
 		</ol>
-		<button onclick="onSubmit(this.form)">Submit</button>
+		<button onclick="onSubmit(this.form)">Submit</button>		<button type="button" onclick="onGenerate(this.form)">Generate</button>
+
 
 	</form>
 	<label id="results"></label>
 </body>
 <script>
+  function onGenerate(elem) {
+    elem.prevDose[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.anaphylaxis[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.vaccineReaction[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.componentReaction[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.antibodyTreatment[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.otherVaccine[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.immunoSuppressed[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.bloodThinner[Math.random() < 0.5 ? 0:1].checked=true;
+    elem.inIsolation[Math.random() < 0.5 ? 0:1].checked=true;
+  }
+
 	function onSubmit(elem){
       if(!elem.checkValidity()) {
         document.getElementById('results').innerHTML = "Missing required answers";

@@ -22,9 +22,16 @@ function getScriptUrl() {
 }
 
 
-function testUUID(){
-//  debug(Utilities.getUuid())
-  debug(hashTimestamp())
+function testUserEmail(){
+  debug(getUserEmail())
+}
+
+
+function getUserEmail(){
+  email = Session.getActiveUser().getEmail()
+  if(email == "")
+    email = "Unavailable"
+  return email
 }
 
 // time based UUID+random, provides good uniqueness gaurantee

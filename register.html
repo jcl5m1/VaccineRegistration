@@ -11,7 +11,7 @@
 	<a href='<?=url?>'>Home</a><br>
 	<h1>New Registration</h1>
 	<form id="myform" onsubmit="google.script.run.processRegistrationForm(this)" method="GET" action="<?=url?>">
-		<input type="hidden" name="page" value="profile">
+		<input type="hidden" name="page" value="questionaire">
 		<input type="hidden" name="prev" value="register">
 		<h2>Patient Information</h2>
 		(optional) Scan State ID Barcode: <input type="file" accept="image/*"
@@ -164,6 +164,7 @@ Social Security Number: <input type='text' name='InsuranceSSN'><br>
       myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
       myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
       myform.InsuranceSSN.value = record.InsuranceSSN;
+      myform.Notes.value = record.Notes;
     }
 
 

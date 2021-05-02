@@ -1,5 +1,10 @@
-var profileData;
-var urlParameters;
+var profileData = null;
+var urlParameters = null;
+
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email'];
+
+// was considering making dynamic, but will be static for now
+//var NEW_PATIENT_FLOW = ['register', 'questionaire', 'consent', 'appointments', 'lookup'];
 
 function doGet(e) {
 
@@ -11,22 +16,23 @@ function doGet(e) {
   urlParameters = e.parameter;
   // return HtmlService.createHtmlOutput(params);
 
-  var validPages = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email'];
 
   var page = e.parameter['page']
   var prev = e.parameter['prev']
-
+  
   if (prev == 'register') {
     //give time for append to finish.
     // TODO better to check?  dunno how to persist state across page changes
     Utilities.sleep(2000);
-  }
-
-  if (page == 'profile') {
     profileData = searchPatients(e.parameter);
   }
 
-  if (validPages.indexOf(page) !== -1) {
+  if (page == 'profile'){
+    if(profileData == null)
+      profileData = searchPatients(e.parameter);
+  }
+
+  if (VALID_PAGES.indexOf(page) !== -1) {
     return HtmlService
       .createTemplateFromFile(page)
       .evaluate();
@@ -65,6 +71,7 @@ function generateRegistrationTest() {
     InsuranceGroupNumber: Math.floor(Math.random() * 10000000000),
     InsuranceSubscriberID: Math.floor(Math.random() * 10000000000),
     InsuranceSSN: Math.floor(Math.random() * 1000000000),
+    Notes: randomString(10),
   };
   return res;
 }
@@ -173,3 +180,38 @@ function processCameraForm(formObject) {
     uploadImage(Date.now() + "_camera.jpg", formObject.ImageInsuranceFront)
 }
 
+
+function requestSignature(name, email, dose, id) {
+
+  // create the form
+  var res = createEmbeddedDocusignEnvelope(name, email, id)
+
+  //executor needs to be logged in
+  if ('authUrl' in res)
+    return res
+
+  // no ID, cannot update spreadsheet
+    if (id == null)
+    return res
+  if (id == '')
+    return res
+
+  // update the spreadsheet
+  var values = {}
+  values['Dose'+dose+'ConsentStatus'] = res.status
+  values['Dose'+dose+'ConsentID'] = res.envelopeId
+  setSheetValueUsingHeaders("Patients",'ID',id,values)
+  return res;
+}
+
+function processDocusignComplete(id, dose, result){
+  // no ID, cannot update spreadsheet
+  if (id == '')
+    return null
+
+  var values = {}
+  values['Dose'+dose+'ConsentStatus'] = result.status
+  values['Dose'+dose+'ConsentID'] = result.envelopeId
+  values['Dose'+dose+'ConsentUrl'] = result.downloadUrl
+  return setSheetValueUsingHeaders("Patients",'ID',id,values)
+}
