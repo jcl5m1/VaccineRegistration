@@ -161,8 +161,20 @@ function showMatches(query) {
 
 function doCheckin(id, appointmentId, dose){
   console.log(id,appointmentId, dose)
+  var state = 'completed'
+  //change google sheet data
   google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose)
-  document.getElementById('status'+dose + "_"+id).innerHTML = "completed"
+
+  //change in memory data used by live update
+  for(var i = 0; i < data.length; i++) {
+    if(id == data[i]['ID'].toUpperCase()){
+      data[i]['Dose'+dose+'Status'] = state
+    }
+  }
+
+  //change current displayed HTML
+  document.getElementById('status'+dose + "_"+id).innerHTML = 'completed'
+
 }
 
 // TODO move barcode processing to importable file
