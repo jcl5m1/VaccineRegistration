@@ -12,7 +12,7 @@
 
 	<a href='<?=url?>'>Home</a><br>
   <div id='existingReservations'></div>
-	<h1>Select Available Appointment:</h1>
+	<h1><div id='selectionHeader'>Select Available Appointment:</div></h1>
 	Last checked: <?= new Date().toLocaleString() ?><br>
   <form id='DateForm'>
 	<div id="selectDate">
@@ -103,13 +103,36 @@
   }
 
   function updateExistingReservations(data){
+
+    var dose1status = data['Dose1Status']
+    if(dose1status == ''){
+      dose1status = 'not yet scheduled'
+    }
+    else {
+      if(dose1status == 'registered')
+        document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
+    }
+
+    var dose2status = data['Dose2Status']
+    if((dose2status == '')||(dose2status == null))
+      dose2status = 'not yet scheduled'
+    else {
+      if(dose2status == 'registered')
+        document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
+    }
+
     var html = "<h1>Your Appointments:</h1>"
-    html += `ProfileID: ${data['ID']}<br><br>`
-    html += `Dose 1 Status: ${data['Dose1Status']}<br>`
+    html += `<table><td valign=top>`
+    html += `Dose 1: ${dose1status}<br>`
     html += generateAppointmentHtml(data['Dose1AppointmentID'],data['ID'],1)
     html += "<br>"
-    html += `Dose 2 Status: ${data['Dose2Status']}<br>`
+    html += `Dose 2: ${dose2status}<br>`
     html += generateAppointmentHtml(data['Dose2AppointmentID'],data['ID'],2)
+    html += `</td><td width=50>`
+    html += `</td><td align=center>`
+    html += `<img src='<?=QR_CODE_URL?>${data['ID']}'><br>`
+    html += `ID: ${data['ID']}<br>This code may help with check-in.`
+    html += "</td></table>"
     document.getElementById("existingReservations").innerHTML = html;
   }
 
