@@ -83,17 +83,21 @@
     if(appointment== null)
       return ''
 
+    //show appointment information with cancel button
+
     html = `<b>${appointment['Name']}</b><br>`;
     html += "<a href='https://www.google.com/maps/search/?api=1&query='" + appointment['Location'] + "' target=new>" + appointment['Location'] +"</a><br>";
     html += `${appointment['Date']} ${appointment['Time']}<br>`
-    html += `<form action="<?=url?>">`
-    html += `<input type="hidden" name='appointmentId' value='${appointment['ID']}'>`
-    html += `<input type="hidden" name='prev' value='appointments'>`
-    html += `<input type="hidden" name='page' value='appointments'>`
-    html += `<input type="hidden" name='ID' value='${profileId}'>`
-    html += `<input type="hidden" name='dose' value='${dose}'>`
-    html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
-    html += `</form>`
+    html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`
+
+      html += `<form action="<?=url?>">`
+      html += `<input type="hidden" name='appointmentId' value='${appointment['ID']}'>`
+      html += `<input type="hidden" name='prev' value='appointments'>`
+      html += `<input type="hidden" name='page' value='appointments'>`
+      html += `<input type="hidden" name='ID' value='${profileId}'>`
+      html += `<input type="hidden" name='dose' value='${dose}'>`
+      html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
+      html += `</form>`
 
     return html
   }
@@ -136,8 +140,12 @@
     var day = e.value;
     var appts = days[day];
     var appointment = appts[0];// use the first appointment  of this day as for display
-    html = "<b>" +  appointment['Name'] + "</b><br>";
+
+    //show appointment information with time slot drop down
+    html = `<b>${appointment['Name']}</b><br>`;
     html += "<a href='https://www.google.com/maps/search/?api=1&query=" + appointment['Location'] +"' target=new>" + appointment['Location'] + "</a><br>";
+    html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`;
+
     html += "<select id='appointment' onchange='onAppointmentSelect(this)'>"
     html += "<option disabled selected value>select a time</option>";
     for (var i in appts) {
