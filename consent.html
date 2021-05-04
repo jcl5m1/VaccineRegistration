@@ -147,6 +147,7 @@
     //window.location.href = result.url
   }
 
+
   function onDocusignAPIComplete(result){
     console.log(result)
 
@@ -165,12 +166,13 @@
     html += "<input hidden type='text' name='page' value='consent'>"
     html += "<button>Logout of Docusign</button></form><br>"
 
+
     //if profile ID is provided, update the spreadsheet
     <?
     if("ID" in urlParameters) {
       ?>
-      var id = <?=urlParameters['ID']?>
-      var dose = <?=urlParameters['dose']?>
+      var id = '<?=urlParameters['ID']?>'
+      var dose = parseInt('<?=('dose' in urlParameters) ? urlParameters['dose']:1?>')
       google.script.run.processDocusignComplete(id,dose,result)
       GoToAppointmentsForm.ID.value = id
       GoToAppointmentsForm.dose.value = dose
@@ -195,13 +197,10 @@
     }
     html += '</table>'
     document.getElementById("result").innerHTML = html
+
   }
 
-  function testGotoAppointmentsForm(){
-    GoToAppointmentsForm.ID.value = '3CLD9S0V3CVYLFL'
-    GoToAppointmentsForm.dose.value = 1
-    GoToAppointmentsForm.submit()
-  }
+
 </script>
 
 </html>

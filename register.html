@@ -13,6 +13,8 @@
 	<form id="myform" onsubmit="google.script.run.processRegistrationForm(this)" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="questionaire">
 		<input type="hidden" name="prev" value="register">
+    <input type="hidden" name="dose" value="1">
+
 		<h2>Patient Information</h2>
 		(optional) Scan State ID Barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">

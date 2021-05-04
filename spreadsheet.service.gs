@@ -1,15 +1,15 @@
 
 
 function testSpreadsheet() {
-  // values = getSheetData('Appointments');
-  // res = getCellByKey(values, 1, "Registered");
-  // debug( res > 0 ? "pass" : "fail")
+  values = getSheetData('Appointments');
+  res = getCellByKey(values, 1, "Registered");
+  debug( res > 0 ? "pass" : "fail")
 
-  // res = getColumnByKey(values,"Registered");
-  // debug(res.length > 0 ? "pass" : "fail")
+  res = getColumnByKey(values,"Registered");
+  debug(res.length > 0 ? "pass" : "fail")
 
-  // res = getSheetDataAsDict('Appointments');
-  // debug(res.length > 0 ? "pass" : "fail")
+  res = getSheetDataAsDict('Appointments');
+  debug(res.length > 0 ? "pass" : "fail")
 
 
   record = dictToValueArray("Patients",
@@ -22,32 +22,33 @@ function testSpreadsheet() {
     })
 
   //add patient
-  // res = appendSheetData("Patients", [record])
-  // debug('spreadsheetId' in res ? "pass" : "fail")
-  // Utilities.sleep(1000)
+  res = appendSheetData("Patients", [record])
+  debug('spreadsheetId' in res ? "pass" : "fail")
+  Utilities.sleep(1000)
 
-  // // search for patient
-  // res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
-  // debug(res['FirstName'] == 'angela' ? "pass" : "fail")
+  // search for patient
+  res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
+  debug(res['FirstName'] == 'angela' ? "pass" : "fail")
 
-  // // set patient cell status
-  // var res = setSheetValueUsingHeaders('Patients', 'ID', '9HKBF8AW2SSY68', {'Dose1Status':'registered'})
-  // debug(res)
-  // debug('spreadsheetId' in res['Dose1Status'] ? "pass" : "fail")
+  // set patient cell status
+  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HKBF8AW2SSY68', {'Dose1Status':'registered'})
+  debug(res)
+  debug('spreadsheetId' in res['Dose1Status'] ? "pass" : "fail")
             
-  // //check appointment registration count
-  // var id = '20210415_1000_VaccineClinicA'
-  // var res = getSheetValueUsingHeaders('Appointments', 'ID', id, ['Registered','Remaining'])
-  // debug('Registered' in res? "pass" : "fail")
-  // debug(res)
+  //check appointment registration count
+  var id = '20210415_1000_VaccineClinicA'
+  var res = getSheetValueUsingHeaders('Appointments', 'ID', id, ['Registered','Remaining'])
+  debug('Registered' in res? "pass" : "fail")
+  debug(res)
 
-  // //increment appointment registration
-  // var res = setSheetValueUsingHeaders("Appointments",'ID',id, {'Registered':parseInt(res['Registered'])+1})
-  // debug('Registered' in res? "pass" : "fail")
-  // debug(res)
+  //increment appointment registration
+  var res = setSheetValueUsingHeaders("Appointments",'ID',id, {'Registered':parseInt(res['Registered'])+1})
+  debug('Registered' in res? "pass" : "fail")
+  debug(res)
 
-  // var res = debugLog("event","test message")
-  // debug('spreadsheetId' in res ? "pass" : "fail")
+  var res = debugLog("event","test message")
+  debug('spreadsheetId' in res ? "pass" : "fail")
+
 }
 
 // save to spreadsheet tab
@@ -282,6 +283,9 @@ function setSheetValueUsingHeaders(sheetName, id_header, id, values) {
     // one call per cell, how to do potentially disjoint cells?
     for(var col in values) {
       var col_idx = keys.indexOf(col)
+      // not found, skip
+      if(col_idx < 0)
+        continue
       var range = sheetName + '!' + R1C1toA1(row_idx, col_idx)
       var resource = { values: [[values[col]]] }
       res[col] = Sheets.Spreadsheets.Values.update(resource, GOOGLE_SPREADSHEET_ID, range, options);
