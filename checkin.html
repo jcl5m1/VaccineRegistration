@@ -19,7 +19,7 @@
 	<div id="results"></div>
 </body>
 <script>
-	var data;
+var data;
 
 function onKeyUp(e) {
   document.getElementById('results').innerHTML = e.value;
@@ -42,7 +42,7 @@ function showMatches(query) {
   query = query.toUpperCase().replace(' ','');
   var matches = []
 
-  // case insensivite first or last name search
+  // case insensitive first or last name search
   for(var i = 0; i < data.length; i++) {
     var lastName = data[i]['LastName'].toUpperCase();
     var firstName = data[i]['FirstName'].toUpperCase();
@@ -86,9 +86,11 @@ function showMatches(query) {
     html += "<td>Dose2Status:</td>";
     html += "<td>Dose2Consent:</td>";
     html += "<td>Dose2Brand:</td>";
+    html += "<td>Notes:</td>";
     html += "</tr>";
 
     for(var i in matches){
+      console.log(matches[i])
       var id =  matches[i]['ID'];
       var lastName = matches[i]['LastName'];
       var firstName = matches[i]['FirstName'];
@@ -97,6 +99,11 @@ function showMatches(query) {
       var consent1url = matches[i]['Dose1ConsentUrl'];
       var consent1 = matches[i]['Dose1ConsentStatus'];
       var brand1 = matches[i]['Dose1VaccineBrand'];
+      var notes = matches[i]['Notes'];
+
+
+      if(notes == null)
+        notes = ''
 
       var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}'>${lastName}, ${firstName}</a>`;
       var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}'>profile</a>`;
@@ -151,6 +158,7 @@ function showMatches(query) {
       html += `<td>${status2}</td>`;
       html += `<td>${consent2}</td>`;
       html += `<td>${brand2}</td>`;
+      html += `<td>${notes}</td>`;
       html += "</tr>"
     } // for each match
     html += "</table>"

@@ -174,7 +174,8 @@ function getCheckInDataset(date) {
                       'Dose2Status',
                       'Dose2VaccineBrand',
                       'Dose2ConsentStatus',
-                      'Dose2ConsentUrl']
+                      'Dose2ConsentUrl',
+                      'Notes']
 
   for (var i = 1; i < values.length; i++) {
     // if (date == dateFromDateTime(values[i]['Dose1DateTime']))

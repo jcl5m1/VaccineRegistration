@@ -1,5 +1,6 @@
 var profileData = null;
 var urlParameters = null;
+var appointmentData = null;
 
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email'];
 
@@ -32,6 +33,9 @@ function doGet(e) {
       profileData = searchPatients(e.parameter);
     }
   }
+  // if(page == 'appointments') {
+  //   appointmentData = getSheetDataAsDict('Appointments')
+  // }
 
   if (VALID_PAGES.indexOf(page) !== -1) {
     return HtmlService

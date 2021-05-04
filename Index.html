@@ -9,12 +9,10 @@
 <body>
 	<?var url = getScriptUrl();?>
 	<h1>COVID-19 Vaccine Registration</h1><br>
-	<h2>Paient/Public Pages</h2>
+	<h2>Patient/Public Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=register'>New Registration</a></li>
-		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
 		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
-		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
 	</ul>
 
 	<h2>Staff Only Pages</h2>
@@ -25,6 +23,8 @@
 
 	<h2>Development/Test Pages</h2>
 	<ul>
+		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
+		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
 		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
 		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
 		<li><a href='<?=url?>?page=email'>Email Testing</a></li>

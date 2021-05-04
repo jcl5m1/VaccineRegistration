@@ -11,20 +11,22 @@
   ?>
 
 	<a href='<?=url?>'>Home</a><br>
-  <div id='existingReservations'></div>
-	<h1><div id='selectionHeader'>Select Available Appointment:</div></h1>
+	<div id='existingReservations'></div>
+	<h1>
+		<div id='selectionHeader'>Select Available Appointment:</div>
+	</h1>
 	Last checked: <?= new Date().toLocaleString() ?><br>
-  <form id='DateForm'>
-	<div id="selectDate">
-		<select name='date' onchange='onDateSelect(this)'>
+	<form id='DateForm'>
+		<div id="selectDate">
+			<select name='date' onchange='onDateSelect(this)'>
         <option value='' disabled selected>(loading appointments)</option>
       </select>
-	</div><br>
-  <form id='AppointmentForm' action="<?=url?>">
-    <input type="hidden" name='page' value='appointments'>
-    <input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-  	<div id="dayInfo"></div>
-  </form>
+		</div><br>
+		<form id='AppointmentForm' action="<?=url?>">
+			<input type="hidden" name='page' value='appointments'>
+			<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+			<div id="dayInfo"></div>
+		</form>
 </body>
 <script>
 	var days = {};
@@ -67,7 +69,10 @@
 
     // get appointments for this profile ID, and display
 
-    google.script.run.withSuccessHandler(updateExistingReservations).getAppointments('<?=('ID' in urlParameters)?urlParameters['ID']:''?>')
+    <? if(profileData != null) {?>
+      var profileId = '<?=profileData['ID']?>'
+      google.script.run.withSuccessHandler(updateExistingReservations).getAppointments(profileId);
+    <?  } ?>
 
   }
 
@@ -111,7 +116,7 @@
     // no data, return
     if(data == null)
       return
-    if(data['ID'] =='')
+    if(data['ID'] == '')
       return
 
     var dose1status = data['Dose1Status']
@@ -162,11 +167,16 @@
       }
     }
 
-    var patientId='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'
+    var patientId = '';
+    <? if(profileData != null) { ?>
+      patientId = '<?=profileData['ID']?>'
+    <?  } ?>
+
     if(patientId == '') {
       alert("No Patient ID provided.  Cannot register.")
       return;
     }
+
     var dose=parseInt(<?=('dose' in urlParameters)?urlParameters['dose']:1?>)
     console.log(patientId, appointmentId, dose)
     google.script.run.withSuccessHandler(updateExistingReservations).processReserveAppointment(patientId, dose, appointmentId, appointment.VaccineBrand)
