@@ -285,8 +285,10 @@ function processCancelAppointment(formElem){
 
   // update the patient page
   var prefix = 'Dose'+formElem.dose
-  values[prefix+'AppointmentID'] = appointmentId
+  values[prefix+'AppointmentID'] = ''
   values[prefix+'Status'] = 'cancelled'
+  values[prefix+'VaccineBrand'] = ''
+
   var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
   if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
     return "failed to update patient profile"    
@@ -320,8 +322,7 @@ function processCheckIn(patientId, appointmentId, dose){
 
   var values = {}
 
-
-  debugLog('log',patientId + ',' + appointmentId+','+dose)
+  debugLog('checkedin',patientId + ',' + appointmentId+','+dose)
   // update the patient page
   var prefix = 'Dose'+dose
   values[prefix+'AppointmentID'] = appointmentId
