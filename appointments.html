@@ -104,6 +104,12 @@
 
   function updateExistingReservations(data){
 
+    // no data, return
+    if(data == null)
+      return
+    if(data['ID'] =='')
+      return
+
     var dose1status = data['Dose1Status']
     if(dose1status == ''){
       dose1status = 'not yet scheduled'
@@ -153,6 +159,10 @@
     }
 
     var patientId='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'
+    if(patientId == '') {
+      alert("No Patient ID provided.  Cannot register.")
+      return;
+    }
     var dose=parseInt(<?=('dose' in urlParameters)?urlParameters['dose']:1?>)
     console.log(patientId, appointmentId, dose)
     google.script.run.withSuccessHandler(updateExistingReservations).processReserveAppointment(patientId, dose, appointmentId, appointment.VaccineBrand)
