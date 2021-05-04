@@ -310,3 +310,45 @@ function processCancelAppointment(formElem){
   }
   return getAppointments(patientId)
 }
+
+
+function processCheckIn(patientId, appointmentId, dose){
+
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
+
+  var values = {}
+
+
+  debugLog('log',patientId + ',' + appointmentId+','+dose)
+  // update the patient page
+  var prefix = 'Dose'+dose
+  values[prefix+'AppointmentID'] = appointmentId
+  values[prefix+'Status'] = 'completed'
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
+    var msg = "failed to update patient profile"  
+    return msg
+  }
+
+  //update the appointment  count
+
+  // get current checkin count
+  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['CheckedIn'])
+  if (!('CheckedIn' in res)){
+    var msg ="failed to get appointment checkin count"    
+    return msg
+  }
+
+  //increment checkin count
+  if(res['CheckedIn'] == '')
+    res['CheckedIn'] = 0
+  var count = parseInt(res['CheckedIn'])+1;
+  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'CheckedIn':count})
+  if (!('spreadsheetId' in res['CheckedIn'])){
+    var msg = "failed to update appointment checkin count"    
+    return msg
+  }
+  return getAppointments(patientId)
+}

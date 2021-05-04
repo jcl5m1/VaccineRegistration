@@ -161,19 +161,30 @@ function getCheckInDataset(date) {
     key_lut[keys[i]] = i;
   }
   var checkInDataset = [];
+
+  var resultValues = ['FirstName', 
+                      'LastName', 
+                      'ID', 
+                      'Dose1AppointmentID', 
+                      'Dose1Status',
+                      'Dose1VaccineBrand',
+                      'Dose1ConsentStatus',
+                      'Dose1ConsentUrl',
+                      'Dose2AppointmentID', 
+                      'Dose2Status',
+                      'Dose2VaccineBrand',
+                      'Dose2ConsentStatus',
+                      'Dose2ConsentUrl']
+
   for (var i = 1; i < values.length; i++) {
-    dose = 0;
     // if (date == dateFromDateTime(values[i]['Dose1DateTime']))
     //   dose = 1;
     // if (date == dateFromDateTime(values[i]['Dose2DateTime']))
     //   dose = 2;
 
-    var record = {
-      'FirstName': values[i][key_lut['FirstName']],
-      'LastName': values[i][key_lut['LastName']],
-      'ID': values[i][key_lut['ID']],
-      'Dose': dose,
-      'Waiver': values[i][key_lut['Waiver']],
+    var record = {}
+    for(var j = 0; j < resultValues.length; j++) {
+      record[resultValues[j]] = values[i][key_lut[resultValues[j]]]
     }
 
     checkInDataset.push(record);

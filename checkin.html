@@ -32,6 +32,10 @@ function onCheckInData(result) {
   showMatches('');
 }
 
+function onSuccess(result){
+  console.log(result);
+}
+
 function showMatches(query) {
 
   // all upper without whitespace
@@ -73,23 +77,90 @@ function showMatches(query) {
     });
 
     html = '';
+    html += "<div><table width=100%><tr bgcolor='#ddf'>"
+    html += "<td width=300>Name</td>"
+    html += "<td>Dose1Status:</td>";
+    html += "<td>Dose1Consent:</td>";
+    html += "<td>Dose1Brand:</td>";
+    html += "<td>Dose2Status:</td>";
+    html += "<td>Dose2Consent:</td>";
+    html += "<td>Dose2Brand:</td>";
+    html += "</tr>";
+
     for(var i in matches){
+      var id =  matches[i]['ID'];
       var lastName = matches[i]['LastName'];
       var firstName = matches[i]['FirstName'];
-      var status = "none";
-      var waiver = 'false';
+      var status1 = matches[i]['Dose1Status'];
+      var appointmentId1 = matches[i]['Dose1AppointmentID']
+      var consent1url = matches[i]['Dose1ConsentUrl'];
+      var consent1 = matches[i]['Dose1ConsentStatus'];
+      var brand1 = matches[i]['Dose1VaccineBrand'];
+
+      var nameProfileUrl = `<a href='<?=url?>?page=profile&ID=${id}'>${lastName}, ${firstName}</a>`;
+
+      if(consent1 == 'completed') {
+        consent1 = `<a href='${consent1url}'>${consent1}</a>`
+      }
+
+      if(status1=='registered') { // allow cancelled people to still be checked in?
+        status1 = `<div id='status1_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId1}',1)">${status1}</button></div>`
+      }
+
+      if(status1 == null)
+        status1 = ''
+
+      if(consent1 == null)
+        consent1 = ''
+
+      if(brand1 == null)
+        brand1 = ''
+
+      var appointmentId2 = matches[i]['Dose2AppointmentID']
+      var status2 = matches[i]['Dose2Status'];
+      var consent2 = matches[i]['Dose2ConsentStatus'];
+      var brand2 = matches[i]['Dose2VaccineBrand'];
+      var consent2url = matches[i]['Dose2ConsentUrl'];
+
+      if(consent2 == 'completed') {
+        consent2 = `<a href='${consent2url}'>${consent2}</a>`
+      }
+
+      if(status2 == null)
+        status2 = ''
+
+      if(status2=='registered') { // allow cancelled people to still be checked in?
+        status2 = `<div id='status2_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId2}',2)">${status2}</button></div>`
+      }
+
+      if(consent2 == null)
+        consent2 = ''
+
+      if(brand2 == null)
+        brand2 = ''
+
       var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
-      html += "<div><table bgcolor=" + bgcolor + " width=100%><td width=300>" + lastName + ', ' + firstName + "</td>"
-      html += "<td>Status:" + status + "</td>";
-      html += "<td>Waiver:" + waiver + "</td>";
-      html += "<td><a href='<?=url?>?page=profile&ID=" + matches[i]['ID'] + "'>Profile</a></td>";
-      html += "<td><a href=''>CheckIn</a></td>";
-      html += "</table></div>"
-    }
-  }
+      html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
+      html += `<td width=300>${nameProfileUrl}</td>`
+      html += `<td>${status1}</td>`;
+      html += `<td>${consent1}</td>`;
+      html += `<td>${brand1}</td>`;
+      html += `<td>${status2}</td>`;
+      html += `<td>${consent2}</td>`;
+      html += `<td>${brand2}</td>`;
+      html += "</tr>"
+    } // for each match
+    html += "</table>"
+  } // no matches
+
   document.getElementById('results').innerHTML = html;
 }
 
+function doCheckin(id, appointmentId, dose){
+  console.log(id,appointmentId, dose)
+  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose)
+  document.getElementById('status'+dose + "_"+id).innerHTML = "completed"
+}
 
 // TODO move barcode processing to importable file
 function detectBarcode(canvas) {
