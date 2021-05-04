@@ -10,7 +10,7 @@
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Profile</h1>
 	TODO: restrict profile shown based on public vs staff<br>
-	<? if(profileData) {?>
+	<? if(profileData != null) {?>
 	<img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
 	<table border=0>
 		<? 

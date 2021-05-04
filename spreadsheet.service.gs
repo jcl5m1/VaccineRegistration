@@ -1,15 +1,15 @@
 
 
 function testSpreadsheet() {
-  values = getSheetData('Appointments');
-  res = getCellByKey(values, 1, "Registered");
-  debug( res > 0 ? "pass" : "fail")
+  // values = getSheetData('Appointments');
+  // res = getCellByKey(values, 1, "Registered");
+  // debug( res > 0 ? "pass" : "fail")
 
-  res = getColumnByKey(values,"Registered");
-  debug(res.length > 0 ? "pass" : "fail")
+  // res = getColumnByKey(values,"Registered");
+  // debug(res.length > 0 ? "pass" : "fail")
 
-  res = getSheetDataAsDict('Appointments');
-  debug(res.length > 0 ? "pass" : "fail")
+  // res = getSheetDataAsDict('Appointments');
+  // debug(res.length > 0 ? "pass" : "fail")
 
 
   record = dictToValueArray("Patients",
@@ -20,15 +20,34 @@ function testSpreadsheet() {
       "Status": "registered",
       "DateOfBirth": "1960-01-01"
     })
-  res = appendSheetData("Patients", [record])
-  debug('spreadsheetId' in res ? "pass" : "fail")
-  Utilities.sleep(1000)
-  res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
-  debug(res['FirstName']== 'angela' ? "pass" : "fail")
 
-  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HPYPJ0CUWYZGG', {'Dose1DateTime':'test value'})
-  debug('spreadsheetId' in res['Dose1DateTime'] ? "pass" : "fail")
+  //add patient
+  // res = appendSheetData("Patients", [record])
+  // debug('spreadsheetId' in res ? "pass" : "fail")
+  // Utilities.sleep(1000)
 
+  // // search for patient
+  // res = searchPatients({ "FirstName": "angela", 'LastName': 'wong', 'DateOfBirth': '1960-01-01' });
+  // debug(res['FirstName'] == 'angela' ? "pass" : "fail")
+
+  // // set patient cell status
+  // var res = setSheetValueUsingHeaders('Patients', 'ID', '9HKBF8AW2SSY68', {'Dose1Status':'registered'})
+  // debug(res)
+  // debug('spreadsheetId' in res['Dose1Status'] ? "pass" : "fail")
+            
+  // //check appointment registration count
+  // var id = '20210415_1000_VaccineClinicA'
+  // var res = getSheetValueUsingHeaders('Appointments', 'ID', id, ['Registered','Remaining'])
+  // debug('Registered' in res? "pass" : "fail")
+  // debug(res)
+
+  // //increment appointment registration
+  // var res = setSheetValueUsingHeaders("Appointments",'ID',id, {'Registered':parseInt(res['Registered'])+1})
+  // debug('Registered' in res? "pass" : "fail")
+  // debug(res)
+
+  // var res = debugLog("event","test message")
+  // debug('spreadsheetId' in res ? "pass" : "fail")
 }
 
 // save to spreadsheet tab
@@ -60,6 +79,7 @@ function getColumnByKey(values, key) {
     results.push(getCell(values, i, index));
   return results;
 }
+
 
 // get range of values from Google sheet
 function getSheetData(rangeName) {
@@ -168,16 +188,26 @@ function searchPatients(query) {
 
   // only extract a few keys
   queryPatient = {}
-
+  // if non-empty ID is provided, just use the ID
   if ('ID' in query) {
-    queryPatient['ID'] = query['ID']
-  } else {
-    // if not using ID, require other components
-    queryPatient['FirstName'] = query['FirstName'].toUpperCase()
-    queryPatient['LastName'] = query['LastName'].toUpperCase()
-    queryPatient['DateOfBirth'] = query['DateOfBirth']
+    if(query['ID'].length > 0){
+      queryPatient['ID'] = query['ID']
+    }
   }
-
+  
+  if(!('ID' in queryPatient)){
+    // if not using ID, require other components
+    if('FirstName' in query)
+      queryPatient['FirstName'] = query['FirstName'].toUpperCase()
+    if('LastName' in query)
+      queryPatient['LastName'] = query['LastName'].toUpperCase()
+    if('DateOfBirth' in query)
+      queryPatient['DateOfBirth'] = query['DateOfBirth']
+  }
+ 
+  // not enough valid parameters
+  if(Object.keys(queryPatient).length == 0)
+    return null
 
   var key_lut = {}
   for (var i = 0; i < keys.length; i++) {
@@ -185,14 +215,13 @@ function searchPatients(query) {
   }
 
   for (var i = 1; i < values.length; i++) {
+    // must match ALL provided query params
     var found = true;
     for (var k in queryPatient) {
       var v = values[i][key_lut[k]]
       // make case insensitive
       if (k == 'FirstName' || k == 'LastName')
         v = v.toUpperCase();
-      if (queryPatient[k].length == 0)
-        continue
       if (queryPatient[k] != v) {
         found = false;
         break;
@@ -206,7 +235,7 @@ function searchPatients(query) {
       return result;
     }
   }
-  return undefined
+  return null
 }
 
 function R1C1toA1(row, column) {
@@ -239,7 +268,7 @@ function R1C1toA1(row, column) {
 
 // set cells using sheetID, id column, id value, and dictionary {column_name:new_value,...}
 function setSheetValueUsingHeaders(sheetName, id_header, id, values) {
-  var data = getSheetData(sheetName)
+  var data = getSheetData(sheetName) // potentially inefficient - gets entire sheet?
   var keys = data[0];
   var id_idx = keys.indexOf(id_header)
   for (var row_idx = 1; row_idx < data.length; row_idx++) { 
@@ -264,6 +293,32 @@ function setSheetValueUsingHeaders(sheetName, id_header, id, values) {
     res.input = input
     return res
   }
+  // there was a reason why this was undefined vs null.  but, I forgot :(
+  return null
+}
 
+//get sheet values by headers list and row ID
+function getSheetValueUsingHeaders(sheetName, id_header, id, headers) {
+  var data = getSheetData(sheetName) // potentially inefficient - gets entire sheet?
+  var keys = data[0];
+  var id_idx = keys.indexOf(id_header)
+  for (var row_idx = 1; row_idx < data.length; row_idx++) { 
+    // find the row match in the id_header column
+    if (data[row_idx][id_idx] != id) 
+      continue
+
+    var res = {}
+    for(var i in headers) {
+      var col_idx = keys.indexOf(headers[i])
+      res[headers[i]] = data[row_idx][col_idx]
+    }
+
+    // provide input in return value, to give callback more info
+    var input = {}
+    input[id_header] = id
+    res.input = input
+    return res
+  }
+  // there was a reason why this was undefined vs null.  but, I forgot :(
   return undefined
 }

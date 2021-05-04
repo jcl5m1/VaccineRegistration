@@ -20,16 +20,17 @@ function doGet(e) {
   var page = e.parameter['page']
   var prev = e.parameter['prev']
   
+  // give time form submit processing to finish.
+  // TODO better to subscribe to callback?  not sure how to do that across a form submit.
   if (prev == 'register') {
-    //give time for append to finish.
-    // TODO better to check?  dunno how to persist state across page changes
     Utilities.sleep(2000);
     profileData = searchPatients(e.parameter);
   }
 
-  if (page == 'profile'){
-    if(profileData == null)
+  if ((page == 'profile')||(page == 'appointments')){
+    if(profileData == null) {
       profileData = searchPatients(e.parameter);
+    }
   }
 
   if (VALID_PAGES.indexOf(page) !== -1) {
@@ -43,6 +44,27 @@ function doGet(e) {
     .createTemplateFromFile('Index')
     .evaluate();
 
+}
+
+
+function test(){
+  var testID = '3CLD9S0V3CVYLFL'
+  var res = getAppointments(testID)
+  debug(res)
+}
+
+// just get dose appointment info
+function getAppointments(profileID) {
+  profileData = searchPatients({ID:profileID});
+  res = {}
+  for(var key in profileData){
+    if(key.indexOf("Dose")>=0) {
+      res[key] = profileData[key]
+    }
+  }
+
+  res.ID = profileID
+  return res
 }
 
 function generateRegistrationTest() {
@@ -198,8 +220,9 @@ function requestSignature(name, email, dose, id) {
 
   // update the spreadsheet
   var values = {}
-  values['Dose'+dose+'ConsentStatus'] = res.status
-  values['Dose'+dose+'ConsentID'] = res.envelopeId
+  var prefix = 'Dose'+dose
+  values[prefix+'ConsentStatus'] = res.status
+  values[prefix+'ConsentID'] = res.envelopeId
   setSheetValueUsingHeaders("Patients",'ID',id,values)
   return res;
 }
@@ -210,8 +233,80 @@ function processDocusignComplete(id, dose, result){
     return null
 
   var values = {}
-  values['Dose'+dose+'ConsentStatus'] = result.status
-  values['Dose'+dose+'ConsentID'] = result.envelopeId
-  values['Dose'+dose+'ConsentUrl'] = result.downloadUrl
+  var prefix = 'Dose'+dose
+  values[prefix+'ConsentStatus'] = result.status
+  values[prefix+'ConsentID'] = result.envelopeId
+  values[prefix+'ConsentUrl'] = result.downloadUrl
   return setSheetValueUsingHeaders("Patients",'ID',id,values)
+}
+
+function processReserveAppointment(patientId, dose, appointmentId, brand){
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
+
+  var values = {}
+  // update the patient page
+  var prefix = 'Dose'+dose
+  values[prefix+'AppointmentID'] = appointmentId
+  values[prefix+'Status'] = 'registered'
+  values[prefix+'VaccineBrand'] = brand
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if ((res==null)||(!('spreadsheetId' in res[prefix+'AppointmentID']))){
+    return ["failed to update patient profile", res, patientId, values]    
+  }
+
+  //update the appointment reservation count
+
+  // get current registration count
+  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
+  if (!('Registered' in res)){
+    return ["failed to get appointment registration count", res, appointmentId]
+  }
+
+  //increment registration count
+  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':parseInt(res['Registered'])+1})
+  if (!('spreadsheetId' in res['Registered'])){
+    return ["failed to update appointment registration count", res, appointmentId]    
+  }
+  return getAppointments(patientId)
+}
+
+function processCancelAppointment(formElem){
+
+  var patientId = formElem.ID
+  var appointmentId = formElem.appointmentId
+
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
+
+  var values = {}
+
+  // update the patient page
+  var prefix = 'Dose'+formElem.dose
+  values[prefix+'AppointmentID'] = appointmentId
+  values[prefix+'Status'] = 'cancelled'
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
+    return "failed to update patient profile"    
+  }
+
+  //update the appointment reservation count
+
+  // get current registration count
+  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
+  if (!('Registered' in res)){
+    return "failed to get appointment registration count"    
+  }
+
+  //dencrement registration count
+  var count = parseInt(res['Registered'])-1;
+  if(count < 0)
+    count = 0;
+  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':count})
+  if (!('spreadsheetId' in res['Registered'])){
+    return "failed to update appointment registration count"    
+  }
+  return getAppointments(patientId)
 }
