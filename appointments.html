@@ -76,7 +76,7 @@
 
   }
 
-  function generateAppointmentHtml(appointmentId, profileId, dose) {
+  function generateAppointmentHtml(appointmentId) {
     var appointment = null
 
     //get the appointment that matches this ID
@@ -90,8 +90,7 @@
     if(appointment== null)
       return ''
 
-    //show appointment information with cancel button
-
+    //show appointment information
     html = `<b>${appointment['Name']}</b><br>`;
     var loc = appointment['Location']
     html += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
@@ -99,15 +98,17 @@
     html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`
     html += `Notes: ${appointment['Notes']}<br>`
 
-    html += `<form action="<?=url?>">`
-    html += `<input type="hidden" name='appointmentId' value='${appointment['ID']}'>`
+    return html
+  }
+
+  function generateAppointmentCancelButton(profileId, dose){
+    html = `<form action="<?=url?>">`
     html += `<input type="hidden" name='prev' value='appointments'>`
     html += `<input type="hidden" name='page' value='appointments'>`
     html += `<input type="hidden" name='ID' value='${profileId}'>`
     html += `<input type="hidden" name='dose' value='${dose}'>`
     html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
     html += `</form>`
-
     return html
   }
 
@@ -126,6 +127,8 @@
     else {
       if(dose1status == 'registered')
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
+      if(dose1status == 'completed')
+        document.getElementById('selectionHeader').innerHTML = "Select Dose 2 Appointment:"
     }
 
     var dose2status = data['Dose2Status']
@@ -134,20 +137,34 @@
     else {
       if(dose2status == 'registered')
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
+      if(dose2status == 'completed')
+        document.getElementById('selectionHeader').innerHTML = "No Additional Appointments Needed"
     }
+
+
+    var profileId = data['ID']
 
     var html = "<h1>Your Appointments:</h1>"
     html += `<table><td valign=top>`
     html += `Dose 1: ${dose1status}<br>`
-    html += generateAppointmentHtml(data['Dose1AppointmentID'],data['ID'],1)
+    html += `Consent: ${data['Dose1ConsentStatus']}<br>`
+    html += generateAppointmentHtml(data['Dose1AppointmentID'])
+    if(dose1status == "registered")
+      html += generateAppointmentCancelButton(profileId, 1)
+
     html += "<br>"
     html += `Dose 2: ${dose2status}<br>`
-    html += generateAppointmentHtml(data['Dose2AppointmentID'],data['ID'],2)
+    html += `Consent: ${data['Dose2ConsentStatus']}<br>`
+    html += generateAppointmentHtml(data['Dose2AppointmentID'])
+    if(dose2status == "registered")
+      html += generateAppointmentCancelButton(profileId,2)
+
     html += `</td><td width=50>`
     html += `</td><td align=center>`
     html += `<img src='<?=QR_CODE_URL?>${data['ID']}'><br>`
     html += `PatientID: ${data['ID']}<br>This code may help with check-in.`
     html += "</td></table>"
+
     document.getElementById("existingReservations").innerHTML = html;
   }
 
@@ -168,17 +185,28 @@
     }
 
     var patientId = '';
+    var dose=1;
     <? if(profileData != null) { ?>
       patientId = '<?=profileData['ID']?>'
-    <?  } ?>
 
+      // if dose 1 is completed according to profile data, set dose =2
+      <? if(profileData['Dose1Status']=="completed"){ ?>
+        dose = 2;
+        <?
+      }
+    } ?>
+
+    //allows url dose override
+    <? if ('dose' in urlParameters) { ?>
+      dose = parseInt(<?=urlParameters['dose']?>)
+    <? } ?>
+    
     if(patientId == '') {
       alert("No Patient ID provided.  Cannot register.")
       return;
     }
 
-    var dose=parseInt(<?=('dose' in urlParameters)?urlParameters['dose']:1?>)
-    console.log(patientId, appointmentId, dose)
+    //console.log(patientId, appointmentId, dose)
     google.script.run.withSuccessHandler(updateExistingReservations).processReserveAppointment(patientId, dose, appointmentId, appointment.VaccineBrand)
   }
 

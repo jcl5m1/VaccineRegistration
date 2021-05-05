@@ -260,26 +260,14 @@ function processReserveAppointment(patientId, dose, appointmentId, brand){
     return ["failed to update patient profile", res, patientId, values]    
   }
 
-  //update the appointment reservation count
+  // appointment stats are updated by spreadeheet
 
-  // get current registration count
-  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
-  if (!('Registered' in res)){
-    return ["failed to get appointment registration count", res, appointmentId]
-  }
-
-  //increment registration count
-  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':parseInt(res['Registered'])+1})
-  if (!('spreadsheetId' in res['Registered'])){
-    return ["failed to update appointment registration count", res, appointmentId]    
-  }
   return getAppointments(patientId)
 }
 
 function processCancelAppointment(formElem){
 
   var patientId = formElem.ID
-  var appointmentId = formElem.appointmentId
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -290,30 +278,14 @@ function processCancelAppointment(formElem){
   // update the patient page
   var prefix = 'Dose'+formElem.dose
   values[prefix+'AppointmentID'] = ''
-  values[prefix+'Status'] = 'cancelled'
+  values[prefix+'Status'] = ''
   values[prefix+'VaccineBrand'] = ''
 
   var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
   if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
     return "failed to update patient profile"    
   }
-
-  //update the appointment reservation count
-
-  // get current registration count
-  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
-  if (!('Registered' in res)){
-    return "failed to get appointment registration count"    
-  }
-
-  //dencrement registration count
-  var count = parseInt(res['Registered'])-1;
-  if(count < 0)
-    count = 0;
-  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':count})
-  if (!('spreadsheetId' in res['Registered'])){
-    return "failed to update appointment registration count"    
-  }
+  // appointment stats are updated by spreadeheet
   return getAppointments(patientId)
 }
 
@@ -337,23 +309,6 @@ function processCheckIn(patientId, appointmentId, dose){
     return msg
   }
 
-  //update the appointment  count
-
-  // get current checkin count
-  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['CheckedIn'])
-  if (!('CheckedIn' in res)){
-    var msg ="failed to get appointment checkin count"    
-    return msg
-  }
-
-  //increment checkin count
-  if(res['CheckedIn'] == '')
-    res['CheckedIn'] = 0
-  var count = parseInt(res['CheckedIn'])+1;
-  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'CheckedIn':count})
-  if (!('spreadsheetId' in res['CheckedIn'])){
-    var msg = "failed to update appointment checkin count"    
-    return msg
-  }
+  // appointment stats are updated by spreadeheet
   return getAppointments(patientId)
 }
