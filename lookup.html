@@ -11,10 +11,10 @@
 	<h1>Look Up Registration</h1>
 	<form id="myform" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="appointments">
-		<input type="hidden" name="ID" value="">
     (optional) Scan QR Code/State ID barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
 		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
+ 		(optional) PatientID: <input type="text" name="ID" value=""><br><br>
       First Name: <input type="text" name="FirstName"><br>
       Last Name: <input type="text" name="LastName"><br>
       Date of Birth <input type="date" name="DateOfBirth"><br>
