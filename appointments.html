@@ -15,18 +15,20 @@
 	<h1>
 		<div id='selectionHeader'>Select Available Appointment:</div>
 	</h1>
-	Last checked: <?= new Date().toLocaleString() ?><br>
-	<form id='DateForm'>
-		<div id="selectDate">
-			<select name='date' onchange='onDateSelect(this)'>
-        <option value='' disabled selected>(loading appointments)</option>
-      </select>
-		</div><br>
-		<form id='AppointmentForm' action="<?=url?>">
-			<input type="hidden" name='page' value='appointments'>
-			<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-			<div id="dayInfo"></div>
-		</form>
+  <div id='selectionBody'>
+    Last checked: <?= new Date().toLocaleString() ?><br>
+    <form id='DateForm'>
+      <div id="selectDate">
+        <select name='date' onchange='onDateSelect(this)'>
+          <option value='' disabled selected>(loading appointments)</option>
+        </select>
+      </div><br>
+      <form id='AppointmentForm' action="<?=url?>">
+        <input type="hidden" name='page' value='appointments'>
+        <input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+        <div id="dayInfo"></div>
+      </form>
+    </div>
 </body>
 <script>
 	var days = {};
@@ -137,23 +139,28 @@
     else {
       if(dose2status == 'registered')
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
-      if(dose2status == 'completed')
+      if(dose2status == 'completed') {
         document.getElementById('selectionHeader').innerHTML = "No Additional Appointments Needed"
+      }
     }
 
+    // both doses done, remove selection body
+    if((dose1status == 'completed')&&(dose2status == 'completed')) {
+      document.getElementById('selectionBody').innerHTML = ""
+    }
 
     var profileId = data['ID']
 
     var html = "<h1>Your Appointments:</h1>"
     html += `<table><td valign=top>`
-    html += `Dose 1: ${dose1status}<br>`
+    html += `<b>Dose 1: ${dose1status}</b><br>`
     html += `Consent: ${data['Dose1ConsentStatus']}<br>`
     html += generateAppointmentHtml(data['Dose1AppointmentID'])
     if(dose1status == "registered")
       html += generateAppointmentCancelButton(profileId, 1)
 
     html += "<br>"
-    html += `Dose 2: ${dose2status}<br>`
+    html += `<b>Dose 2: ${dose2status}</b><br>`
     html += `Consent: ${data['Dose2ConsentStatus']}<br>`
     html += generateAppointmentHtml(data['Dose2AppointmentID'])
     if(dose2status == "registered")
