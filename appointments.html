@@ -15,20 +15,20 @@
 	<h1>
 		<div id='selectionHeader'>Select Available Appointment:</div>
 	</h1>
-  <div id='selectionBody'>
-    Last checked: <?= new Date().toLocaleString() ?><br>
-    <form id='DateForm'>
-      <div id="selectDate">
-        <select name='date' onchange='onDateSelect(this)'>
+	<div id='selectionBody'>
+		Last checked: <?= new Date().toLocaleString() ?><br>
+		<form id='DateForm'>
+			<div id="selectDate">
+				<select name='date' onchange='onDateSelect(this)'>
           <option value='' disabled selected>(loading appointments)</option>
         </select>
-      </div><br>
-      <form id='AppointmentForm' action="<?=url?>">
-        <input type="hidden" name='page' value='appointments'>
-        <input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-        <div id="dayInfo"></div>
-      </form>
-    </div>
+			</div><br>
+			<form id='AppointmentForm' action="<?=url?>">
+				<input type="hidden" name='page' value='appointments'>
+				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+				<div id="dayInfo"></div>
+			</form>
+	</div>
 </body>
 <script>
 	var days = {};
@@ -74,8 +74,9 @@
     <? if(profileData != null) {?>
       var profileId = '<?=profileData['ID']?>'
       google.script.run.withSuccessHandler(updateExistingReservations).getAppointments(profileId);
-    <?  } ?>
-
+    <?  } else { ?>
+      updateExistingReservations();
+    <? } ?>
   }
 
   function generateAppointmentHtml(appointmentId) {
@@ -116,11 +117,21 @@
 
   function updateExistingReservations(data){
 
+    var valid = true
     // no data, return
-    if(data == null)
+    if((data == null)||(typeof data == undefined)) {
+      valid = false;
+    }
+    else {
+      if(data['ID'] == '')
+        valid = false
+    }
+
+    if(!valid){
+      var html = "<h1>Profile not found.</h1>"
+      document.getElementById("existingReservations").innerHTML = html;
       return
-    if(data['ID'] == '')
-      return
+    }
 
     var dose1status = data['Dose1Status']
     if(dose1status == ''){
