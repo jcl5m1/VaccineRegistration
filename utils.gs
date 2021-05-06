@@ -17,6 +17,9 @@ function isDict(v) {
 }
 
 function formatIfURL(data){
+  if((data == null)||(typeof data == undefined))
+    return data;
+
   if(data.indexOf("http") != 0)
     return data;
 
