@@ -11,24 +11,10 @@
 	<h1>Profile</h1>
 	TODO: restrict profile shown based on public vs staff<br>
 	<? if(profileData != null) {?>
-	<img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
-	<table border=0>
-		<? 
-      // convert dict to table
-      var i = 0
-      for(var key in profileData ){
-        var color = (i%2==0) ? '#eee':'#fff';
-        i += 1;
-        ?>
-		<tr bgcolor=<?=color?>>
-			<td><b><?=key?>:</b></td>
-			<td><?=profileData[key]?></td>
-		</tr>
-		<?}?>
-	</table>
-
+    <img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
+    <?!=formatToHTML(profileData)?>
 	<?} else {?>
-	<h2>Not Found</h2>
+  	<h2>Not Found</h2>
 	<? } ?>
 </body>
 

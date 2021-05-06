@@ -28,13 +28,14 @@
 		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
 		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
 		<li><a href='<?=url?>?page=email'>Email Testing</a></li>
+		<li><a href='<?=url?>?page=upload'>Upload Testing</a></li>
 		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
 	</ul>
 
   Active User Email: <?=getUserEmail() ?><br>
   Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
 	<br>
-	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
+	<form id='feedback' method="POST" action="<?=url?>">
 		<br><br>
 		<a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
 		<h2>Feedback/Feature Request/Bug Reporting:</h2>
@@ -42,6 +43,7 @@
 		account required)<br><br>
 
 		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
+    <input type='hidden' name='action' value='feedback'><br>
     Your Name: <input type='text' name="CreatedBy"><br>
     Type: <select name='Type'>
         <option value="support">Support Request</option>
@@ -53,6 +55,10 @@
 		<textarea name="Description" rows="4" cols="50"></textarea><br>
 		<button>Submit</button>
 	</form>
+
+  <br><br>            
+  Scan to send mobile device to this page:<br>            
+  <img src="<?=QR_CODE_URL?><?=url?>">
 </body>
 
 </html>

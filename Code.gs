@@ -2,7 +2,7 @@ var profileData = null;
 var urlParameters = null;
 var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email','upload'];
 
 // was considering making dynamic, but will be static for now
 //var NEW_PATIENT_FLOW = ['register', 'questionaire', 'consent', 'appointments', 'lookup'];
@@ -15,17 +15,12 @@ function doGet(e) {
   }
 
   urlParameters = e.parameter;
-  // return HtmlService.createHtmlOutput(params);
-
-
   var page = e.parameter['page']
-  var prev = e.parameter['prev']
-  
-  // give time form submit processing to finish.
-  // TODO better to subscribe to callback?  not sure how to do that across a form submit.
-  if (prev == 'register') {
-    Utilities.sleep(2000);
-    profileData = searchPatients(e.parameter);
+  var action = e.parameter['action']
+
+  if (action == 'register') {
+    var res = processRegistrationForm(e.parameter)
+    profileData = searchPatients({'ID':res});
   }
 
   if ((page == 'profile')||(page == 'appointments')){
@@ -33,23 +28,44 @@ function doGet(e) {
       profileData = searchPatients(e.parameter);
     }
   }
-  // if(page == 'appointments') {
-  //   appointmentData = getSheetDataAsDict('Appointments')
-  // }
-
-  if (VALID_PAGES.indexOf(page) !== -1) {
-    return HtmlService
-      .createTemplateFromFile(page)
-      .evaluate();
-  }
-
-  //default page comes last
-  return HtmlService
-    .createTemplateFromFile('Index')
-    .evaluate();
-
+  return routePage(page);
 }
 
+function doPost(e){
+  var action = e.parameter['action']
+  var page = e.parameter['page']
+
+  if (action == 'register') {
+    var res = processRegistrationForm(e.parameter)
+    profileData = searchPatients({'ID':res});
+//    return HtmlService.createHtmlOutput(formatToHTML(profileData))
+  }
+
+  if (action == 'upload') {
+    var res = uploadImageFromString(e.parameter.imageFile, e.parameter.imageFileData)
+    return HtmlService.createHtmlOutput(formatToHTML(res.getDownloadUrl()));
+  }
+
+  if(action == 'feedback'){
+    processFeedbackForm(e.parameter);
+  }
+
+  // TODO this is not working with POST method yet.  Following error:
+  // TypeError: Cannot use instanceof on a non-object
+  return routePage(page);
+}
+
+function routePage(page){
+  if (VALID_PAGES.indexOf(page) == -1) {
+    //default page
+    return HtmlService
+      .createTemplateFromFile('Index')
+      .evaluate();
+  }
+  return HtmlService
+    .createTemplateFromFile(page)
+    .evaluate();
+}
 
 function test(){
   var testID = '3CLD9S0V3CVYLFL'
@@ -70,6 +86,7 @@ function getAppointments(profileID) {
   res.ID = profileID
   return res
 }
+
 
 function generateRegistrationTest() {
   var res = {
@@ -103,96 +120,102 @@ function generateRegistrationTest() {
 }
 
 
-function processRegistrationForm(formObject) {
+function processRegistrationForm(params) {
   var id = hashTimestamp();
-
-  var namePrefix = formObject.LastName + "_" + formObject.FirstName + "_" + id
-  var data = {
+  var namePrefix = params.LastName + "_" + params.FirstName + "_" + id
+  var payload = {
     ID: id,
     Timestamp: Date.now(),
-    FirstName: formObject.FirstName.toUpperCase(),
-    LastName: formObject.LastName.toUpperCase(),
-    DateOfBirth: formObject.DateOfBirth,
-    Phone: formObject.Phone,
-    Email: formObject.Email.toUpperCase(),
-    Gender: formObject.Gender.toUpperCase(),
-    Race: formObject.Race.toUpperCase(),
-    Ethnicity: formObject.Ethnicity.toUpperCase(),
-    RelationshipToPatient: formObject.RelationshipToPatient,
-    SignatureName: formObject.SignatureName.toUpperCase(),
-    AddressStreet: formObject.AddressStreet.toUpperCase(),
-    AddressCity: formObject.AddressCity.toUpperCase(),
-    AddressState: formObject.AddressState,
-    AddressZip: formObject.AddressZip,
+    FirstName: params.FirstName.toUpperCase(),
+    LastName: params.LastName.toUpperCase(),
+    DateOfBirth: params.DateOfBirth,
+    Phone: params.Phone,
+    Email: params.Email.toUpperCase(),
+    Gender: params.Gender.toUpperCase(),
+    Race: params.Race.toUpperCase(),
+    Ethnicity: params.Ethnicity.toUpperCase(),
+    RelationshipToPatient: params.RelationshipToPatient,
+    SignatureName: params.SignatureName.toUpperCase(),
+    AddressStreet: params.AddressStreet.toUpperCase(),
+    AddressCity: params.AddressCity.toUpperCase(),
+    AddressState: params.AddressState,
+    AddressZip: params.AddressZip,
     Status: 'registered',
     Source: 'webapp',
     ImageIDBack: namePrefix + "_IDBack.jpg",
 
-    InsuranceType: formObject.InsuranceType,
+    InsuranceType: params.InsuranceType,
     ImageInsuranceFront: namePrefix + "_InsuranceFront.jpg",
     ImageInsuranceBack: namePrefix + "_InsuranceBack.jpg",
-    InsurancePolicyHolder: formObject.InsurancePolicyHolder.toUpperCase(),
-    InsurancePolicyHolderDateOfBirth: formObject.InsurancePolicyHolderDateOfBirth,
-    InsuranceCompany: formObject.InsuranceCompany.toUpperCase(),
-    InsuranceClaimAddress: formObject.InsuranceClaimAddress.toUpperCase(),
-    InsuranceGroupNumber: formObject.InsuranceGroupNumber.toUpperCase(),
-    InsuranceSubscriberID: formObject.InsuranceSubscriberID.toUpperCase(),
-    InsuranceSSN: formObject.InsuranceSSN,
+    InsurancePolicyHolder: params.InsurancePolicyHolder.toUpperCase(),
+    InsurancePolicyHolderDateOfBirth: params.InsurancePolicyHolderDateOfBirth,
+    InsuranceCompany: params.InsuranceCompany.toUpperCase(),
+    InsuranceClaimAddress: params.InsuranceClaimAddress.toUpperCase(),
+    InsuranceGroupNumber: params.InsuranceGroupNumber.toUpperCase(),
+    InsuranceSubscriberID: params.InsuranceSubscriberID.toUpperCase(),
+    InsuranceSSN: params.InsuranceSSN,
 
-    Notes: formObject.Notes,
+    Notes: params.Notes,
   }
-  var res = dictToValueArray("Patients", data)
+
+  // TODO check if successfully registered
+  //upload images and get download URLs
+  if (params.ImageIDBack) {
+    var res = uploadImageFromString(payload['ImageIDBack'], params.ImageIDBackData)
+    payload['ImageIDBack'] = res.getDownloadUrl();
+  }else {
+    payload['ImageIDBack'] = ''
+  }
+
+  if (params.ImageInsuranceFront) {
+    var res = uploadImageFromString(payload['ImageInsuranceFront'], params.ImageInsuranceFrontData)
+    payload['ImageInsuranceFront'] = res.getDownloadUrl()
+  } else {
+    payload['ImageInsuranceFront'] = ''
+  }
+
+  if (params.ImageInsuranceBack) {
+    var res = uploadImageFromString(payload['ImageInsuranceBack'], params.ImageInsuranceBackData)
+    payload['ImageInsuranceBack'] = res.getDownloadUrl()
+  } else {
+    payload['ImageInsuranceBack'] = ''
+  }
 
   // TODO check if already registered
   // store patient info
-  res = appendSheetData("Patients", [res])
-
-  // TODO check if successfully registered
-
-  //upload images
-  if (formObject.ImageIDBack.name) {
-    uploadImage(data['ImageIDBack'], formObject.ImageIDBack)
-  }
-
-  if (formObject.ImageInsuranceFront.name) {
-    uploadImage(data['ImageInsuranceFront'], formObject.ImageInsuranceFront)
-  }
-
-  if (formObject.ImageInsuranceBack.name) {
-    uploadImage(data['ImageInsuranceBack'], formObject.ImageInsuranceBack)
-  }
+  res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
 
   return id;
 }
 
 
-function processFeedbackForm(formObject) {
+function processFeedbackForm(params) {
   var id = hashTimestamp();
   var res = dictToValueArray("Tickets", {
     ID: id,
     Status: 'NEW',
     Timestamp: Date.now(),
-    CreatedBy: formObject.CreatedBy,
-    Type: formObject.Type,
-    Description: formObject.Description
+    CreatedBy: params.CreatedBy,
+    Type: params.Type,
+    Description: params.Description
   })
 
   // store ticket
   res = appendSheetData("Tickets", [res])
 }
 
-function processWaitlistForm(formObject) {
+function processWaitlistForm(params) {
   var id = hashTimestamp();
   var res = dictToValueArray("Waitlist", {
     ID: id,
     Status: 'NEW',
     Timestamp: Date.now(),
-    CreatedBy: formObject.CreatedBy.toUpperCase(),
-    FirstName: formObject.FirstName.toUpperCase(),
-    LastName: formObject.LastName.toUpperCase(),
-    Phone: formObject.Phone,
-    Email: formObject.Email.toUpperCase(),
-    Notes: formObject.Notes,
+    CreatedBy: params.CreatedBy.toUpperCase(),
+    FirstName: params.FirstName.toUpperCase(),
+    LastName: params.LastName.toUpperCase(),
+    Phone: params.Phone,
+    Email: params.Email.toUpperCase(),
+    Notes: params.Notes,
   })
 
   // store waitlist
@@ -200,10 +223,10 @@ function processWaitlistForm(formObject) {
 }
 
 
-function processCameraForm(formObject) {
-  debugLog("upload", formObject.ImageInsuranceFront.name)
-  if (formObject.ImageInsuranceFront.name)
-    uploadImage(Date.now() + "_camera.jpg", formObject.ImageInsuranceFront)
+function processCameraForm(params) {
+  debugLog("upload", params.ImageInsuranceFront.name)
+  if (params.ImageInsuranceFront.name)
+    uploadImage(Date.now() + "_camera.jpg", params.ImageInsuranceFront)
 }
 
 

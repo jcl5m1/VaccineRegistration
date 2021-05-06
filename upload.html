@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Upload</h1>
+    <form method="POST" action="<?=url?>">
+      <input type="hidden" name="action" value="upload">
+      <input type="hidden" name="imageFileData" value="upload">
+      <input type="file" accept="image/*" name='imageFile'
+        onchange="encodePhoto(this)" capture="environment"><br>
+    <button>Submit</button>
+  </body>
+  <script>
+  function encodePhoto(elem) {
+    const file = elem.files[0];
+    const reader = new FileReader();
+    reader.addEventListener("load", function () {
+      // convert image file to base64 string
+      document.getElementsByName(elem.name+'Data')[0].value = reader.result
+    }, false);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  </script>
+</html>

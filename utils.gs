@@ -12,6 +12,48 @@ function getCallerLine(err) {
   return caller_line.slice(index + 3, caller_line.length);
 }
 
+function isDict(v) {
+    return typeof v==='object' && v!==null && !(v instanceof Array) && !(v instanceof Date);
+}
+
+function formatIfURL(data){
+  if(data.indexOf("http") != 0)
+    return data;
+
+  return "<a href='"+data+"'>"+data+"</a>";
+}
+
+// convert variables,array, and dict to html table
+function formatToHTML(data) {
+  var i = 0;
+  if(isDict(data)){
+    html = "<table border=0>";
+    for(var key in data ){
+      var color = (i%2==0) ? '#eee':'#fff';
+      i += 1;
+      html += "<tr bgcolor='" + color + "'>";
+      html += "<td><b>" + key + ":</b></td>";
+      html += "<td>" + formatIfURL(data[key]) + "</td>";
+      html += "</tr>";
+		}
+    html += "</table>";
+    return html;
+  }
+  if(Array.isArray(data)) {
+    html = "<table border=0>";
+    for(var i = 0; i < data.length; i++){
+      var color = (i%2==0) ? '#eee':'#fff';
+      html += "<tr bgcolor='" + color + "'>";
+      html += "<td>" + i + ":</td>";
+      html += "<td>" + formatIfURL(data[i]) + "</td>";
+      html += "</tr>";
+		}
+    html += "</table>";
+    return html;
+  }
+  return formatIfURL(data);
+}
+
 function getErrorObject() {
   try { throw Error('') } catch (err) { return err; }
 }
