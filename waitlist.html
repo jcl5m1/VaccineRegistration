@@ -79,8 +79,6 @@
     }
 
     function onWaitlistData(results){
-      console.log(results.length);
-
       html = '<table width=100%>';
       html += `<tr bgcolor='#ddf'>`;
       html += `<td><b>Date / Time / Creator</b></td>`;
@@ -100,8 +98,6 @@
         var createdBy = r['CreatedBy'];
         var notes = (r['Notes'] == null) ? '': r['Notes']
         var email = (r['Email'] == null) ? '': r['Email']
-
-        console.log(r)
 
         html += `<tr bgcolor='${color}'>`;
         html += `<td>${ts}<br> CreatedBy: ${createdBy}</td>`;
