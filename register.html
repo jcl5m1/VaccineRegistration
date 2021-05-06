@@ -205,14 +205,14 @@ async function onImageChange(elem, canvasId){
     }
     if (barcode.format == 'pdf417'){
       // TODO add undefined checks
-      myform.FirstName.value = barcode.value.FirstName;
-      myform.LastName.value = barcode.value.LastName;
-      myform.DateOfBirth.value = barcode.value.DateOfBirth;
-      myform.Gender.value = barcode.value.Sex;
-      myform.AddressStreet.value = barcode.value.AddressStreet1;
-      myform.AddressCity.value = barcode.value.AddressCity;
-      myform.AddressState.value = barcode.value.AddressState;
-      myform.AddressZip.value = barcode.value.AddressZip;
+      myform.FirstName.value = (barcode.value.FirstName === undefined) ? '' : barcode.value.FirstName;
+      myform.LastName.value = (barcode.value.LastName === undefined) ? '' : barcode.value.LastName;
+      myform.DateOfBirth.value = (barcode.value.DateOfBirth === undefined) ? '' : barcode.value.DateOfBirth;
+      myform.Gender.value = (barcode.value.Sex === undefined) ? '' : barcode.value.Sex;
+      myform.AddressStreet.value = (barcode.value.AddressStreet1 === undefined) ? '' : barcode.value.AddressStreet1;
+      myform.AddressCity.value = (barcode.value.AddressCity === undefined) ? '' : barcode.value.AddressCity;
+      myform.AddressState.value = (barcode.value.AddressState === undefined) ? '' : barcode.value.AddressState;
+      myform.AddressZip.value = (barcode.value.AddressZip === undefined) ? '' : barcode.value.AddressZip;
     }
   }
 }
