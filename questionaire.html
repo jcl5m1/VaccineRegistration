@@ -10,9 +10,9 @@
 	<a href='<?=url?>'>Home</a><br>
 	<h1>COVID-19 Vaccine Questionaire</h1>
   <p>Debug Profile ID: <?= profileData == null ? '' : profileData['ID'] ?></p>
-	<form id="myform" action="<?=url?>">
+	<form id="questionaire" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="consent">
-		<input type="hidden" name="prev" value="questionaire">
+		<input type="hidden" name="action" value="questionaire">
     <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
 
     <?

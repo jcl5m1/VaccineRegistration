@@ -166,7 +166,8 @@ function createEmbeddedDocusignEnvelope(name, email, id) {
 
   // can't use script.google.com because it set 'X-Frame-Options' to 'sameorigin'
   // and won't allow a redirect to it.  so, using iframe as work around
-  returnUrl = "https://none";
+  // safari still requires this to end the docusign session
+  returnUrl = getScriptUrl();
 
   // create a recipent view URL
   payload = {

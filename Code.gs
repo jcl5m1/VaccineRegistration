@@ -50,6 +50,11 @@ function doPost(e){
     processFeedbackForm(e.parameter);
   }
 
+  if(action == 'questionaire'){
+    // TODO implement
+  }
+
+
   // TODO this is not working with POST method yet.  Following error:
   // TypeError: Cannot use instanceof on a non-object
   return routePage(page);
