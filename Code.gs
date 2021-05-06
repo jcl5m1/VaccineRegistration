@@ -161,6 +161,7 @@ function processRegistrationForm(params) {
     InsuranceSSN: params.InsuranceSSN,
 
     Notes: params.Notes,
+    Browser: params.Browser,
   }
 
   // TODO check if successfully registered

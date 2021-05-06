@@ -77,6 +77,8 @@
 		<br>
       Any special notes?<br>
 		<textarea name="Notes" rows="4" cols="50"></textarea><br>
+    <input type="hidden" id="Browser" name="Browser" value="">
+
 		<button type="submit">Submit</button>
 		<button type="button"
       onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
@@ -85,11 +87,14 @@
 
 
 	<script>
-		function debugForm(formObject) {
-        for(var e in formObject.elements) {
-          console.log(e);
-        }
-    }
+
+  document.getElementById("Browser").value = navigator.appVersion;
+
+  function debugForm(formObject) {
+      for(var e in formObject.elements) {
+        console.log(e);
+      }
+  }
 
   function encodePhoto(elem) {
     const file = elem.files[0];

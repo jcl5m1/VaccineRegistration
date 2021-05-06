@@ -34,6 +34,8 @@
 
   Active User Email: <?=getUserEmail() ?><br>
   Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
+  Browser: <div id="browser"></div>
+
 	<br>
 	<form id='feedback' method="POST" action="<?=url?>">
 		<br><br>
@@ -59,6 +61,9 @@
   <br><br>            
   Scan to send mobile device to this page:<br>            
   <img src="<?=QR_CODE_URL?><?=url?>">
+  <script>
+    document.getElementById("browser").innerHTML = navigator.appVersion;
+  </script>
 </body>
 
 </html>
