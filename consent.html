@@ -94,9 +94,11 @@
       var name = <?=urlParameters['FirstName'] + ' ' + urlParameters['LastName']?>;
       var email = <?=urlParameters['Email']?>;
       var id = <?=urlParameters['ID']?>;
-      document.getElementById('EmbeddedRecipientName').value = name;
-      document.getElementById('EmbeddedRecipientEmail').value = email;
-      onGenerateEmbeddedForm(name, email, id);
+      if ((id != '') && (email != '') && (name != '')) {
+        document.getElementById('EmbeddedRecipientName').value = name;
+        document.getElementById('EmbeddedRecipientEmail').value = email;
+        onGenerateEmbeddedForm(name, email, id);
+      }
       <?
     }
     ?>

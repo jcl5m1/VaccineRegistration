@@ -2,10 +2,7 @@ var profileData = null;
 var urlParameters = null;
 var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email','upload'];
-
-// was considering making dynamic, but will be static for now
-//var NEW_PATIENT_FLOW = ['register', 'questionaire', 'consent', 'appointments', 'lookup'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email','upload','insurance'];
 
 function doGet(e) {
 
@@ -23,6 +20,15 @@ function doGet(e) {
     profileData = searchPatients({'ID':res});
   }
 
+  if(action == 'insurance'){
+    processInsuranceForm(e.parameter);
+  }
+
+  if(page == 'register') {
+    // generate an ID for new registration
+    profileData = {'ID': hashTimestamp()}
+  }
+
   if ((page == 'profile')||(page == 'appointments')){
     if(profileData == null) {
       profileData = searchPatients(e.parameter);
@@ -31,6 +37,7 @@ function doGet(e) {
   return routePage(page);
 }
 
+// post was having trouble with HTMLService return, so using doGet right now
 function doPost(e){
   var action = e.parameter['action']
   var page = e.parameter['page']
@@ -38,11 +45,14 @@ function doPost(e){
   if (action == 'register') {
     var res = processRegistrationForm(e.parameter)
     profileData = searchPatients({'ID':res});
-//    return HtmlService.createHtmlOutput(formatToHTML(profileData))
+  }
+
+  if(action == 'insurance'){
+    processInsuranceForm(e.parameter);
   }
 
   if (action == 'upload') {
-    var res = uploadImageFromString(e.parameter.imageFile, e.parameter.imageFileData)
+    var res = uploadFileWithBase64String(e.parameter.imageFile, e.parameter.imageFileData)
     return HtmlService.createHtmlOutput(formatToHTML(res.getDownloadUrl()));
   }
 
@@ -73,8 +83,8 @@ function routePage(page){
 }
 
 function test(){
-  var testID = '3CLD9S0V3CVYLFL'
-  var res = getAppointments(testID)
+  var profileID = '3CLD9S0V3CVYLFL'
+  var res = searchPatients({ID:profileID})
   debug(res)
 }
 
@@ -124,12 +134,14 @@ function generateRegistrationTest() {
   return res;
 }
 
-
 function processRegistrationForm(params) {
-  var id = hashTimestamp();
-  var namePrefix = params.LastName + "_" + params.FirstName + "_" + id
+
+  // this ID is already registered - likely form resubmit
+  if(searchPatients({ID:params.ID}) != null)
+    return;
+
   var payload = {
-    ID: id,
+    ID: params.ID,
     Timestamp: Date.now(),
     FirstName: params.FirstName.toUpperCase(),
     LastName: params.LastName.toUpperCase(),
@@ -147,11 +159,20 @@ function processRegistrationForm(params) {
     AddressZip: params.AddressZip,
     Status: 'registered',
     Source: 'webapp',
-    ImageIDBack: namePrefix + "_IDBack.jpg",
+    Notes: params.Notes,
+    Browser: params.Browser,
+  }
 
+  // store patient info
+  res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
+
+  return params.ID;
+}
+
+
+function processInsuranceForm(params) {
+  var payload = {
     InsuranceType: params.InsuranceType,
-    ImageInsuranceFront: namePrefix + "_InsuranceFront.jpg",
-    ImageInsuranceBack: namePrefix + "_InsuranceBack.jpg",
     InsurancePolicyHolder: params.InsurancePolicyHolder.toUpperCase(),
     InsurancePolicyHolderDateOfBirth: params.InsurancePolicyHolderDateOfBirth,
     InsuranceCompany: params.InsuranceCompany.toUpperCase(),
@@ -159,41 +180,14 @@ function processRegistrationForm(params) {
     InsuranceGroupNumber: params.InsuranceGroupNumber.toUpperCase(),
     InsuranceSubscriberID: params.InsuranceSubscriberID.toUpperCase(),
     InsuranceSSN: params.InsuranceSSN,
-
-    Notes: params.Notes,
-    Browser: params.Browser,
   }
 
-  // TODO check if successfully registered
-  //upload images and get download URLs
-  if (params.ImageIDBack) {
-    var res = uploadImageFromString(payload['ImageIDBack'], params.ImageIDBackData)
-    payload['ImageIDBack'] = res.getDownloadUrl();
-  }else {
-    payload['ImageIDBack'] = ''
+  var res = setSheetValueUsingHeaders("Patients",'ID',params.ID, payload)
+  if ((res==null)||(!('spreadsheetId' in res['InsuranceType']))){
+    return ["failed to update patient profile", res, params.ID, values]    
   }
-
-  if (params.ImageInsuranceFront) {
-    var res = uploadImageFromString(payload['ImageInsuranceFront'], params.ImageInsuranceFrontData)
-    payload['ImageInsuranceFront'] = res.getDownloadUrl()
-  } else {
-    payload['ImageInsuranceFront'] = ''
-  }
-
-  if (params.ImageInsuranceBack) {
-    var res = uploadImageFromString(payload['ImageInsuranceBack'], params.ImageInsuranceBackData)
-    payload['ImageInsuranceBack'] = res.getDownloadUrl()
-  } else {
-    payload['ImageInsuranceBack'] = ''
-  }
-
-  // TODO check if already registered
-  // store patient info
-  res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
-
-  return id;
+  return res
 }
-
 
 function processFeedbackForm(params) {
   var id = hashTimestamp();
@@ -228,6 +222,23 @@ function processWaitlistForm(params) {
   res = appendSheetData("Waitlist", [res])
 }
 
+function uploadInsuranceImage(patientId, firstName, lastName, imageName, data){
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
+
+  var filename = lastName + "_" + firstName + "_" + patientId + "_" + imageName + ".jpg"
+  var downloadUrl = uploadFileWithBase64String(filename, data).getDownloadUrl();
+
+  var values = {}
+  // update the patient page
+  values[imageName] = downloadUrl
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if ((res==null)||(!('spreadsheetId' in res[imageName]))){
+    return ["failed to update patient profile", res, patientId, values]    
+  }
+  return res
+}
 
 function processCameraForm(params) {
   debugLog("upload", params.ImageInsuranceFront.name)

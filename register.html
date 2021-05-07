@@ -5,21 +5,21 @@
 	<base target="_top">
 </head>
 
-<body>
-	<script type="text/javascript" src="barcode.js"></script>
+<body onload="onLoad()">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>New Registration</h1>
 	<form id="myform" method="GET" action="<?=url?>">
-		<input type="hidden" name="page" value="questionaire">
+		<input type="hidden" name="page" value="insurance">
 		<input type="hidden" name="action" value="register">
     <input type="hidden" name="dose" value="1">
+    <input type="hidden" name="ID" value="<?=profileData['ID']?>">
 
 		<h2>Patient Information</h2>
-    <input type="hidden" name="ImageIDBackData">
-		(optional) Scan State ID Barcode: <input type="file" accept="image/*"
-      name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
-		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
+		(optional) Scan State ID Barcode: 
+    <input type="file" accept="image/*"
+      name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
+    		<canvas hidden id="canvasID" width="0" height="0"></canvas>
       First Name: <input type="text" required name="FirstName"><br>
       Last Name: <input type="text" required name="LastName"><br>
       Date of Birth <input type="date" required name="DateOfBirth"><br>
@@ -61,114 +61,26 @@
       Street: <input type="text" name="AddressStreet"><br>
       City: <input type="text" name="AddressCity"><br>
       State: <input type="text" name="AddressState"><br>
-      Zip: <input type="text" name="AddressZip"><br>
-
-		<br>
-		<h2>Insurance:</h2>
-		Do you have insurance?
-		<select name="InsuranceType" onchange="onSelectInsurace(this)">
-        <option disabled selected>--select--</option>
-        <option value="Private">Yes (Private)</option>
-        <option value="Medicare">Yes (Medicare)</option>
-        <option value="None">No</option>
-      </select><br>
-		<div id='insuranceField'></div>
-		<br>
-      Any special notes?<br>
+      Zip: <input type="text" name="AddressZip"><br><br>
+      Any notes we should know?<br>
 		<textarea name="Notes" rows="4" cols="50"></textarea><br>
     <input type="hidden" id="Browser" name="Browser" value="">
 
 		<button type="submit">Submit</button>
 		<button type="button"
       onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
-		<button type="button" onclick="debugForm(this.parentNode)">Debug</button>
 	</form>
 
+</body>
+
+<?!=generateBarcodeJavascript()?>
 
 <script>
-
-document.getElementById("Browser").value = navigator.appVersion;
-
-function debugForm(formObject) {
-    for(var e in formObject.elements) {
-      console.log(e);
-    }
-}
-
-function base64EncodePhoto(elem) {
-  const file = elem.files[0];
-  const reader = new FileReader();
-  reader.addEventListener("load", function () {
-    // convert image file to base64 string
-    document.getElementsByName(elem.name+'Data')[0].value = reader.result
-  }, false);
-
-  if (file) {
-    reader.readAsDataURL(file);
-  }
-}
-
-function onSelectInsurace(elem) {
-  html = '';
-  switch(elem.value) {
-    case 'Private':
-      html += `
-<input type="hidden" name="ImageInsuranceFrontData">
-Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" onchange="onImageChange(this,'canvas')"><br>
-<input type="hidden" name="ImageInsuranceBackData">
-Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" onchange="onImageChange(this,'canvas')"><br>
-Policy Holder Name: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-Insurance Company: <input type='text' name='InsuranceCompany'><br>
-Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
-Group Number: <input type='text' name='InsuranceGroupNumber'><br>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
-<input type='text' hidden name='InsuranceSSN'>
-      `;
-      break;
-    case 'Medicare':
-      html += `
-Photo of FRONT:
-<input type="hidden" name="ImageInsuranceFrontData">
-<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" onchange="onImageChange(this,'canvas')"><br>
-Photo of BACK:
-<input type="hidden" name="ImageInsuranceBackData">
-<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" onchange="onImageChange(this,'canvas')"><br>
-Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-<input type='text' name='InsuranceCompany' hidden value='Medicare'>
-<input type='text' name='InsuranceClaimAddress' hidden value=''>
-<input type='text' name='InsuranceGroupNumber' hidden value=''>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
-<input type='text' hidden name='InsuranceSSN'>
-
-      `;
-      break;
-    default:
-      html += `
-<input type="hidden" name="ImageInsuranceFrontData">
-<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
-<input type="hidden" name="ImageInsuranceBackData">
-<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
-<input type='text' name='InsurancePolicyHolder' hidden value=''>
-<input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
-<input type='text' name='InsuranceCompany' hidden value=''>
-<input type='text' name='InsuranceClaimAddress' hidden value=''>
-<input type='text' name='InsuranceGroupNumber' hidden value=''>
-<input type='text' name='InsuranceSubscriberID' hidden value=''>
-Social Security Number: <input type='text' name='InsuranceSSN'><br>
-      `;
-      break;
-  }
-  document.getElementById('insuranceField').innerHTML = html;
+function onLoad(){
+  document.getElementById("Browser").value = navigator.appVersion;
 }
 
 function onGenerate(record){
-  //set insurance first to generate fields
-  myform.InsuranceType.value = record.InsuranceType;
-
-  onSelectInsurace(myform.InsuranceType);
-
   myform.FirstName.value = record.FirstName;
   myform.LastName.value = record.LastName;
   myform.DateOfBirth.value = record.DateOfBirth;
@@ -183,19 +95,10 @@ function onGenerate(record){
   myform.AddressCity.value = record.AddressCity;
   myform.AddressState.value = record.AddressState;
   myform.AddressZip.value = record.AddressZip;
-  myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
-  myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
-  myform.InsuranceCompany.value = record.InsuranceCompany;
-  myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
-  myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
-  myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
-  myform.InsuranceSSN.value = record.InsuranceSSN;
-  myform.Notes.value = record.Notes;
 }
 
-
 // reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
-async function onImageChange(elem, canvasId){
+async function onBarcodeImageChange(elem, canvasId){
   var canvas = document.getElementById(canvasId);
   await scaleImageToFit(elem,1000,canvas);
   var res =  await detectBarcode(canvas);
@@ -217,9 +120,5 @@ async function onImageChange(elem, canvasId){
   }
 }
 
-	</script>
-
-  <?!=generateBarcodeJavascript()?>
-</body>
-
+</script>
 </html>

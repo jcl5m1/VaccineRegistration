@@ -15,16 +15,10 @@
 		<input type="hidden" name="action" value="questionaire">
     <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
 
-    <?
-      if(profileData != null) {
-        ?>
-    		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
-    		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
-    		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
-    		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
-        <?
-      }
-    ?>
+    <input type="hidden" name="ID" value="<?=('ID' in urlParameters) ? urlParameters['ID']:''?>">
+    <input type="hidden" name="FirstName" value="<?=('FirstName' in urlParameters) ? urlParameters['FirstName']:''?>">
+    <input type="hidden" name="LastName" value="<?=('LastName' in urlParameters) ? urlParameters['LastName']:''?>">
+    <input type="hidden" name="Email" value="<?=('Email' in urlParameters) ? urlParameters['Email']:''?>">
 		<ol>
 			<table border=0>
 				<tr bgcolor='#eee'>
