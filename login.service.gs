@@ -1,5 +1,6 @@
-var CLIENT_ID = "YOUR_CLIENT_ID";
-var CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+var CLIENT_ID =
+  "358441841881-ii7scb9kfh1k8icbmj3gk7onu9i8irmm.apps.googleusercontent.com";
+var CLIENT_SECRET = "hrj-bu_ZA4fpU85x6TO8CPUS";
 
 // Enter required scopes (we only need email)
 var SCOPES = ["https://www.googleapis.com/auth/userinfo.email"];
@@ -95,15 +96,149 @@ function tryGetEmailWithToken(auth_token) {
 }
 
 /**
- * Test in App Script
+ * Try access OAuth API with access token.
  */
-function testJWT() {
-  // you can get a one-time code after logging in at login.html page
-  var code = "YOUR_AUTH_CODE";
-  access_token = generateAccessToken(code);
-  debug(access_token);
-  if (access_token) {
-    var res = tryOauthJWT(access_token);
-    debug(res);
+function testGetId() {
+  var result = getID();
+  debug(result);
+}
+
+/**#####################################
+ * Check if user session is a validated staff session.
+ *
+ * Checks in the user properties if the session has been stored
+ * as a staff session.
+ *
+ * @return {bool} Validated staff session.
+ */
+function validateStaffSession() {
+  var userKey = Session.getTemporaryActiveUserKey();
+  var prop_keys = PropertiesService.getScriptProperties().getKeys();
+  var validated_session = false;
+
+  if (prop_keys == null) {
+    return validated_session;
   }
+  if (prop_keys.indexOf(userKey) != -1) {
+    validated_session = true;
+  }
+  return validated_session;
+}
+
+/**#####################################
+ * Is initiated when Index.html first loads.
+ *
+ * Checks for stored records of the users. Then collects their user records
+ * HTML containing their unique key the number of time that they have accessed the
+ * web app and how many days and hours are remaning for them before their token
+ * expires.
+ *
+ * @return {string} HTML data.
+ */
+function getID() {
+  const UserProp = createUserProperty();
+  var key = Object.keys(UserProp)[0];
+  var prop = UserProp[key];
+  var timeRemaining = getDaysAndHoursRemaining(prop.date, prop.currentDate, 30);
+
+  var days = timeRemaining.days + " days";
+  var hours = timeRemaining.hrs + " hours";
+
+  if (prop.timesAccessed == 1) {
+    ("This is the first time you have accessed this webApp");
+  } else {
+    "You have accessed this webApp " + prop.timesAccessed + " times.";
+  }
+
+  // Id text result output
+  const textOutput =
+    "<p>You have been assigned the unique token (you do not need to save this): </p>" +
+    "<em>" +
+    key +
+    "</em>" +
+    "<p> You have accessed this page " +
+    prop.timesAccessed +
+    "</p> " +
+    " times";
+  "<p> Your unique token will stay valid for " +
+    days +
+    " " +
+    hours +
+    ". <p>" +
+    "<p><em> No other personal data was taken besides an anonymous temporary active user key</em></p>`";
+
+  return textOutput;
+}
+
+/**#####################################
+ * Collects a unique session key from the current users and
+ * first compares it with current prop service list of keys.
+ * If already exists it updates the current key:value pair.
+ * If it is new, it adds it to the prop service along with the
+ * initial startdate, adds times accessed to 1 and current date
+ * last access.
+ *
+ * @return {object} object of user details.
+ * @return {object.date} Start date of first time key was activated.
+ * @return {object.timesAccessed} Count of times accessed.
+ * @return {object.currentDate} Current date of last accessed.
+ */
+function createUserProperty() {
+  const userSession = Session.getTemporaryActiveUserKey();
+
+  var userProperty = {};
+  var resultDic = {};
+
+  //Check if current ID exists:
+  var props = PropertiesService.getScriptProperties();
+
+  debug(props);
+  if (props.getKeys()[userSession]) {
+    const currentVals = JSON.parse(props.getProperty(userSession));
+    userProperty = {
+      date: currentVals.date,
+      timesAccessed: parseInt(currentVals.timesAccessed) + 1,
+      currentDate: new Date(),
+    };
+  } else {
+    userProperty = {
+      date: new Date(),
+      timesAccessed: 1,
+      currentDate: new Date(),
+    };
+  }
+
+  var userPropToString = JSON.stringify(userProperty);
+  props.setProperty(userSession, userPropToString);
+  resultDic[userSession] = userProperty;
+  debug(resultDic);
+  return resultDic;
+}
+
+/**#####################################
+ * The total days and hours remianing of unique user access key.
+ *
+ * @param {date} startDate - the date the key was first given.
+ * @param {date} currentDate - the current date of this access of the WebApp.
+ * @param {number} expiryDays - Number of days unit the unique user key expires.
+ *
+ * @return {object} containing remaining days and hours.
+ * @return {object.days} days remaning.
+ * @return {object.hrs} hours remaining.
+ */
+function getDaysAndHoursRemaining(startDate, currentDate, expiryDays) {
+  var start = new Date(startDate);
+  var current = new Date(currentDate);
+
+  var dateDifference = start.setDate(start.getDate() + expiryDays) - current;
+
+  var millisecondsPerHour = 60 * 60 * 1000;
+  var millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+  var daysRemaining = Math.floor(dateDifference / millisecondsPerDay);
+
+  var millisecondsRemaining = dateDifference % millisecondsPerDay;
+  var hoursRemaining = Math.floor(millisecondsRemaining / millisecondsPerHour);
+
+  return { days: daysRemaining, hrs: hoursRemaining };
 }

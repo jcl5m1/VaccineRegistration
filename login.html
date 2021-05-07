@@ -7,6 +7,7 @@
   <body>
     <?var url = getScriptUrl();?>
     <?var auth_url = generateAuthUrl();?>
+    <?var user_email = getUserEmail();?>
 
     <a href="<?=url?>">Home</a><br />
     <h1>Login</h1>
@@ -42,15 +43,67 @@
     </form>
     <br /><br />
 
+    <!-- Populates result of email login -->
     <div id="result"></div>
+    <!-- Populates user session key if email is validated to be staff -->
+    <div id="staff_status"></div>
     <script>
+      // On authorization completion
       function onOauthAPIComplete(result) {
-        console.log("Done");
-        console.log(result.email);
-        document.getElementById("result").innerHTML =
-          "User Email: " + result.email;
-        return result;
+        html = "User Email: " + result.email + "<br><br>"
+        document.getElementById("result").innerHTML = html
+        google.script.run.withSuccessHandler(onValidateComplete).validateStaff(result.email)
       }
-    </script>
+
+      // On staff validation completion
+      function onValidateComplete(result) {
+        if (result == true) {
+          msg = "Success!"
+        } else {
+          msg = "Failed!<br>  Please check with your administrator that your email was correct entered in the staff whitelist."
+        }
+
+        html += "Staff Verification Result:" + msg
+
+        document.getElementById("result").innerHTML = html
+
+        // Set user unique session ID
+        if (result == true) {
+        /**
+        *First tests if GAS code is successful,
+        * attempts to run GAS-side function.
+        * on failure sends to onFailure function with nature of error.
+        * on success sends to result function with returned result.
+        */    
+        google.script.run.withFailureHandler(onGetIDFailure)
+                          .withSuccessHandler(onGetIDSuccess)
+                          .getID();
+        }
+
+      }
+  
+    /** Displays error if there is an error on the call to server-side.
+      * run from withFailureHandler.
+      *
+      * @param {string} error - Error warninig. 
+      */ 
+    function onGetIDFailure(error){
+      let errorTxt = `<em style="color:red">The following error occurred: ${error}</em>` ;
+      document.querySelector("#staff_status").innerHTML = errorTxt;
+    };
+ 
+    /** Display returned HTML from server-side. 
+      * run from withSuccessHandler. 
+      *
+      * @param {string} uniqueID - HTML containing details of unique user key. 
+      */ 
+    function onGetIDSuccess(uniqueID){
+      document.querySelector("#staff_status").innerHTML = uniqueID;
+    };
+
+    
+    
+  </script>
+  
   </body>
 </html>
