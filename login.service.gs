@@ -160,14 +160,12 @@ function getID() {
     "<em>" +
     key +
     "</em>" +
-    "<p> You have accessed this page " +
-    prop.timesAccessed + " times</p>" +
   "<p> Your unique token will stay valid for " +
     days +
     " " +
     hours +
     ". <p>" +
-    "<p><em> No other personal data was taken besides an anonymous temporary active user key</em></p>`";
+    "<p><em> No other personal data was taken besides an anonymous temporary active user key</em><br>Please return to the home page. <br>TODO(hellojas): Add auto redirect?</p>";
 
   return textOutput;
 }
@@ -250,6 +248,8 @@ function deleteCurrentUserSession ( ) {
   var scriptProperties = PropertiesService.getScriptProperties();
   scriptProperties.deleteProperty(userSession);
   debug(scriptProperties.getKeys())
+  Utilities.sleep(3000);// pause in the loop for 200 milliseconds
+
 }
 
 function getUserSession ( ) {

@@ -8,9 +8,12 @@
 <body onload="onLoad()">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
+		<h1>Waitlist:</h1>
+
+  <!-- If staff session, show waitlist, else limit. -->
+  <? if (validateStaffSession()) {?>
 
 	<form id="myform" onsubmit="google.script.run.processWaitlistForm(this)" method="GET" action="<?=url?>">
-		<h1>Waitlist:</h1>
 		<input type='text' name="page" hidden value='waitlist'>
 		<table>
 			<tr>
@@ -43,6 +46,13 @@
 	</form>
 	<br><br>
 	<div id="waitlist"></div>
+    <?} else {?>
+    Hi! This is a staff only page.<br>
+    Please <a href='<?=url?>?page=login'>login</a></li> to access the waitlist or return home if you arrived here in error.
+    <? } ?>
+
+
+
 </body>
 <script>
 	function onLoad(){
