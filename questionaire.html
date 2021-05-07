@@ -10,21 +10,15 @@
 	<a href='<?=url?>'>Home</a><br>
 	<h1>COVID-19 Vaccine Questionaire</h1>
   <p>Debug Profile ID: <?= profileData == null ? '' : profileData['ID'] ?></p>
-	<form id="myform" action="<?=url?>">
+	<form id="questionaire" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="consent">
-		<input type="hidden" name="prev" value="questionaire">
+		<input type="hidden" name="action" value="questionaire">
     <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
 
-    <?
-      if(profileData != null) {
-        ?>
-    		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
-    		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
-    		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
-    		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
-        <?
-      }
-    ?>
+    <input type="hidden" name="ID" value="<?=('ID' in urlParameters) ? urlParameters['ID']:''?>">
+    <input type="hidden" name="FirstName" value="<?=('FirstName' in urlParameters) ? urlParameters['FirstName']:''?>">
+    <input type="hidden" name="LastName" value="<?=('LastName' in urlParameters) ? urlParameters['LastName']:''?>">
+    <input type="hidden" name="Email" value="<?=('Email' in urlParameters) ? urlParameters['Email']:''?>">
 		<ol>
 			<table border=0>
 				<tr bgcolor='#eee'>
@@ -170,7 +164,8 @@
           results[arrInput[i].name] = arrInput[i].value;
         }
       }
-      document.getElementById('results').innerHTML = JSON.stringify(results,null, 2);
+      console.log(JSON.stringify(results,null, 2))
+//      document.getElementById('results').innerHTML = JSON.stringify(results,null, 2);
     }
 
 </script>

@@ -8,13 +8,15 @@
 
 <body>
 	<?var url = getScriptUrl();?>
-	<h1>COVID-19 Vaccine Registration</h1><br>
-	<h2>Paient/Public Pages</h2>
+	<img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
+  
+  <h1>COVID-19 Vaccine Registration</h1><br>
+
+
+	<h2>Patient/Public Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=register'>New Registration</a></li>
-		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
 		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
-		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
 	</ul>
 
 	<h2>Staff Only Pages</h2>
@@ -25,17 +27,27 @@
 
 	<h2>Development/Test Pages</h2>
 	<ul>
+		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
+		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
 		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
 		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
 		<li><a href='<?=url?>?page=email'>Email Testing</a></li>
+		<li><a href='<?=url?>?page=upload'>Upload Testing</a></li>
 		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
 	    <li><a href='<?=url?>?page=login'>Google Login Testing</a></li>
 	</ul>
 
+
+  <h2>User Info</h2>
   Active User Email: <?=getUserEmail() ?><br>
   Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
+  Browser: <div id="browser"></div><br>
+  <br>
+
+  <a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>'>Destination Drive Folder</a>
+
 	<br>
-	<form onsubmit="google.script.run.processFeedbackForm(this)" method="GET" action="<?=url?>">
+	<form id='feedback' method="POST" action="<?=url?>">
 		<br><br>
 		<a href='https://github.com/jcl5m1/VaccineRegistration'>Github Page</a>
 		<h2>Feedback/Feature Request/Bug Reporting:</h2>
@@ -43,6 +55,7 @@
 		account required)<br><br>
 
 		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
+    <input type='hidden' name='action' value='feedback'><br>
     Your Name: <input type='text' name="CreatedBy"><br>
     Type: <select name='Type'>
         <option value="support">Support Request</option>
@@ -54,6 +67,13 @@
 		<textarea name="Description" rows="4" cols="50"></textarea><br>
 		<button>Submit</button>
 	</form>
+
+  <br><br>            
+  Scan to send mobile device to this page:<br>            
+  <img src="<?=QR_CODE_URL?><?=url?>">
+  <script>
+    document.getElementById("browser").innerHTML = navigator.appVersion;
+  </script>
 </body>
 
 </html>

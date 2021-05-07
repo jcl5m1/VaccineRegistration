@@ -1,10 +1,8 @@
 var profileData = null;
 var urlParameters = null;
+var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'login'];
-
-// was considering making dynamic, but will be static for now
-//var NEW_PATIENT_FLOW = ['register', 'questionaire', 'consent', 'appointments', 'lookup'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email','upload','insurance'];
 
 function doGet(e) {
 
@@ -14,17 +12,21 @@ function doGet(e) {
   }
 
   urlParameters = e.parameter;
-  // return HtmlService.createHtmlOutput(params);
-
-
   var page = e.parameter['page']
-  var prev = e.parameter['prev']
-  
-  // give time form submit processing to finish.
-  // TODO better to subscribe to callback?  not sure how to do that across a form submit.
-  if (prev == 'register') {
-    Utilities.sleep(2000);
-    profileData = searchPatients(e.parameter);
+  var action = e.parameter['action']
+
+  if (action == 'register') {
+    var res = processRegistrationForm(e.parameter)
+    profileData = searchPatients({'ID':res});
+  }
+
+  if(action == 'insurance'){
+    processInsuranceForm(e.parameter);
+  }
+
+  if(page == 'register') {
+    // generate an ID for new registration
+    profileData = {'ID': hashTimestamp()}
   }
 
   if ((page == 'profile')||(page == 'appointments')){
@@ -32,24 +34,57 @@ function doGet(e) {
       profileData = searchPatients(e.parameter);
     }
   }
-
-  if (VALID_PAGES.indexOf(page) !== -1) {
-    return HtmlService
-      .createTemplateFromFile(page)
-      .evaluate();
-  }
-
-  //default page comes last
-  return HtmlService
-    .createTemplateFromFile('Index')
-    .evaluate();
-
+  return routePage(page);
 }
 
+// post was having trouble with HTMLService return, so using doGet right now
+function doPost(e){
+  var action = e.parameter['action']
+  var page = e.parameter['page']
+
+  if (action == 'register') {
+    var res = processRegistrationForm(e.parameter)
+    profileData = searchPatients({'ID':res});
+  }
+
+  if(action == 'insurance'){
+    processInsuranceForm(e.parameter);
+  }
+
+  if (action == 'upload') {
+    var res = uploadFileWithBase64String(e.parameter.imageFile, e.parameter.imageFileData)
+    return HtmlService.createHtmlOutput(formatToHTML(res.getDownloadUrl()));
+  }
+
+  if(action == 'feedback'){
+    processFeedbackForm(e.parameter);
+  }
+
+  if(action == 'questionaire'){
+    // TODO implement
+  }
+
+
+  // TODO this is not working with POST method yet.  Following error:
+  // TypeError: Cannot use instanceof on a non-object
+  return routePage(page);
+}
+
+function routePage(page){
+  if (VALID_PAGES.indexOf(page) == -1) {
+    //default page
+    return HtmlService
+      .createTemplateFromFile('Index')
+      .evaluate();
+  }
+  return HtmlService
+    .createTemplateFromFile(page)
+    .evaluate();
+}
 
 function test(){
-  var testID = '3CLD9S0V3CVYLFL'
-  var res = getAppointments(testID)
+  var profileID = '3CLD9S0V3CVYLFL'
+  var res = searchPatients({ID:profileID})
   debug(res)
 }
 
@@ -66,6 +101,7 @@ function getAppointments(profileID) {
   res.ID = profileID
   return res
 }
+
 
 function generateRegistrationTest() {
   var res = {
@@ -98,108 +134,116 @@ function generateRegistrationTest() {
   return res;
 }
 
+function processRegistrationForm(params) {
 
-function processRegistrationForm(formObject) {
-  var id = hashTimestamp();
+  // this ID is already registered - likely form resubmit
+  if(searchPatients({ID:params.ID}) != null)
+    return;
 
-  var namePrefix = formObject.LastName + "_" + formObject.FirstName + "_" + id
-  var data = {
-    ID: id,
+  var payload = {
+    ID: params.ID,
     Timestamp: Date.now(),
-    FirstName: formObject.FirstName.toUpperCase(),
-    LastName: formObject.LastName.toUpperCase(),
-    DateOfBirth: formObject.DateOfBirth,
-    Phone: formObject.Phone,
-    Email: formObject.Email.toUpperCase(),
-    Gender: formObject.Gender.toUpperCase(),
-    Race: formObject.Race.toUpperCase(),
-    Ethnicity: formObject.Ethnicity.toUpperCase(),
-    RelationshipToPatient: formObject.RelationshipToPatient,
-    SignatureName: formObject.SignatureName.toUpperCase(),
-    AddressStreet: formObject.AddressStreet.toUpperCase(),
-    AddressCity: formObject.AddressCity.toUpperCase(),
-    AddressState: formObject.AddressState,
-    AddressZip: formObject.AddressZip,
+    FirstName: params.FirstName.toUpperCase(),
+    LastName: params.LastName.toUpperCase(),
+    DateOfBirth: params.DateOfBirth,
+    Phone: params.Phone,
+    Email: params.Email.toUpperCase(),
+    Gender: params.Gender.toUpperCase(),
+    Race: params.Race.toUpperCase(),
+    Ethnicity: params.Ethnicity.toUpperCase(),
+    RelationshipToPatient: params.RelationshipToPatient,
+    SignatureName: params.SignatureName.toUpperCase(),
+    AddressStreet: params.AddressStreet.toUpperCase(),
+    AddressCity: params.AddressCity.toUpperCase(),
+    AddressState: params.AddressState,
+    AddressZip: params.AddressZip,
     Status: 'registered',
     Source: 'webapp',
-    ImageIDBack: namePrefix + "_IDBack.jpg",
-
-    InsuranceType: formObject.InsuranceType,
-    ImageInsuranceFront: namePrefix + "_InsuranceFront.jpg",
-    ImageInsuranceBack: namePrefix + "_InsuranceBack.jpg",
-    InsurancePolicyHolder: formObject.InsurancePolicyHolder.toUpperCase(),
-    InsurancePolicyHolderDateOfBirth: formObject.InsurancePolicyHolderDateOfBirth,
-    InsuranceCompany: formObject.InsuranceCompany.toUpperCase(),
-    InsuranceClaimAddress: formObject.InsuranceClaimAddress.toUpperCase(),
-    InsuranceGroupNumber: formObject.InsuranceGroupNumber.toUpperCase(),
-    InsuranceSubscriberID: formObject.InsuranceSubscriberID.toUpperCase(),
-    InsuranceSSN: formObject.InsuranceSSN,
-
-    Notes: formObject.Notes,
+    Notes: params.Notes,
+    Browser: params.Browser,
   }
-  var res = dictToValueArray("Patients", data)
 
-  // TODO check if already registered
   // store patient info
-  res = appendSheetData("Patients", [res])
+  res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
 
-  // TODO check if successfully registered
-
-  //upload images
-  if (formObject.ImageIDBack.name) {
-    uploadImage(data['ImageIDBack'], formObject.ImageIDBack)
-  }
-
-  if (formObject.ImageInsuranceFront.name) {
-    uploadImage(data['ImageInsuranceFront'], formObject.ImageInsuranceFront)
-  }
-
-  if (formObject.ImageInsuranceBack.name) {
-    uploadImage(data['ImageInsuranceBack'], formObject.ImageInsuranceBack)
-  }
-
-  return id;
+  return params.ID;
 }
 
 
-function processFeedbackForm(formObject) {
+function processInsuranceForm(params) {
+  var payload = {
+    InsuranceType: params.InsuranceType,
+    InsurancePolicyHolder: params.InsurancePolicyHolder.toUpperCase(),
+    InsurancePolicyHolderDateOfBirth: params.InsurancePolicyHolderDateOfBirth,
+    InsuranceCompany: params.InsuranceCompany.toUpperCase(),
+    InsuranceClaimAddress: params.InsuranceClaimAddress.toUpperCase(),
+    InsuranceGroupNumber: params.InsuranceGroupNumber.toUpperCase(),
+    InsuranceSubscriberID: params.InsuranceSubscriberID.toUpperCase(),
+    InsuranceSSN: params.InsuranceSSN,
+  }
+
+  var res = setSheetValueUsingHeaders("Patients",'ID',params.ID, payload)
+  if ((res==null)||(!('spreadsheetId' in res['InsuranceType']))){
+    return ["failed to update patient profile", res, params.ID, values]    
+  }
+  return res
+}
+
+function processFeedbackForm(params) {
   var id = hashTimestamp();
   var res = dictToValueArray("Tickets", {
     ID: id,
     Status: 'NEW',
     Timestamp: Date.now(),
-    CreatedBy: formObject.CreatedBy,
-    Type: formObject.Type,
-    Description: formObject.Description
+    CreatedBy: params.CreatedBy,
+    Type: params.Type,
+    Description: params.Description
   })
 
   // store ticket
   res = appendSheetData("Tickets", [res])
 }
 
-function processWaitlistForm(formObject) {
+function processWaitlistForm(params) {
   var id = hashTimestamp();
   var res = dictToValueArray("Waitlist", {
     ID: id,
     Status: 'NEW',
     Timestamp: Date.now(),
-    CreatedBy: formObject.CreatedBy.toUpperCase(),
-    FirstName: formObject.FirstName.toUpperCase(),
-    LastName: formObject.LastName.toUpperCase(),
-    Phone: formObject.Phone,
-    Email: formObject.Email.toUpperCase(),
-    Notes: formObject.Notes,
+    CreatedBy: params.CreatedBy.toUpperCase(),
+    FirstName: params.FirstName.toUpperCase(),
+    LastName: params.LastName.toUpperCase(),
+    Phone: params.Phone,
+    Email: params.Email.toUpperCase(),
+    Notes: params.Notes,
   })
 
   // store waitlist
   res = appendSheetData("Waitlist", [res])
 }
 
+function uploadInsuranceImage(patientId, firstName, lastName, imageName, data){
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
 
-function processCameraForm(formObject) {
-  debugLog("upload", formObject.ImageInsuranceFront.name)
-  if (formObject.ImageInsuranceFront.name)
-    uploadImage(Date.now() + "_camera.jpg", formObject.ImageInsuranceFront)
+  var filename = lastName + "_" + firstName + "_" + patientId + "_" + imageName + ".jpg"
+  var downloadUrl = uploadFileWithBase64String(filename, data).getDownloadUrl();
+
+  var values = {}
+  // update the patient page
+  values[imageName] = downloadUrl
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if ((res==null)||(!('spreadsheetId' in res[imageName]))){
+    return ["failed to update patient profile", res, patientId, values]    
+  }
+  return res
+}
+
+function processCameraForm(params) {
+  debugLog("upload", params.ImageInsuranceFront.name)
+  if (params.ImageInsuranceFront.name)
+    uploadImage(Date.now() + "_camera.jpg", params.ImageInsuranceFront)
 }
 
 
@@ -256,26 +300,14 @@ function processReserveAppointment(patientId, dose, appointmentId, brand){
     return ["failed to update patient profile", res, patientId, values]    
   }
 
-  //update the appointment reservation count
+  // appointment stats are updated by spreadeheet
 
-  // get current registration count
-  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
-  if (!('Registered' in res)){
-    return ["failed to get appointment registration count", res, appointmentId]
-  }
-
-  //increment registration count
-  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':parseInt(res['Registered'])+1})
-  if (!('spreadsheetId' in res['Registered'])){
-    return ["failed to update appointment registration count", res, appointmentId]    
-  }
   return getAppointments(patientId)
 }
 
 function processCancelAppointment(formElem){
 
   var patientId = formElem.ID
-  var appointmentId = formElem.appointmentId
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -285,28 +317,38 @@ function processCancelAppointment(formElem){
 
   // update the patient page
   var prefix = 'Dose'+formElem.dose
-  values[prefix+'AppointmentID'] = appointmentId
-  values[prefix+'Status'] = 'cancelled'
+  values[prefix+'AppointmentID'] = ''
+  values[prefix+'Status'] = ''
+  values[prefix+'VaccineBrand'] = ''
+
   var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
   if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
     return "failed to update patient profile"    
   }
+  // appointment stats are updated by spreadeheet
+  return getAppointments(patientId)
+}
 
-  //update the appointment reservation count
 
-  // get current registration count
-  var res = getSheetValueUsingHeaders("Appointments",'ID',appointmentId, ['Registered'])
-  if (!('Registered' in res)){
-    return "failed to get appointment registration count"    
+function processCheckIn(patientId, appointmentId, dose){
+
+  // no ID, cannot update spreadsheet
+  if (patientId == '')
+    return null
+
+  var values = {}
+
+  debugLog('checkedin',patientId + ',' + appointmentId+','+dose)
+  // update the patient page
+  var prefix = 'Dose'+dose
+  values[prefix+'AppointmentID'] = appointmentId
+  values[prefix+'Status'] = 'completed'
+  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
+  if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
+    var msg = "failed to update patient profile"  
+    return msg
   }
 
-  //dencrement registration count
-  var count = parseInt(res['Registered'])-1;
-  if(count < 0)
-    count = 0;
-  var res = setSheetValueUsingHeaders("Appointments",'ID',appointmentId, {'Registered':count})
-  if (!('spreadsheetId' in res['Registered'])){
-    return "failed to update appointment registration count"    
-  }
+  // appointment stats are updated by spreadeheet
   return getAppointments(patientId)
 }

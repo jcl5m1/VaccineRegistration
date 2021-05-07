@@ -11,21 +11,24 @@
   ?>
 
 	<a href='<?=url?>'>Home</a><br>
-  <div id='existingReservations'></div>
-	<h1>Select Available Appointment:</h1>
-	Last checked: <?= new Date().toLocaleString() ?><br>
-  <form id='DateForm'>
-	<div id="selectDate">
-		<select name='date' onchange='onDateSelect(this)'>
-        <option value='' disabled selected>(loading appointments)</option>
-      </select>
-	</div><br>
-  <form id='AppointmentForm' action="<?=url?>">
-    <input type="hidden" name='page' value='appointments'>
-    <input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-  	<div id="dayInfo"></div>
-    <button id='registerButton' type="button" disabled onclick="onRegister()">Select</button>
-  </form>
+	<div id='existingReservations'></div>
+	<h1>
+		<div id='selectionHeader'>Select Available Appointment:</div>
+	</h1>
+	<div id='selectionBody'>
+		Last checked: <?= new Date().toLocaleString() ?><br>
+		<form id='DateForm'>
+			<div id="selectDate">
+				<select name='date' onchange='onDateSelect(this)'>
+          <option value='' disabled selected>(loading appointments)</option>
+        </select>
+			</div><br>
+			<form id='AppointmentForm' action="<?=url?>">
+				<input type="hidden" name='page' value='appointments'>
+				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+				<div id="dayInfo"></div>
+			</form>
+	</div>
 </body>
 <script>
 	var days = {};
@@ -44,13 +47,16 @@
     appointments = results;
     html = "<select name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
 
-    //load appointments group by day
+    //load appointments group by day and by name
     for (var i in appointments) {
       var appointment = appointments[i];
       var day = appointment['Date'];
+      var name = appointment['Name'];
       if (!(day in days))
-        days[day] = []
-      days[day].push(appointment);
+        days[day] = {}
+      if (!(name in days[day]))
+        days[day][name] = []
+      days[day][name].push(appointment);
       if(appointment['Remaining'] > 0)
         hasAvailability[day] = true;
     }
@@ -65,11 +71,15 @@
 
     // get appointments for this profile ID, and display
 
-    google.script.run.withSuccessHandler(updateExistingReservations).getAppointments('<?=('ID' in urlParameters)?urlParameters['ID']:''?>')
-
+    <? if(profileData != null) {?>
+      var profileId = '<?=profileData['ID']?>'
+      google.script.run.withSuccessHandler(updateExistingReservations).getAppointments(profileId);
+    <?  } else { ?>
+      updateExistingReservations();
+    <? } ?>
   }
 
-  function generateAppointmentHtml(appointmentId, profileId, dose) {
+  function generateAppointmentHtml(appointmentId) {
     var appointment = null
 
     //get the appointment that matches this ID
@@ -83,42 +93,105 @@
     if(appointment== null)
       return ''
 
-    //show appointment information with cancel button
-
+    //show appointment information
     html = `<b>${appointment['Name']}</b><br>`;
-    html += "<a href='https://www.google.com/maps/search/?api=1&query='" + appointment['Location'] + "' target=new>" + appointment['Location'] +"</a><br>";
+    var loc = appointment['Location']
+    html += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
     html += `${appointment['Date']} ${appointment['Time']}<br>`
     html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`
-
-      html += `<form action="<?=url?>">`
-      html += `<input type="hidden" name='appointmentId' value='${appointment['ID']}'>`
-      html += `<input type="hidden" name='prev' value='appointments'>`
-      html += `<input type="hidden" name='page' value='appointments'>`
-      html += `<input type="hidden" name='ID' value='${profileId}'>`
-      html += `<input type="hidden" name='dose' value='${dose}'>`
-      html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
-      html += `</form>`
+    html += `Notes: ${appointment['Notes']}<br>`
 
     return html
   }
 
+  function generateAppointmentCancelButton(profileId, dose){
+    html = `<form action="<?=url?>">`
+    html += `<input type="hidden" name='prev' value='appointments'>`
+    html += `<input type="hidden" name='page' value='appointments'>`
+    html += `<input type="hidden" name='ID' value='${profileId}'>`
+    html += `<input type="hidden" name='dose' value='${dose}'>`
+    html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
+    html += `</form>`
+    return html
+  }
+
   function updateExistingReservations(data){
+
+    var valid = true
+    // no data, return
+    if((data == null)||(typeof data == undefined)) {
+      valid = false;
+    }
+    else {
+      if(data['ID'] == '')
+        valid = false
+    }
+
+    if(!valid){
+      var html = "<h1>Profile not found.</h1>"
+      document.getElementById("existingReservations").innerHTML = html;
+      return
+    }
+
+    var dose1status = data['Dose1Status']
+    if(dose1status == ''){
+      dose1status = 'not yet scheduled'
+    }
+    else {
+      if(dose1status == 'registered')
+        document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
+      if(dose1status == 'completed')
+        document.getElementById('selectionHeader').innerHTML = "Select Dose 2 Appointment:"
+    }
+
+    var dose2status = data['Dose2Status']
+    if((dose2status == '')||(dose2status == null))
+      dose2status = 'not yet scheduled'
+    else {
+      if(dose2status == 'registered')
+        document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
+      if(dose2status == 'completed') {
+        document.getElementById('selectionHeader').innerHTML = "No Additional Appointments Needed"
+      }
+    }
+
+    // both doses done, remove selection body
+    if((dose1status == 'completed')&&(dose2status == 'completed')) {
+      document.getElementById('selectionBody').innerHTML = ""
+    }
+
+    var profileId = data['ID']
+
     var html = "<h1>Your Appointments:</h1>"
-    html += `ProfileID: ${data['ID']}<br><br>`
-    html += `Dose 1 Status: ${data['Dose1Status']}<br>`
-    html += generateAppointmentHtml(data['Dose1AppointmentID'],data['ID'],1)
+    html += `<table><td valign=top>`
+    html += `<b>Dose 1: ${dose1status}</b><br>`
+    html += `Consent: ${data['Dose1ConsentStatus']}<br>`
+    html += generateAppointmentHtml(data['Dose1AppointmentID'])
+    if(dose1status == "registered")
+      html += generateAppointmentCancelButton(profileId, 1)
+
     html += "<br>"
-    html += `Dose 2 Status: ${data['Dose2Status']}<br>`
-    html += generateAppointmentHtml(data['Dose2AppointmentID'],data['ID'],2)
+    html += `<b>Dose 2: ${dose2status}</b><br>`
+    html += `Consent: ${data['Dose2ConsentStatus']}<br>`
+    html += generateAppointmentHtml(data['Dose2AppointmentID'])
+    if(dose2status == "registered")
+      html += generateAppointmentCancelButton(profileId,2)
+
+    html += `</td><td width=50>`
+    html += `</td><td align=center>`
+    html += `<img src='<?=QR_CODE_URL?>${data['ID']}'><br>`
+    html += `PatientID: ${data['ID']}<br>This code may help with check-in.`
+    html += "</td></table>"
+
     document.getElementById("existingReservations").innerHTML = html;
   }
 
-  function onAppointmentSelect() {
-    document.getElementById('registerButton').disabled=false
+  function onAppointmentSelect(selectId) {
+    document.getElementById(selectId).disabled=false
   }
 
-  function onRegister() {
-    var appointmentId = document.getElementById("appointment").value
+  function onRegister(form) {
+    var appointmentId = form.appointment.value
     var appointment = null
 
     //get the appointment that matches this ID
@@ -129,42 +202,74 @@
       }
     }
 
-    var patientId='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'
-    var dose=parseInt(<?=('dose' in urlParameters)?urlParameters['dose']:1?>)
-    console.log(patientId, appointmentId, dose)
+    var patientId = '';
+    var dose=1;
+    <? if(profileData != null) { ?>
+      patientId = '<?=profileData['ID']?>'
+
+      // if dose 1 is completed according to profile data, set dose =2
+      <? if(profileData['Dose1Status']=="completed"){ ?>
+        dose = 2;
+        <?
+      }
+    } ?>
+
+    //allows url dose override
+    <? if ('dose' in urlParameters) { ?>
+      dose = parseInt(<?=urlParameters['dose']?>)
+    <? } ?>
+    
+    if(patientId == '') {
+      alert("No Patient ID provided.  Cannot register.")
+      return;
+    }
+
+    //console.log(patientId, appointmentId, dose)
     google.script.run.withSuccessHandler(updateExistingReservations).processReserveAppointment(patientId, dose, appointmentId, appointment.VaccineBrand)
   }
 
 
   function onDateSelect(e){
     var day = e.value;
-    var appts = days[day];
-    var appointment = appts[0];// use the first appointment  of this day as for display
+    var names = days[day];
 
-    //show appointment information with time slot drop down
-    html = `<b>${appointment['Name']}</b><br>`;
-    html += "<a href='https://www.google.com/maps/search/?api=1&query=" + appointment['Location'] +"' target=new>" + appointment['Location'] + "</a><br>";
-    html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`;
+    html = ''
+    for(var j in names) {
+      var appts = names[j]
+      var appointment = appts[0];// use the first appointment of this day for displaying general information
+  
+      var selectId = appointment['ID']
+      //show appointment information with time slot drop down
+      html += `<b>${appointment['Name']}</b><br>`;
+      var loc = appointment['Location']
+      html += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
 
-    html += "<select id='appointment' onchange='onAppointmentSelect(this)'>"
-    html += "<option disabled selected value>select a time</option>";
-    for (var i in appts) {
-      var appointment = appts[i];
-      time = appointment['Time'];
+      html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`;
+      html += `Notes: ${appointment['Notes']}<br>`
 
-      //format time to 12hr
-      hrs = parseInt(time.split(':')[0]);
-      suffix = (hrs >= 12) ? " PM" : " AM";
-      hrs = (hrs >= 13) ? hrs-12: hrs;
-      time = '' + hrs + ':' + time.split(':')[1] + suffix;
+      html += `<form><select id='appointment' onchange="onAppointmentSelect('${selectId}button')"">`
+      html += "<option disabled selected value>select a time</option>";
+      for (var i in appts) {
+        var appointment = appts[i];
+        time = appointment['Time'];
 
-      disabled = '';
-      if (appointment['Remaining'] == 0)
-        disabled = 'disabled';
-      id = appointment['ID'];
-      html += "<option value='" + id + "' " + disabled + ">"+time+"  -  " + appointment['Remaining']+ " Remaining Slots" +"</option>";
+        //format time to 12hr
+        hrs = parseInt(time.split(':')[0]);
+        suffix = (hrs >= 12) ? " PM" : " AM";
+        hrs = (hrs >= 13) ? hrs-12: hrs;
+        time = '' + hrs + ':' + time.split(':')[1] + suffix;
+
+        disabled = '';
+        if (appointment['Remaining'] == 0)
+          disabled = 'disabled';
+        id = appointment['ID'];
+        html += `<option value='${id}' ${disabled}>${time}  -  ${appointment['Remaining']} Remaining Slots </option>`;
+
+      }
+      html += "</select><br>";
+      html += `<button id='${selectId}button' type='button' disabled onclick='onRegister(this.form)'>Select</button>`
+      html += `</form><br><br>`;
     }
-    html += "</select>";
     document.getElementById("dayInfo").innerHTML = html;
   }
 </script>

@@ -83,7 +83,6 @@
   var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
   function checkParameters(){
-    console.log(<?=JSON.stringify(urlParameters)?>);
 
     <?
     // the URL params include everything we need for a docusign, go ahead and trigger embedded docusign form
@@ -95,9 +94,11 @@
       var name = <?=urlParameters['FirstName'] + ' ' + urlParameters['LastName']?>;
       var email = <?=urlParameters['Email']?>;
       var id = <?=urlParameters['ID']?>;
-      document.getElementById('EmbeddedRecipientName').value = name;
-      document.getElementById('EmbeddedRecipientEmail').value = email;
-      onGenerateEmbeddedForm(name, email, id);
+      if ((id != '') && (email != '') && (name != '')) {
+        document.getElementById('EmbeddedRecipientName').value = name;
+        document.getElementById('EmbeddedRecipientEmail').value = email;
+        onGenerateEmbeddedForm(name, email, id);
+      }
       <?
     }
     ?>
@@ -151,11 +152,12 @@
   function onDocusignAPIComplete(result){
     console.log(result)
 
-    // hide the waiting frame if it is visible
-    document.getElementById('framecontainer').style.display = "none";
 
     // docusignAPI is requesting login, show authorization link
     if ('authUrl' in result) {
+      // hide the waiting frame if it is visible
+      document.getElementById('framecontainer').style.display = "none";
+
       html = `<a href=${result['authUrl']} target=new>Click to Login into Docusign</a>`
       document.getElementById("result").innerHTML = html
       return
@@ -178,26 +180,31 @@
       GoToAppointmentsForm.dose.value = dose
       GoToAppointmentsForm.submit();
       <?
+    } else {
+      ?>
+      //no ID provided
+      // hide the waiting frame if it is visible to show debug data
+      document.getElementById('framecontainer').style.display = "none";
+
+      // convert dict to table   
+      html += '<table border=0>'
+      var i = 0
+      for(var key in result ){
+        var color = (i%2==0) ? '#eee':'#fff'
+        i += 1;
+        var value = result[key];
+        if(value == null)
+          value = '';
+        if(value.includes('http'))
+          html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td><a href='${value}'>${value}</a></td></tr>`
+        else
+          html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td>${value}</td></tr>`
+      }
+      html += '</table>'
+      document.getElementById("result").innerHTML = html
+      <?
     }
     ?>
-
-    // convert dict to table   
-    html += '<table border=0>'
-    var i = 0
-    for(var key in result ){
-      var color = (i%2==0) ? '#eee':'#fff'
-      i += 1;
-      var value = result[key];
-      if(value == null)
-        value = '';
-      if(value.includes('http'))
-        html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td><a href='${value}'>${value}</a></td></tr>`
-      else
-        html +=`<tr bgcolor=${color}><td><b>${key}:</b></td><td>${value}</td></tr>`
-    }
-    html += '</table>'
-    document.getElementById("result").innerHTML = html
-
   }
 
 

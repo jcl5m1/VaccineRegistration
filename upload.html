@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <a href='<?=url?>'>Home</a><br>
+    <h1>Upload - Server-side POST</h1>
+    <form method="POST" action="<?=url?>">
+      <input type="hidden" name="action" value="upload">
+      <input type="hidden" name="imageFileData" value="upload">
+      <input type="file" accept="image/*" name='imageFile'
+        onchange="encodeImage(this)" capture="environment"><br>
+    <button>Submit</button>
+    </form>
+    <h1>Upload - From Client Browser</h1>
+    <form>
+      <input type="file" accept="image/*" name='imageFile'
+        onchange="uploadImage(this,500, 'canvas')" capture="environment"><br>
+      <canvas id="canvas" width="0" height="0"></canvas><br>
+    </form>
+
+  </body>
+  <!-- barcode script includes a resize function -->
+  <?!=generateBarcodeJavascript()?>
+  <script>
+  function encodeImage(elem) {
+    const file = elem.files[0];
+    const reader = new FileReader();
+    reader.addEventListener("load", function () {
+      // convert image file to base64 string
+      document.getElementsByName(elem.name+'Data')[0].value = reader.result
+    }, false);
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function uploadImage(elem, maxDimension, canvasId) {
+    // scale to fit maximum dimension
+    var canvas = document.getElementById(canvasId);
+    await scaleImageToFit(elem,maxDimension,canvas);
+
+    // get filename
+    var filename = elem.value;
+    filename = filename.substr(filename.lastIndexOf("\\")+1, filename.length)
+
+    // ecnode data and upload
+    var encodedData = canvas.toDataURL();
+    console.log("upload begin: "+ filename)
+    google.script.run.withSuccessHandler(uploadComplete).uploadFileWithBase64String(filename, encodedData)
+  }
+
+  function uploadComplete(result){
+    console.log(result)
+  }
+  </script>
+</html>
