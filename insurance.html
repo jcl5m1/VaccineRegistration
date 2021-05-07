@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Insurance</h1>
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="questionaire">
+		<input type="hidden" name="action" value="insurance">
+    <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
+    <?
+      if(profileData != null) {
+        ?>
+    		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
+    		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
+    		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
+    		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
+        <?
+      }
+    ?>
+		Do you have insurance?
+		<select name="InsuranceType" onchange="onSelectInsurace(this)">
+        <option disabled selected>--select--</option>
+        <option value="Private">Yes (Private)</option>
+        <option value="Medicare">Yes (Medicare)</option>
+        <option value="None">No</option>
+      </select><br>
+		<div id='insuranceField'></div>
+		<br>
+    <canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
+    <canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
+		<button type="submit">Submit</button>
+		<button type="button"
+      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+	</form>
+
+</body>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+
+<script>
+function onSelectInsurace(elem) {
+  html = '';
+  switch(elem.value) {
+    case 'Private':
+      html += `
+Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceFront')"><br>
+Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceBack')"><br>
+Policy Holder Name: <input type='text' name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+Insurance Company: <input type='text' name='InsuranceCompany'><br>
+Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
+Group Number: <input type='text' name='InsuranceGroupNumber'><br>
+Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+      `;
+      break;
+    case 'Medicare':
+      html += `
+Photo of FRONT:
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceFront')"><br>
+Photo of BACK:
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceBack')"><br>
+Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+<input type='text' name='InsuranceCompany' hidden value='Medicare'>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+      `;
+      break;
+    default:
+      html += `
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
+<input type='text' name='InsurancePolicyHolder' hidden value=''>
+<input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
+<input type='text' name='InsuranceCompany' hidden value=''>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+<input type='text' name='InsuranceSubscriberID' hidden value=''>
+Social Security Number: <input type='text' name='InsuranceSSN'><br>
+      `;
+      break;
+  }
+  document.getElementById('insuranceField').innerHTML = html;
+}
+
+
+function onGenerate(record){
+  //set insurance first to generate fields
+  myform.InsuranceType.value = record.InsuranceType;
+
+  onSelectInsurace(myform.InsuranceType);
+
+  myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
+  myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
+  myform.InsuranceCompany.value = record.InsuranceCompany;
+  myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
+  myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
+  myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
+  myform.InsuranceSSN.value = record.InsuranceSSN;
+}
+
+async function uploadImage(elem, canvasId) {
+  // scale to fit maximum dimension
+  var maxDimension = 1000;
+  var canvas = document.getElementById(canvasId);
+  await scaleImageToFit(elem,maxDimension,canvas);
+
+  // ecnode data and upload
+  var encodedData = canvas.toDataURL();
+  console.log("uploading " + elem.name);
+  google.script.run.withSuccessHandler(uploadComplete).uploadInsuranceImage(
+    <?=profileData.ID?>, <?=profileData.FirstName?>, <?=profileData.LastName?>, elem.name, encodedData);
+}
+
+function uploadComplete(result){  
+  console.log("upload complete:" + result)
+}
+
+</script>
+</html>

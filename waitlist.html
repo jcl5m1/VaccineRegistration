@@ -79,9 +79,15 @@
     }
 
     function onWaitlistData(results){
-      console.log(results.length);
-
       html = '<table width=100%>';
+      html += `<tr bgcolor='#ddf'>`;
+      html += `<td><b>Date / Time / Creator</b></td>`;
+      html += `<td><b>Name / Contact Info</b></td>`;
+      html += `<td><b>Notes</b></td>`;
+      html += `<td><b>Status</b></td>`;
+      html += `<td><b>Invite</td>`;
+      html += `<td><b>Cancel</b></td></tr>`;
+
       for(var i in results) {
         var color = (i%2==0) ? '#eee' : '#fff';
         var r = results[i]
@@ -90,14 +96,14 @@
         var firstName = r['FirstName'];
         var lastName = r['LastName'];
         var createdBy = r['CreatedBy'];
-        var email = '';
-        if ('Email' in r)
-          email = r['Email']
+        var notes = (r['Notes'] == null) ? '': r['Notes']
+        var email = (r['Email'] == null) ? '': r['Email']
 
         html += `<tr bgcolor='${color}'>`;
         html += `<td>${ts}<br> CreatedBy: ${createdBy}</td>`;
         html += `<td>${firstName} ${lastName}<br>`;
-        html += `<a href='tel: ${phone}'>${phone}</a> ${email} </td>`;
+        html += `<a href='tel: ${phone}'>${phone}</a> <a href='mailto: ${email}'>${email}</a></td>`;
+        html += `<td>${notes}</td>`;
         html += `<td> Status: <b><div id='${r['ID']}status'>${r['Status'].toUpperCase()} </div></b></td>`;
         html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED')">Invite</button></td>`;
         html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED')">Cancel</button></td>`;

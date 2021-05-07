@@ -1,9 +1,23 @@
-
-function uploadImage(name, img) {
+function uploadImageFromBlob(name, img) {
   var destination = DriveApp.getFolderById(GOOGLE_DRIVE_FOLDER_ID);
   var contentType = 'image/jpeg';
   var blob = img.getAs(contentType);
   blob.setName(name);
+  return destination.createFile(blob);
+}
+
+function uploadFileWithBase64String(name, imgString) {
+  var destination = DriveApp.getFolderById(GOOGLE_DRIVE_FOLDER_ID);
+  // remove base64 encoding prefix
+  var i = imgString.indexOf(",");
+
+  // example prefix
+  // "data:image/jpeg;base64,/9j/4AAQSkZJR...."
+  var prefix = imgString.substring(0,i);
+  var contentType = prefix.substring(prefix.indexOf(":"), prefix.indexOf(";"));
+
+  var payload = imgString.substring(i + 1);
+  var blob = Utilities.newBlob(Utilities.base64Decode(payload), contentType, name);
   return destination.createFile(blob);
 }
 
@@ -30,6 +44,6 @@ function testDrive() {
   //   Logger.log(file.getName());
   // }
 
-  var res = getFileByName('16177591600882177527466622953471.jpg')
-  console.log(Utilities.base64Encode(res.getBlob().getBytes()).slice(0, 50))
+  // var res = getFileByName('16177591600882177527466622953471.jpg')
+  // console.log(Utilities.base64Encode(res.getBlob().getBytes()).slice(0, 50))
 }

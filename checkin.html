@@ -12,17 +12,16 @@
 	<form id="myform">
 		Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
     Scan QR code/ID barcode: <input type="file" accept="image/*"
-    name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
+    name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
 		<canvas hidden id="canvas" width="0" height="0"></canvas>
 	</form>
 	<br><br>
 	<div id="results"></div>
 </body>
 <script>
-	var data;
+var data;
 
 function onKeyUp(e) {
-  document.getElementById('results').innerHTML = e.value;
   showMatches(e.value);
 }
 
@@ -32,13 +31,17 @@ function onCheckInData(result) {
   showMatches('');
 }
 
+function onSuccess(result){
+  console.log(result);
+}
+
 function showMatches(query) {
 
   // all upper without whitespace
   query = query.toUpperCase().replace(' ','');
   var matches = []
 
-  // case insensivite first or last name search
+  // case insensitive first or last name search
   for(var i = 0; i < data.length; i++) {
     var lastName = data[i]['LastName'].toUpperCase();
     var firstName = data[i]['FirstName'].toUpperCase();
@@ -73,262 +76,130 @@ function showMatches(query) {
     });
 
     html = '';
+    html += "<div><table width=100%><tr bgcolor='#ddf'>"
+    html += "<td width=300>Name</td>"
+    html += "<td>Full Profile</td>"
+    html += "<td>Dose1Status:</td>";
+    html += "<td>Dose1Consent:</td>";
+    html += "<td>Dose1Brand:</td>";
+    html += "<td>Dose2Status:</td>";
+    html += "<td>Dose2Consent:</td>";
+    html += "<td>Dose2Brand:</td>";
+    html += "<td>Notes:</td>";
+    html += "</tr>";
+
     for(var i in matches){
+      var id =  matches[i]['ID'];
       var lastName = matches[i]['LastName'];
       var firstName = matches[i]['FirstName'];
-      var status = "none";
-      var waiver = 'false';
+      var status1 = matches[i]['Dose1Status'];
+      var appointmentId1 = matches[i]['Dose1AppointmentID']
+      var consent1url = matches[i]['Dose1ConsentUrl'];
+      var consent1 = matches[i]['Dose1ConsentStatus'];
+      var brand1 = matches[i]['Dose1VaccineBrand'];
+      var notes = matches[i]['Notes'];
+
+
+      if(notes == null)
+        notes = ''
+
+      var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}'>${lastName}, ${firstName}</a>`;
+      var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}'>profile</a>`;
+
+      if(consent1 == 'completed') {
+        consent1 = `<a href='${consent1url}'>${consent1}</a>`
+      }
+
+      if(status1=='registered') { // allow cancelled people to still be checked in?
+        status1 = `<div id='status1_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId1}',1)">${status1}</button></div>`
+      }
+
+      if(status1 == null)
+        status1 = ''
+
+      if(consent1 == null)
+        consent1 = ''
+
+      if(brand1 == null)
+        brand1 = ''
+
+      var appointmentId2 = matches[i]['Dose2AppointmentID']
+      var status2 = matches[i]['Dose2Status'];
+      var consent2 = matches[i]['Dose2ConsentStatus'];
+      var brand2 = matches[i]['Dose2VaccineBrand'];
+      var consent2url = matches[i]['Dose2ConsentUrl'];
+
+      if(consent2 == 'completed') {
+        consent2 = `<a href='${consent2url}'>${consent2}</a>`
+      }
+
+      if(status2 == null)
+        status2 = ''
+
+      if(status2=='registered') { // allow cancelled people to still be checked in?
+        status2 = `<div id='status2_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId2}',2)">${status2}</button></div>`
+      }
+
+      if(consent2 == null)
+        consent2 = ''
+
+      if(brand2 == null)
+        brand2 = ''
+
       var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
-      html += "<div><table bgcolor=" + bgcolor + " width=100%><td width=300>" + lastName + ', ' + firstName + "</td>"
-      html += "<td>Status:" + status + "</td>";
-      html += "<td>Waiver:" + waiver + "</td>";
-      html += "<td><a href='<?=url?>?page=profile&ID=" + matches[i]['ID'] + "'>Profile</a></td>";
-      html += "<td><a href=''>CheckIn</a></td>";
-      html += "</table></div>"
-    }
-  }
+      html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
+      html += `<td width=300>${nameAppointmentUrl}</td>`
+      html += `<td>${profileUrl}</td>`
+      html += `<td>${status1}</td>`;
+      html += `<td>${consent1}</td>`;
+      html += `<td>${brand1}</td>`;
+      html += `<td>${status2}</td>`;
+      html += `<td>${consent2}</td>`;
+      html += `<td>${brand2}</td>`;
+      html += `<td>${notes}</td>`;
+      html += "</tr>"
+    } // for each match
+    html += "</table>"
+  } // no matches
+
   document.getElementById('results').innerHTML = html;
 }
 
+function doCheckin(id, appointmentId, dose){
+  console.log(id,appointmentId, dose)
+  var state = 'completed'
+  //change google sheet data
+  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose)
 
-// TODO move barcode processing to importable file
-function detectBarcode(canvas) {
-  if (window.BarcodeDetector == undefined) {
-    console.error('Barcode Detection not supported');
-    return;
-  }
-
-  var barcodeDetector = new BarcodeDetector();
-  barcodeDetector.detect(canvas)
-  .then(barcodes => {
-    // Add the barcodes as strings to the <footer>
-    for(var i = 0; i < barcodes.length; i++) {
-      switch(barcodes[i].format) {
-        case 'pdf417':
-          res = parseDriversLicense(barcodes[i].rawValue)
-          myform.query.value = res['FirstName'] + ' ' + res['LastName'];
-          onKeyUp(myform.query);
-          break;
-        case 'qr_code':
-          myform.query.value = barcodes[i].rawValue;
-          onKeyUp(myform.query);
-          break;
-        default:
-          console.log(barcodes[i].format + ": " + barcodes[i].rawValue);
-      }
-    }  
-  }).catch((e) => {
-    console.error("Barcode Detection failed: " + e);
-  })
-}
-
-function updatePhoto(e, maxSize){
-  resizeImage({
-      file: e.files[0],
-      maxSize: maxSize
-  }).then(function (resizedImage) {
-      console.log("resized image")
-      var file = new File([resizedImage], e.files[0].name,
-        {type:"image/jpeg", lastModified:new Date().getTime()});
-      var container = new DataTransfer();
-      container.items.add(file);
-      e.files = container.files;
-  }).catch(function (err) {
-      console.error(err);
-  });
-}
-
-var resizeImage = function (settings) {
-    var file = settings.file;
-    var maxSize = settings.maxSize;
-    var reader = new FileReader();
-    var image = new Image();
-    var canvas = document.getElementById('canvas');
-    var dataURItoBlob = function (dataURI) {
-        var bytes = dataURI.split(',')[0].indexOf('base64') >= 0 ?
-            atob(dataURI.split(',')[1]) :
-            unescape(dataURI.split(',')[1]);
-        var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        var max = bytes.length;
-        var ia = new Uint8Array(max);
-        for (var i = 0; i < max; i++)
-            ia[i] = bytes.charCodeAt(i);
-        return new Blob([ia], { type: mime });
-    };
-    var resize = function () {
-        var width = image.width;
-        var height = image.height;
-        if (width > height) {
-            if (width > maxSize) {
-                height *= maxSize / width;
-                width = maxSize;
-            }
-        } else {
-            if (height > maxSize) {
-                width *= maxSize / height;
-                height = maxSize;
-            }
-        }
-        var origWidth = canvas.width
-        var origHeight = canvas.height
-        canvas.width = width;
-        canvas.height = height;
-        ctx = canvas.getContext('2d')
-        ctx.drawImage(image, 0, 0, width, height);
-
-        detectBarcode(canvas);
-
-        var dataUrl = canvas.toDataURL('image/jpeg');
-        var blob = dataURItoBlob(dataUrl);
-        return blob;
-    };
-    return new Promise(function (ok, no) {
-        if (!file.type.match(/image.*/)) {
-            no(new Error("Not an image"));
-            return;
-        }
-        reader.onload = function (readerEvent) {
-            image.onload = function () { return ok(resize()); };
-            image.src = readerEvent.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
-};
-
-driverLicenseFields={
-'DAA': 'FullName',
-'DAB': 'LastName',
-'DAC': 'FirstName',
-'DAD': 'MiddleName',
-'DAE': 'NameSuffix',
-'DAF': 'NamePrefix',
-'DAG': 'AddressStreet1',
-'DAH': 'AddressStreet2',
-'DAI': 'AddressCity',
-'DAJ': 'AddressState',
-'DAK': 'AddressZip',
-'DAL': 'AddressStreet1',
-'DAM': 'AddressStreet2',
-'DAN': 'AddressCity',
-'DAO': 'AddressState',
-'DAP': 'AddressZip',
-'DAQ': 'LicenseorIDNumber',
-'DAR': 'LicenseClassificationCode',
-'DAS': 'LicenseRestrictionCode',
-'DAT': 'LicenseEndorsementsCode',
-'DAU': 'HeightinFT_IN',
-'DAV': 'HeightinCM',
-'DAW': 'WeightinLBS',
-'DAX': 'WeightinKG',
-'DAY': 'EyeColor',
-'DAZ': 'HairColor',
-'DBA': 'LicenseExpirationDate',
-'DBB': 'DateofBirth',
-'DBC': 'Sex',
-'DBD': 'LicenseorIDDocumentIssueDate',
-'DBE': 'IssueTimestamp',
-'DBF': 'NumberofDuplicates',
-'DBG': 'MedicalIndicatorCodes',
-'DBH': 'OrganDonor',
-'DBI': 'Non-ResidentIndicator',
-'DBJ': 'UniqueCustomerIdentifier',
-'DBK': 'SocialSecurityNumber',
-'DBL': 'DateOfBirth',
-'DBM': 'SocialSecurityNumber',
-'DBN': 'FullName',
-'DBO': 'LastName',
-'DBO': 'FamilyName',
-'DBP': 'FirstName',
-'DBP': 'GivenName',
-'DBQ': 'MiddleName',
-'DBQ': 'MiddleNameorInitial',
-'DBR': 'Suffix',
-'DBS': 'Prefix',
-'DCA': 'VirginiaSpecificClass',
-'DCB': 'VirginiaSpecificRestrictions',
-'DCD': 'VirginiaSpecificEndorsements',
-'DCE': 'PhysicalDescriptionWeightRange',
-'DCF': 'DocumentDiscriminator',
-'DCG': 'Countryterritoryofissuance',
-'DCH': 'FederalCommercialVehicleCodes',
-'DCI': 'Placeofbirth',
-'DCJ': 'Auditinformation',
-'DCK': 'InventoryControlNumber',
-'DCL': 'RaceEthnicity',
-'DCM': 'Standardvehicleclassification',
-'DCN': 'Standardendorsementcode',
-'DCO': 'Standardrestrictioncode',
-'DCP': 'Jurisdictionspecificvehicleclassificationdescription',
-'DCQ': 'Jurisdiction-specific',
-'DCR': 'Jurisdictionspecificrestrictioncodedescription',
-'DCS': 'FamilyName',
-'DCS': 'LastName',
-'DCT': 'GivenName',
-'DCT': 'FirstName',
-'DCU': 'Suffix',
-'DDA': 'ComplianceType',
-'DDB': 'CardRevisionDate',
-'DDC': 'HazMatEndorsementExpiryDate',
-'DDD': 'LimitedDurationDocumentIndicator',
-'DDE': 'FamilyNameTruncation',
-'DDF': 'FirstNamesTruncation',
-'DDG': 'MiddleNamesTruncation',
-'DDH': 'Under18Until',
-'DDI': 'Under19Until',
-'DDJ': 'Under21Until',
-'DDK': 'OrganDonorIndicator',
-'DDL': 'VeteranIndicator',
-'PAA': 'PermitClassificationCode',
-'PAB': 'PermitExpirationDate',
-'PAC': 'PermitIdentifier',
-'PAD': 'PermitIssueDate',
-'PAE': 'PermitRestrictionCode',
-'PAF': 'PermitEndorsementCode',
-'ZVA': 'CourtRestrictionCode'
-}
-
-function convertDateToHTML5Format(text){
-  //convert mmddyyyy to yyyy-mm-dd
-  return text.substring(text.length-4,text.length)+"-"+text.substring(0,2)+"-"+text.substring(2,4)
-}
-
-function convertAddressZipFormat(text){
-  //convert zzzzzaaaa to zzzzz-aaaa
-  return text.substring(0,5)+"-"+text.substring(5,text.length)
-}
-function convertGender(text){
-  if(text == 2)
-    return 'female'
-  if(text == 1)
-    return 'male'
-  if(text == 'F')
-    return 'female'
-  if(text == 'M')
-    return 'male'
-  return 'other'
-}
-// use diversLicenseFields to parse decoded text, and return dictionary with matched entries
-function parseDriversLicense(text){
-  var parts = text.split('\n');
-  var result = {}
-  for(var i = 0; i < parts.length; i++) {
-    var p = parts[i]
-    var key = p.substring(0,3)
-    var content = p.substring(3,p.length)
-    if (key in driverLicenseFields) {
-      var field = driverLicenseFields[key]
-      if(field.includes("Date"))
-        content = convertDateToHTML5Format(content);
-      if(field.includes("AddressZip"))
-        content = convertAddressZipFormat(content);
-      if(field.includes("Sex"))
-        content = convertGender(content);
-      result[field] = content;
+  //change in memory data used by live update
+  for(var i = 0; i < data.length; i++) {
+    if(id == data[i]['ID'].toUpperCase()){
+      data[i]['Dose'+dose+'Status'] = state
     }
   }
-  return result;
+
+  //change current displayed HTML
+  document.getElementById('status'+dose + "_"+id).innerHTML = 'completed'
+
 }
 
+// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
+async function onImageChange(elem, canvasId){
+  var canvas = document.getElementById(canvasId);
+  await scaleImageToFit(elem,1000,canvas);
+  var res =  await detectBarcode(canvas);
+  if(res.status == 'success') {
+    var barcode = res.barcodes[0]
+    if (barcode.format == 'qr_code'){
+       myform.query.value = barcode.value
+    }
+    if (barcode.format == 'pdf417'){
+      myform.query.value = barcode.value.FirstName + ' ' + barcode.value.LastName;
+    }
+    showMatches(myform.query.value);
+  }
+}
 </script>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
 </html>

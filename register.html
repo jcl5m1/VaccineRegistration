@@ -5,21 +5,21 @@
 	<base target="_top">
 </head>
 
-<body>
-	<script type="text/javascript" src="barcode.js"></script>
+<body onload="onLoad()">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>New Registration</h1>
-	<form id="myform" onsubmit="google.script.run.processRegistrationForm(this)" method="GET" action="<?=url?>">
-		<input type="hidden" name="page" value="questionaire">
-		<input type="hidden" name="prev" value="register">
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="insurance">
+		<input type="hidden" name="action" value="register">
     <input type="hidden" name="dose" value="1">
+    <input type="hidden" name="ID" value="<?=profileData['ID']?>">
 
 		<h2>Patient Information</h2>
-		(optional) Scan State ID Barcode: <input type="file" accept="image/*"
-      name="ImageIDBack" onchange="updatePhoto(this,1200)" capture="environment">
-		<canvas hidden id="canvas" width="0" height="0"></canvas><br>
-
+		(optional) Scan State ID Barcode: 
+    <input type="file" accept="image/*"
+      name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
+    		<canvas hidden id="canvasID" width="0" height="0"></canvas>
       First Name: <input type="text" required name="FirstName"><br>
       Last Name: <input type="text" required name="LastName"><br>
       Date of Birth <input type="date" required name="DateOfBirth"><br>
@@ -61,354 +61,64 @@
       Street: <input type="text" name="AddressStreet"><br>
       City: <input type="text" name="AddressCity"><br>
       State: <input type="text" name="AddressState"><br>
-      Zip: <input type="text" name="AddressZip"><br>
-
-		<br>
-		<h2>Insurance:</h2>
-		Do you have insurance?
-		<select name="InsuranceType" onchange="onSelectInsurace(this)">
-        <option disabled selected>--select--</option>
-        <option value="Private">Yes (Private)</option>
-        <option value="Medicare">Yes (Medicare)</option>
-        <option value="None">No</option>
-      </select><br>
-		<div id='insuranceField'></div>
-		<br>
-      Any special notes?<br>
+      Zip: <input type="text" name="AddressZip"><br><br>
+      Any notes we should know?<br>
 		<textarea name="Notes" rows="4" cols="50"></textarea><br>
+    <input type="hidden" id="Browser" name="Browser" value="">
+
 		<button type="submit">Submit</button>
 		<button type="button"
       onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
-		<button type="button" onclick="debugForm(this.parentNode)">Debug</button>
 	</form>
 
-
-	<script>
-		function debugForm(formObject) {
-        for(var e in formObject.elements) {
-          console.log(e);
-        }
-    }
-
-    function onSelectInsurace(elem) {
-      html = '';
-      switch(elem.value) {
-        case 'Private':
-          html += `
-Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment"><br>
-Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment"><br>
-Policy Holder Name: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-Insurance Company: <input type='text' name='InsuranceCompany'><br>
-Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
-Group Number: <input type='text' name='InsuranceGroupNumber'><br>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
-<input type='text' hidden name='InsuranceSSN'>
-          `;
-          break;
-        case 'Medicare':
-          html += `
-Photo of FRONT:
-<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment"><br>
-Photo of BACK:
-<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment"><br>
-Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-<input type='text' name='InsuranceCompany' hidden value='Medicare'>
-<input type='text' name='InsuranceClaimAddress' hidden value=''>
-<input type='text' name='InsuranceGroupNumber' hidden value=''>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
-<input type='text' hidden name='InsuranceSSN'>
-
-          `;
-          break;
-        default:
-          html += `
-<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
-<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
-<input type='text' name='InsurancePolicyHolder' hidden value=''>
-<input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
-<input type='text' name='InsuranceCompany' hidden value=''>
-<input type='text' name='InsuranceClaimAddress' hidden value=''>
-<input type='text' name='InsuranceGroupNumber' hidden value=''>
-<input type='text' name='InsuranceSubscriberID' hidden value=''>
-Social Security Number: <input type='text' name='InsuranceSSN'><br>
-          `;
-          break;
-      }
-      document.getElementById('insuranceField').innerHTML = html;
-    }
-
-    function onGenerate(record){
-      //set insurance first to generate fields
-      myform.InsuranceType.value = record.InsuranceType;
-
-      onSelectInsurace(myform.InsuranceType);
-
-      myform.FirstName.value = record.FirstName;
-      myform.LastName.value = record.LastName;
-      myform.DateOfBirth.value = record.DateOfBirth;
-      myform.Phone.value = record.Phone;
-      myform.Email.value = record.Email;
-      myform.Gender.value = record.Gender;
-      myform.Race.value = record.Race;
-      myform.Ethnicity.value = record.Ethnicity;
-      myform.RelationshipToPatient.value = record.RelationshipToPatient;
-      myform.SignatureName.value = record.SignatureName;
-      myform.AddressStreet.value = record.AddressStreet;
-      myform.AddressCity.value = record.AddressCity;
-      myform.AddressState.value = record.AddressState;
-      myform.AddressZip.value = record.AddressZip;
-      myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
-      myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
-      myform.InsuranceCompany.value = record.InsuranceCompany;
-      myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
-      myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
-      myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
-      myform.InsuranceSSN.value = record.InsuranceSSN;
-      myform.Notes.value = record.Notes;
-    }
-
-
-function detectBarcode(canvas) {
-  if (window.BarcodeDetector == undefined) {
-    console.error('Barcode Detection not supported');
-    return;
-  }
-
-  var barcodeDetector = new BarcodeDetector();
-  barcodeDetector.detect(canvas)
-  .then(barcodes => {
-    // Add the barcodes as strings to the <footer>
-    for(var i = 0; i < barcodes.length; i++) {
-      switch(barcodes[i].format) {
-        case 'pdf417':
-          res = parseDriversLicense(barcodes[i].rawValue)
-          myform.FirstName.value = res['FirstName'];
-          myform.LastName.value = res['LastName'];
-          myform.DateOfBirth.value = res['DateofBirth'];
-          myform.Gender.value = res['Sex'];
-          myform.AddressStreet.value = res['AddressStreet1'];
-          myform.AddressCity.value = res['AddressCity'];
-          myform.AddressState.value = res['AddressState'];
-          myform.AddressZip.value = res['AddressZip'];
-          break;
-        default:
-          console.log(barcodes[i].format + ": " + barcodes[i].rawValue)
-      }
-    }  
-  }).catch((e) => {
-    console.error("Barcode Detection failed: " + e);
-  })
-}
-
-function updatePhoto(e, maxSize){
-  resizeImage({
-      file: e.files[0],
-      maxSize: maxSize
-  }).then(function (resizedImage) {
-      console.log("resized image")
-      var file = new File([resizedImage], e.files[0].name,
-        {type:"image/jpeg", lastModified:new Date().getTime()});
-      var container = new DataTransfer();
-      container.items.add(file);
-      e.files = container.files;
-  }).catch(function (err) {
-      console.error(err);
-  });
-}
-
-var resizeImage = function (settings) {
-    var file = settings.file;
-    var maxSize = settings.maxSize;
-    var reader = new FileReader();
-    var image = new Image();
-    var canvas = document.getElementById('canvas');
-    var dataURItoBlob = function (dataURI) {
-        var bytes = dataURI.split(',')[0].indexOf('base64') >= 0 ?
-            atob(dataURI.split(',')[1]) :
-            unescape(dataURI.split(',')[1]);
-        var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
-        var max = bytes.length;
-        var ia = new Uint8Array(max);
-        for (var i = 0; i < max; i++)
-            ia[i] = bytes.charCodeAt(i);
-        return new Blob([ia], { type: mime });
-    };
-    var resize = function () {
-        var width = image.width;
-        var height = image.height;
-        if (width > height) {
-            if (width > maxSize) {
-                height *= maxSize / width;
-                width = maxSize;
-            }
-        } else {
-            if (height > maxSize) {
-                width *= maxSize / height;
-                height = maxSize;
-            }
-        }
-        var origWidth = canvas.width
-        var origHeight = canvas.height
-        canvas.width = width;
-        canvas.height = height;
-        ctx = canvas.getContext('2d')
-        ctx.drawImage(image, 0, 0, width, height);
-
-        detectBarcode(canvas);
-
-        var dataUrl = canvas.toDataURL('image/jpeg');
-        var blob = dataURItoBlob(dataUrl);
-        return blob;
-    };
-    return new Promise(function (ok, no) {
-        if (!file.type.match(/image.*/)) {
-            no(new Error("Not an image"));
-            return;
-        }
-        reader.onload = function (readerEvent) {
-            image.onload = function () { return ok(resize()); };
-            image.src = readerEvent.target.result;
-        };
-        reader.readAsDataURL(file);
-    });
-};
-
-driverLicenseFields={
-'DAA': 'FullName',
-'DAB': 'LastName',
-'DAC': 'FirstName',
-'DAD': 'MiddleName',
-'DAE': 'NameSuffix',
-'DAF': 'NamePrefix',
-'DAG': 'AddressStreet1',
-'DAH': 'AddressStreet2',
-'DAI': 'AddressCity',
-'DAJ': 'AddressState',
-'DAK': 'AddressZip',
-'DAL': 'AddressStreet1',
-'DAM': 'AddressStreet2',
-'DAN': 'AddressCity',
-'DAO': 'AddressState',
-'DAP': 'AddressZip',
-'DAQ': 'LicenseorIDNumber',
-'DAR': 'LicenseClassificationCode',
-'DAS': 'LicenseRestrictionCode',
-'DAT': 'LicenseEndorsementsCode',
-'DAU': 'HeightinFT_IN',
-'DAV': 'HeightinCM',
-'DAW': 'WeightinLBS',
-'DAX': 'WeightinKG',
-'DAY': 'EyeColor',
-'DAZ': 'HairColor',
-'DBA': 'LicenseExpirationDate',
-'DBB': 'DateofBirth',
-'DBC': 'Sex',
-'DBD': 'LicenseorIDDocumentIssueDate',
-'DBE': 'IssueTimestamp',
-'DBF': 'NumberofDuplicates',
-'DBG': 'MedicalIndicatorCodes',
-'DBH': 'OrganDonor',
-'DBI': 'Non-ResidentIndicator',
-'DBJ': 'UniqueCustomerIdentifier',
-'DBK': 'SocialSecurityNumber',
-'DBL': 'DateOfBirth',
-'DBM': 'SocialSecurityNumber',
-'DBN': 'FullName',
-'DBO': 'LastName',
-'DBO': 'FamilyName',
-'DBP': 'FirstName',
-'DBP': 'GivenName',
-'DBQ': 'MiddleName',
-'DBQ': 'MiddleNameorInitial',
-'DBR': 'Suffix',
-'DBS': 'Prefix',
-'DCA': 'VirginiaSpecificClass',
-'DCB': 'VirginiaSpecificRestrictions',
-'DCD': 'VirginiaSpecificEndorsements',
-'DCE': 'PhysicalDescriptionWeightRange',
-'DCF': 'DocumentDiscriminator',
-'DCG': 'Countryterritoryofissuance',
-'DCH': 'FederalCommercialVehicleCodes',
-'DCI': 'Placeofbirth',
-'DCJ': 'Auditinformation',
-'DCK': 'InventoryControlNumber',
-'DCL': 'RaceEthnicity',
-'DCM': 'Standardvehicleclassification',
-'DCN': 'Standardendorsementcode',
-'DCO': 'Standardrestrictioncode',
-'DCP': 'Jurisdictionspecificvehicleclassificationdescription',
-'DCQ': 'Jurisdiction-specific',
-'DCR': 'Jurisdictionspecificrestrictioncodedescription',
-'DCS': 'FamilyName',
-'DCS': 'LastName',
-'DCT': 'GivenName',
-'DCT': 'FirstName',
-'DCU': 'Suffix',
-'DDA': 'ComplianceType',
-'DDB': 'CardRevisionDate',
-'DDC': 'HazMatEndorsementExpiryDate',
-'DDD': 'LimitedDurationDocumentIndicator',
-'DDE': 'FamilyNameTruncation',
-'DDF': 'FirstNamesTruncation',
-'DDG': 'MiddleNamesTruncation',
-'DDH': 'Under18Until',
-'DDI': 'Under19Until',
-'DDJ': 'Under21Until',
-'DDK': 'OrganDonorIndicator',
-'DDL': 'VeteranIndicator',
-'PAA': 'PermitClassificationCode',
-'PAB': 'PermitExpirationDate',
-'PAC': 'PermitIdentifier',
-'PAD': 'PermitIssueDate',
-'PAE': 'PermitRestrictionCode',
-'PAF': 'PermitEndorsementCode',
-'ZVA': 'CourtRestrictionCode'
-}
-
-function convertDateToHTML5Format(text){
-  //convert mmddyyyy to yyyy-mm-dd
-  return text.substring(text.length-4,text.length)+"-"+text.substring(0,2)+"-"+text.substring(2,4)
-}
-
-function convertAddressZipFormat(text){
-  //convert zzzzzaaaa to zzzzz-aaaa
-  return text.substring(0,5)+"-"+text.substring(5,text.length)
-}
-function convertGender(text){
-  if(text == 2)
-    return 'female'
-  if(text == 1)
-    return 'male'
-  if(text == 'F')
-    return 'female'
-  if(text == 'M')
-    return 'male'
-  return 'other'
-}
-// use diversLicenseFields to parse decoded text, and return dictionary with matched entries
-function parseDriversLicense(text){
-  var parts = text.split('\n');
-  var result = {}
-  for(var i = 0; i < parts.length; i++) {
-    var p = parts[i]
-    var key = p.substring(0,3)
-    var content = p.substring(3,p.length)
-    if (key in driverLicenseFields) {
-      var field = driverLicenseFields[key]
-      if(field.includes("Date"))
-        content = convertDateToHTML5Format(content);
-      if(field.includes("AddressZip"))
-        content = convertAddressZipFormat(content);
-      if(field.includes("Sex"))
-        content = convertGender(content);
-      result[field] = content;
-    }
-  }
-  return result;
-}
-	</script>
 </body>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
+<script>
+function onLoad(){
+  document.getElementById("Browser").value = navigator.appVersion;
+}
+
+function onGenerate(record){
+  myform.FirstName.value = record.FirstName;
+  myform.LastName.value = record.LastName;
+  myform.DateOfBirth.value = record.DateOfBirth;
+  myform.Phone.value = record.Phone;
+  myform.Email.value = record.Email;
+  myform.Gender.value = record.Gender;
+  myform.Race.value = record.Race;
+  myform.Ethnicity.value = record.Ethnicity;
+  myform.RelationshipToPatient.value = record.RelationshipToPatient;
+  myform.SignatureName.value = record.SignatureName;
+  myform.AddressStreet.value = record.AddressStreet;
+  myform.AddressCity.value = record.AddressCity;
+  myform.AddressState.value = record.AddressState;
+  myform.AddressZip.value = record.AddressZip;
+  myform.Notes.value = record.Notes;
+}
+
+// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
+async function onBarcodeImageChange(elem, canvasId){
+  var canvas = document.getElementById(canvasId);
+  await scaleImageToFit(elem,1000,canvas);
+  var res =  await detectBarcode(canvas);
+  if(res.status == 'success') {
+    var barcode = res.barcodes[0]
+    if (barcode.format == 'qr_code'){
+    }
+    if (barcode.format == 'pdf417'){
+      // TODO add undefined checks
+      myform.FirstName.value = (barcode.value.FirstName === undefined) ? '' : barcode.value.FirstName;
+      myform.LastName.value = (barcode.value.LastName === undefined) ? '' : barcode.value.LastName;
+      myform.DateOfBirth.value = (barcode.value.DateOfBirth === undefined) ? '' : barcode.value.DateOfBirth;
+      myform.Gender.value = (barcode.value.Sex === undefined) ? '' : barcode.value.Sex;
+      myform.AddressStreet.value = (barcode.value.AddressStreet1 === undefined) ? '' : barcode.value.AddressStreet1;
+      myform.AddressCity.value = (barcode.value.AddressCity === undefined) ? '' : barcode.value.AddressCity;
+      myform.AddressState.value = (barcode.value.AddressState === undefined) ? '' : barcode.value.AddressState;
+      myform.AddressZip.value = (barcode.value.AddressZip === undefined) ? '' : barcode.value.AddressZip;
+    }
+  }
+}
+
+</script>
 </html>
