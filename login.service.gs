@@ -1,6 +1,5 @@
-var CLIENT_ID =
-  "358441841881-ii7scb9kfh1k8icbmj3gk7onu9i8irmm.apps.googleusercontent.com";
-var CLIENT_SECRET = "hrj-bu_ZA4fpU85x6TO8CPUS";
+var CLIENT_ID = "YOUR_CLIENT_ID";
+var CLIENT_SECRET = "YOUR_CLIENT_SECRET";
 
 // Enter required scopes (we only need email)
 var SCOPES = ["https://www.googleapis.com/auth/userinfo.email"];
