@@ -30,6 +30,6 @@ async function onImageChange(elem, canvasId){
   document.getElementById('results').innerHTML = JSON.stringify(res)
 }
 </script>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
-<?!=generateBarcodeJavascript()?>
 </html>

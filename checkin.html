@@ -200,5 +200,6 @@ async function onImageChange(elem, canvasId){
   }
 }
 </script>
-<?!=generateBarcodeJavascript()?>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+
 </html>

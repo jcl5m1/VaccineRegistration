@@ -38,8 +38,7 @@
 	</form>
 
 </body>
-
-<?!=generateBarcodeJavascript()?>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
 <script>
 function onSelectInsurace(elem) {

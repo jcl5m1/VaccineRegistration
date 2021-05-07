@@ -8,7 +8,11 @@
 
 <body>
 	<?var url = getScriptUrl();?>
-	<h1>COVID-19 Vaccine Registration</h1><br>
+	<img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
+  
+  <h1>COVID-19 Vaccine Registration</h1><br>
+
+
 	<h2>Patient/Public Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=register'>New Registration</a></li>
@@ -39,7 +43,7 @@
   Browser: <div id="browser"></div><br>
   <br>
 
-  <a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>'>Drive Folder</a>
+  <a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>'>Destination Drive Folder</a>
 
 	<br>
 	<form id='feedback' method="POST" action="<?=url?>">

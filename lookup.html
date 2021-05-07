@@ -21,7 +21,9 @@
 		<button type="submit">Search</button>
 		<button type="button" onclick="generateLookupTest()">Generate</button>
 	</form>
-<?!=generateBarcodeJavascript()?>
+
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+
 <script>
 
 // reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
