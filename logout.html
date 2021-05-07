@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+  </head>
+  <body>
+    <?var url = getScriptUrl();?>
+    <?var staff_session = validateStaffSession();?>
+    <h1>Logout</h1>
+
+    <!-- Display registration header or staff page header -->
+    <? if( staff_session ) {?>
+    <!-- This shouldn't happen! Unless the user jumps to this page without clicking logout. -->
+    Error! You are still in a staff session.  Please try to log out again or hit refresh.
+
+    <?} else {?>
+    You have successfully logged out.  
+    Return to public <a href="<?=url?>">Home.</a><br />
+    <? } ?>
+
+    </body>
+</html>

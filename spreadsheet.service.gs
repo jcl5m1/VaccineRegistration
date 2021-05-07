@@ -351,3 +351,37 @@ function addToCellIntegerValue(sheetName, id_header, id, colName, amount){
   var res = setSheetValueUsingHeaders(sheetName,id_header,id, payload)
   return res
 }
+
+function testSearchStaff() {
+  searchStaff("icecoffeeee@gmail.com")
+}
+
+// search for staff using email query
+function searchStaff(query) {
+
+  var sheetName = 'Staff'
+  
+  var values = getSheetData(sheetName)
+  keys = values[0];
+
+  // not enough valid parameters
+  if(!query)
+    return false
+
+  // remove case
+  query = query.toUpperCase()
+  var email_column = keys.indexOf("Email")
+  debug(email_column)
+  if (email_column == -1) {
+    return false
+  }
+  for (var i = 1; i < values.length; i++) {
+    var v = values[i][email_column].toUpperCase();
+    debug(v)
+    if (query == v) {
+      return true  
+      }
+    }
+  return false
+  }
+

@@ -9,13 +9,18 @@
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Profile</h1>
-	TODO: restrict profile shown based on public vs staff<br>
-	<? if(profileData != null) {?>
-    <img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
-    <?!=formatToHTML(profileData)?>
-	<?} else {?>
-  	<h2>Not Found</h2>
-	<? } ?>
+  <!-- If staff session, show full profile, else limit. -->
+  <? if (validateStaffSession()) {?>
+    <? if(profileData != null) {?>
+      <img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
+      <?!=formatToHTML(profileData)?>
+    <?} else {?>
+      <h2>Not Found</h2>
+    <? } ?>
+    <?} else {?>
+    Hi! This is a staff only page.
+    Please login from the home page to access paitient data.
+    <? } ?>
 </body>
 
 </html>

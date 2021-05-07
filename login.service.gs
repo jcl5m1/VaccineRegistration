@@ -1,5 +1,6 @@
-var CLIENT_ID = "YOUR_CLIENT_ID";
-var CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+var CLIENT_ID =
+  "358441841881-719d88b50spka3eug4puj136hsdehfmh.apps.googleusercontent.com";
+var CLIENT_SECRET = "GLje72fQ3Ohz68GnPA5oJ2_R";
 
 // Enter required scopes (we only need email)
 var SCOPES = ["https://www.googleapis.com/auth/userinfo.email"];
@@ -102,6 +103,10 @@ function testGetId() {
   debug(result);
 }
 
+function validateStaffEmail() {
+
+}
+
 /**#####################################
  * Check if user session is a validated staff session.
  *
@@ -156,9 +161,7 @@ function getID() {
     key +
     "</em>" +
     "<p> You have accessed this page " +
-    prop.timesAccessed +
-    "</p> " +
-    " times";
+    prop.timesAccessed + " times</p>" +
   "<p> Your unique token will stay valid for " +
     days +
     " " +
@@ -240,4 +243,17 @@ function getDaysAndHoursRemaining(startDate, currentDate, expiryDays) {
   var hoursRemaining = Math.floor(millisecondsRemaining / millisecondsPerHour);
 
   return { days: daysRemaining, hrs: hoursRemaining };
+}
+
+function deleteCurrentUserSession ( ) {
+  const userSession = Session.getTemporaryActiveUserKey();
+  var scriptProperties = PropertiesService.getScriptProperties();
+  scriptProperties.deleteProperty(userSession);
+  debug(scriptProperties.getKeys())
+}
+
+function getUserSession ( ) {
+  const userSession = Session.getTemporaryActiveUserKey();
+  var scriptProperties = PropertiesService.getScriptProperties();
+  debug(scriptProperties.getKeys())
 }
