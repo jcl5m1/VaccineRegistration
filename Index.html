@@ -8,10 +8,18 @@
 
 <body>
 	<?var url = getScriptUrl();?>
-	<img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
-  
-  <h1>COVID-19 Vaccine Registration</h1><br>
+  <img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
 
+  <?var staff_session = validateStaffSession();?>
+
+  <!-- Display registration header or staff page header -->
+  <? if( staff_session ) {?>
+  <h1>COVID-19 Vaccine Staff Dashboard</h1>
+  <br />
+  <?} else {?>
+  <h1>COVID-19 Vaccine Registration</h1>
+  <br />
+  <? } ?>
 
 	<h2>Patient/Public Pages</h2>
 	<ul>
@@ -19,11 +27,27 @@
 		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
 	</ul>
 
+
+  <!-- Display staff only pages if staff-->
+  <? if( staff_session) {?>
+
 	<h2>Staff Only Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=checkin'>Check-In</a></li>
 		<li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
 	</ul>
+
+  <!-- Else display staff login page -->
+  <?} else {?>
+
+  <h2>Staff</h2>
+  <ul>
+    <li><a href="<?=url?>?page=login">Staff Login</a></li>
+  </ul>
+
+    <? } ?>
+    <!-- Development pages -->
+
 
 	<h2>Development/Test Pages</h2>
 	<ul>
