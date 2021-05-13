@@ -5,6 +5,8 @@
 	<base target="_top">
 </head>
 <?!=importHTML('css.html')?>
+<?!=importHTML('modaldialog.html')?>
+<?!=importHTML('wait.html')?>
 
 <body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
@@ -45,15 +47,85 @@
 		<br>
 		<canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
 		<canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
-		<button id='submit' type="submit" disabled>Submit</button>
-		<button type="button"
-      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+		<button id='confirm' type="button" onclick="showInfoConfirm()" disabled>Submit</button>
+		<button type="button" onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+
 	</form>
 
 </body>
 <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
 <script>
+	function showInfoConfirm(){
+    var modalHTML = "<h1>Is Your Information Correct?</h1>"  
+    modalHTML += "<table class='confirm-table'>";
+    var i = 0;
+
+    var res = {}
+
+
+    <? 
+    var keys = {FirstName: 'First Name',
+                LastName: 'Last Name',
+                DateOfBirth: 'Date of Birth',
+                Phone: 'Phone',
+                Email: 'Email',
+                Gender: 'Gender',
+                Race: 'Race',
+                Ethnicity: 'Ethnicity',
+                };
+
+    // copy out the data from app script
+    for(var key in keys){ ?>
+      res['<?=keys[key]?>'] = '<?=profileData[key]?>'
+    <?}?>
+
+    //add address
+    res.Address = <?=profileData.AddressStreet + '<br>' + profileData.AddressCity + ', ' + profileData.AddressState + ' ' + profileData.AddressZip?>;
+
+    //add gaurdian name
+    <?if(profileData.RelationshipToPatient != 'self') {?>
+      res['Gaurdian Name'] = <?=profileData.GaurdianFirstName + " " + profileData.GaurdianLastName?>;
+    <?}?>
+
+    // pull out the current insurance form data
+    res['Insurance Type'] = myform.InsuranceType.value;
+    if(myform.InsuranceType.value == "Private") {
+      res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
+      res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
+      res['Insurance Company'] = myform.InsuranceCompany.value;
+      res['Insurance Claim Address'] = myform.InsuranceClaimAddress.value;
+      res['Group Number'] = myform.InsuranceGroupNumber.value;
+      res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
+    }
+    if(myform.InsuranceType.value == "Medicare") {
+      res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
+      res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
+      res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
+    }
+    if(myform.InsuranceType.value == "None") {
+      res['Social Security Number'] = myform.InsuranceSSN.value;
+      res['Driver License'] = myform.InsuranceDriversLicense.value;
+    }
+
+    for (var key in res) {
+      var color = (i % 2 == 0) ? '#eee' : '#fff';
+      i += 1;
+      modalHTML += "<tr bgcolor='" + color + "'>";
+      modalHTML += "<td class='confirm-table'><b>" + key + ":</b></td>";
+      modalHTML += "<td class='confirm-table'>" + res[key] + "</td>";
+      modalHTML += "</tr>";
+
+    }
+    modalHTML += "</table>";
+    showModalDialog(modalHTML,[{text:'Go Back'},{text:'Yes',callback:'onInfoConfirm()'}]);
+  }
+
+  function onInfoConfirm(){
+    document.getElementById("myform").submit();
+    showWaitScreen();
+  } 
+
 	function onSelectInsurace(elem) {
   html = '';
   switch(elem.value) {
@@ -109,7 +181,7 @@ Drivers License: <input type='text' name='InsuranceDriversLicense'><br>
       break;
   }
   document.getElementById('insuranceField').innerHTML = html;
-  document.getElementById('submit').disabled = false;
+  document.getElementById('confirm').disabled = false;
 }
 
 

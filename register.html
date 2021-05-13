@@ -28,10 +28,12 @@
 				Patient Information
 			</td>
 		</table><br>
+		<? if(ENABLE_QR_CODE) {?>
 		(optional) Scan State ID Barcode:
 		<input type="file" accept="image/*"
-      name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
+        name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
 		<canvas hidden id="canvasID" width="0" height="0"></canvas>
+		<?}?>
 		First Name: <input type="text" required name="FirstName"><br>
       Last Name: <input type="text" required name="LastName"><br>
       Date of Birth <input type="date" required name="DateOfBirth"><br>

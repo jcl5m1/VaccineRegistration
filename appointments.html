@@ -10,13 +10,25 @@
 	<? var url = getScriptUrl(); ?>
 	<?!=importHTML('modaldialog.html') ?>
 	<a href='<?=url?>'>Home</a><br>
-	<table>
+	<table width=400>
 		<td>
 			<div class='title'>Appointments</div>
 		</td>
 		<td>
 			<?!=importHTML('help.html')?>
 	</table>
+
+	<table width=400>
+		<td align=center>
+			<? if((profileData != null) &&(ENABLE_QR_CODE)){?>
+			<img src='<?=QR_CODE_URL?><?=profileData['ID']?>'>
+			<div class='qr-caption'>
+				<?=profileData['ID']?></div>
+			<?} else {?>
+			ID: <?=profileData['ID']?>
+			<?}?>
+		</td>
+	</table><br>
 
 	<div id='existingReservations'></div>
 	<br>
@@ -171,12 +183,6 @@
       return
     }
 
-    // if(data.action == 'cancel'){
-    //   html = '<h1>Your appointment is cancelled!</h1>'
-    //   showModalDialog(html,[{text:'Okay'}])
-    // }
-
-
     var dose1status = data['Dose1Status']
     if(dose1status == ''){
       dose1status = ''
@@ -208,7 +214,6 @@
     }
 
     var html = "<table class='section-bar'><td width=400 align=center>Your Appointments</td></table><br>"
-    html += "<table><td valign=top>"
     var arr =[dose1status, dose2status]
     for(var dose = 1; dose < arr.length+1; dose++)
     {
@@ -231,6 +236,7 @@
       html += `<b>Dose ${dose}: ${statusHTML}</b><br>`
       html += `Consent: ${data['Dose' + dose + 'ConsentStatus']}`
       html += "</td><td>"
+      html += "</td><td>"
       if(status == "registered") {
         html += generateAppointmentCancelButton(data['ID'], dose)
       }
@@ -241,10 +247,6 @@
       html += "</table>"
     }
 
-    html += `</td><td align=center>`
-    html += `<img src='<?=QR_CODE_URL?>${data['ID']}'><br>`
-    html += `PatientID: ${data['ID']}<br>This code may help with check-in.`
-    html += "</td></table>"
 
     document.getElementById("existingReservations").innerHTML = html;
   }

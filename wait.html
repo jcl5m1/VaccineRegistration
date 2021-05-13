@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<div id="waitScreen" class="wait-screen">
+	<div style="display: flex; height: 100vh;background-color: #fff;">
+		<img src='<?=WAIT_GIF_URL?>' style=" margin: auto;">
+  </div>
+	</div>
+
+	<script>
+		function showWaitScreen() {
+  document.getElementById("waitScreen").style.display = "block";
+}
+
+function hideWaitScreen() {
+  document.getElementById("waitScreen").style.display = "none";
+}
+	</script>
+
+	<style>
+		/* wait screen frame */
+		.wait-screen {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			/* Stay in place */
+			z-index: 1;
+			/* Sit on top */
+			left: 0;
+			top: 0;
+			width: 100%;
+			/* Full width */
+			height: 100%;
+			/* Full height */
+			overflow: auto;
+			/* Fallback color */
+			background-color: #fff;
+		}
+	</style>

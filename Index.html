@@ -7,6 +7,7 @@
 </head>
 <?!=importHTML('css.html')?>
 <?!=importHTML('modaldialog.html')?>
+<?!=importHTML('wait.html')?>
 
 <body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
@@ -82,9 +83,21 @@
 	<br><br>
   Scan to send mobile device to this page:<br>
 	<img src="<?=QR_CODE_URL?><?=url?>">
-	<script>
-		document.getElementById("browser").innerHTML = navigator.appVersion;
-	</script>
+
 </body>
 
+<script>
+  document.getElementById("browser").innerHTML = navigator.appVersion;
+
+  document.addEventListener('keydown', function(event) {
+  if(event.keyCode == 37) {
+      console.log('Left was pressed');
+      showWaitScreen();
+  }
+  else if(event.keyCode == 39) {
+      console.log('Right was pressed');
+      hideWaitScreen();
+  }
+});
+</script>
 </html>
