@@ -190,7 +190,6 @@ function getCheckInDataset(date) {
 
 // search for patient profile using name and DOB
 function searchPatients(query) {
-  debug("search Patients:" + JSON.stringify(query))
   var sheetName = 'Patients'
   var values = getSheetData(sheetName)
   keys = values[0];
