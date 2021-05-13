@@ -130,9 +130,9 @@ function generateRegistrationTest() {
     Gender: randomOption(['male', 'female', 'other']),
     Race: randomOption(["White", "BlackOrAfricanAmerican", "AmericanIndianOrAlaskaNative", "Asian", "NativeHawaiianOrOtherPacificIslander", "Other", "DeclineToSpecify"]),
     Ethnicity: randomOption(["HispanicOrLatino", "NonHispanicOrLatino", "Other", "DeclineToSpecify"]),
-    RelationshipToPatient: randomOption(['self', 'gaurdian']),
-    GaurdianFirstName: randomString(8, true),
-    GaurdianLastName: randomString(8, true),
+    RelationshipToPatient: randomOption(['self', 'guardian']),
+    GuardianFirstName: randomString(8, true),
+    GuardianLastName: randomString(8, true),
     AddressStreet: Math.floor(Math.random() * 10000) + " " + randomString(10, true) + " St",
     AddressCity: randomString(10, true),
     AddressState: randomString(2).toUpperCase(),
@@ -171,8 +171,8 @@ function processRegistrationForm(params) {
     Race: params.Race.toUpperCase(),
     Ethnicity: params.Ethnicity.toUpperCase(),
     RelationshipToPatient: params.RelationshipToPatient,
-    GaurdianFirstName: params.GaurdianFirstName.toUpperCase(),
-    GaurdianLastName: params.GaurdianLastName.toUpperCase(),
+    GuardianFirstName: params.GuardianFirstName.toUpperCase(),
+    GuardianLastName: params.GuardianLastName.toUpperCase(),
     AddressStreet: params.AddressStreet.toUpperCase(),
     AddressCity: params.AddressCity.toUpperCase(),
     AddressState: params.AddressState,
@@ -183,10 +183,10 @@ function processRegistrationForm(params) {
     Browser: params.Browser,
   }
 
-  if (payload.GaurdianFirstName == '')
-    payload.GaurdianFirstName = payload.FirstName
-  if (payload.GaurdianLastName == '')
-    payload.GaurdianLastName = payload.LastName
+  if (payload.GuardianFirstName == '')
+    payload.GuardianFirstName = payload.FirstName
+  if (payload.GuardianLastName == '')
+    payload.GuardianLastName = payload.LastName
 
   // store patient info
   res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])

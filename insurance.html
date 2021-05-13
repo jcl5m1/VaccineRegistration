@@ -30,8 +30,8 @@
 		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
 		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
 		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
-		<input type="hidden" name="GaurdianFirstName" value="<?=profileData['GaurdianFirstName']?>">
-		<input type="hidden" name="GaurdianLastName" value="<?=profileData['GaurdianLastName']?>">
+		<input type="hidden" name="GuardianFirstName" value="<?=profileData['GuardianFirstName']?>">
+		<input type="hidden" name="GuardianLastName" value="<?=profileData['GuardianLastName']?>">
 		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
 		<?
       }
@@ -83,9 +83,9 @@
     //add address
     res.Address = <?=profileData.AddressStreet + '<br>' + profileData.AddressCity + ', ' + profileData.AddressState + ' ' + profileData.AddressZip?>;
 
-    //add gaurdian name
+    //add Guardian name
     <?if(profileData.RelationshipToPatient != 'self') {?>
-      res['Gaurdian Name'] = <?=profileData.GaurdianFirstName + " " + profileData.GaurdianLastName?>;
+      res['Guardian Name'] = <?=profileData.GuardianFirstName + " " + profileData.GuardianLastName?>;
     <?}?>
 
     // pull out the current insurance form data

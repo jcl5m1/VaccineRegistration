@@ -62,21 +62,27 @@
 		<br>
 
 
+
+
+		What is your relationship to Patient? <select name="RelationshipToPatient" onchange="onRelationshipSelect(this.value)">
+        <option value="self">Self</option>
+        <option value="guardian">Parent/Guardian</option>
+      </select><br><br>
+      <div id='GuardianInfo' style="display: none">
+      <table><td>
+      Since you are not the patient, enter your name:<br>
+      Guardian First Name <input type="text" name="GuardianFirstName"><br>
+      Guardian Last Name <input type="text" name="GuardianLastName"><br>
+      </td></table>
+      </div>
+		<br>
+
 		<table class='section-bar'>
 			<td width=400 align=center>
-				Parent/Gaurdian/Self
+				Contact Infomation
 			</td>
 		</table><br>
 
-		What is your relationship to Patient? <select name="RelationshipToPatient">
-        <option value="self">Self</option>
-        <option value="gaurdian">Parent/Gaurdian</option>
-      </select><br>
-      If you are not the patient, enter your name:<br>
-      Gaurdian First Name <input type="text" name="GaurdianFirstName"><br>
-      Gaurdian Last Name <input type="text" name="GaurdianLastName"><br>
-		<br>
-		<b>Preferred Contact Infomation:</b><br>
       Phone: <input type="text" required name="Phone"><br>
       Email: <input type="text" name="Email"><br>
 		<br>
@@ -98,8 +104,16 @@
 <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
 <script>
-	function onLoad(){
+function onLoad(){
   document.getElementById("Browser").value = navigator.appVersion;
+}
+
+function onRelationshipSelect(value){
+  if(value == 'self') {
+    document.getElementById('GuardianInfo').style.display='none'
+  } else {
+    document.getElementById('GuardianInfo').style.display='block'
+  }
 }
 
 function onGenerate(record){
@@ -112,8 +126,10 @@ function onGenerate(record){
   myform.Race.value = record.Race;
   myform.Ethnicity.value = record.Ethnicity;
   myform.RelationshipToPatient.value = record.RelationshipToPatient;
-  myform.GaurdianFirstName.value = record.GaurdianFirstName;
-  myform.GaurdianLastName.value = record.GaurdianLastName;
+  onRelationshipSelect(myform.RelationshipToPatient.value)
+
+  myform.GuardianFirstName.value = record.GuardianFirstName;
+  myform.GuardianLastName.value = record.GuardianLastName;
   myform.AddressStreet.value = record.AddressStreet;
   myform.AddressCity.value = record.AddressCity;
   myform.AddressState.value = record.AddressState;
