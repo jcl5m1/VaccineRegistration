@@ -25,7 +25,8 @@
 
 </body>
 <!-- barcode script includes a resize function -->
-<?!=generateBarcodeJavascript()?>
+<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+
 <script>
 	function encodeImage(elem) {
     const file = elem.files[0];
