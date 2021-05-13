@@ -2,7 +2,7 @@ var profileData = null;
 var urlParameters = null;
 var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email','upload','insurance'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'upload', 'insurance'];
 
 function doGet(e) {
 
@@ -10,44 +10,57 @@ function doGet(e) {
     console.log("run from editor complete")
     return
   }
-
   urlParameters = e.parameter;
   var page = e.parameter['page']
   var action = e.parameter['action']
 
+  // log page access in cloud log
+  eventLog = {
+    event: "pageRequest",
+    tempUserKey: Session.getTemporaryActiveUserKey(),
+    page: page
+  }
+  debug(eventLog)
+
   if (action == 'register') {
     var res = processRegistrationForm(e.parameter)
-    profileData = searchPatients({'ID':res});
+    profileData = searchPatients({ 'ID': res });
   }
 
-  if(action == 'insurance'){
+  if (action == 'insurance') {
     processInsuranceForm(e.parameter);
   }
 
-  if(page == 'register') {
+  if (page == 'register') {
     // generate an ID for new registration
-    profileData = {'ID': hashTimestamp()}
+    profileData = { 'ID': hashTimestamp() }
   }
 
-  if ((page == 'profile')||(page == 'appointments')){
-    if(profileData == null) {
+  if ((page == 'profile') || (page == 'appointments')) {
+    if (profileData == null) {
       profileData = searchPatients(e.parameter);
     }
   }
+
+  // gets all appointments
+  if (page == 'appointments') {
+    appointmentData = getSheetDataAsDict('Appointments')
+  }
+
   return routePage(page);
 }
 
 // post was having trouble with HTMLService return, so using doGet right now
-function doPost(e){
+function doPost(e) {
   var action = e.parameter['action']
   var page = e.parameter['page']
 
   if (action == 'register') {
     var res = processRegistrationForm(e.parameter)
-    profileData = searchPatients({'ID':res});
+    profileData = searchPatients({ 'ID': res });
   }
 
-  if(action == 'insurance'){
+  if (action == 'insurance') {
     processInsuranceForm(e.parameter);
   }
 
@@ -56,11 +69,11 @@ function doPost(e){
     return HtmlService.createHtmlOutput(formatToHTML(res.getDownloadUrl()));
   }
 
-  if(action == 'feedback'){
+  if (action == 'feedback') {
     processFeedbackForm(e.parameter);
   }
 
-  if(action == 'questionaire'){
+  if (action == 'questionaire') {
     // TODO implement
   }
 
@@ -70,7 +83,7 @@ function doPost(e){
   return routePage(page);
 }
 
-function routePage(page){
+function routePage(page) {
   if (VALID_PAGES.indexOf(page) == -1) {
     //default page
     return HtmlService
@@ -82,26 +95,30 @@ function routePage(page){
     .evaluate();
 }
 
-function test(){
+function test() {
   var profileID = '3CLD9S0V3CVYLFL'
-  var res = searchPatients({ID:profileID})
+  var res = searchPatients({ ID: profileID })
   debug(res)
 }
 
 // just get dose appointment info
-function getAppointments(profileID) {
-  profileData = searchPatients({ID:profileID});
-  res = {}
-  for(var key in profileData){
-    if(key.indexOf("Dose")>=0) {
-      res[key] = profileData[key]
-    }
-  }
-
-  res.ID = profileID
+function getAppointments(profileID, action) {
+  profileData = searchPatients({ ID: profileID });
+  var res = getOnlyAppointmentData(profileData)
+  res.action = action
   return res
 }
 
+function getOnlyAppointmentData(data) {
+  var res = {}
+  for (var key in data) {
+    if (key.indexOf("Dose") >= 0) {
+      res[key] = data[key]
+    }
+  }
+  res.ID = data['ID']
+  return res
+}
 
 function generateRegistrationTest() {
   var res = {
@@ -114,7 +131,8 @@ function generateRegistrationTest() {
     Race: randomOption(["White", "BlackOrAfricanAmerican", "AmericanIndianOrAlaskaNative", "Asian", "NativeHawaiianOrOtherPacificIslander", "Other", "DeclineToSpecify"]),
     Ethnicity: randomOption(["HispanicOrLatino", "NonHispanicOrLatino", "Other", "DeclineToSpecify"]),
     RelationshipToPatient: randomOption(['self', 'gaurdian']),
-    SignatureName: randomString(8, true) + " " + randomString(8, true),
+    GaurdianFirstName: randomString(8, true),
+    GaurdianLastName: randomString(8, true),
     AddressStreet: Math.floor(Math.random() * 10000) + " " + randomString(10, true) + " St",
     AddressCity: randomString(10, true),
     AddressState: randomString(2).toUpperCase(),
@@ -129,6 +147,7 @@ function generateRegistrationTest() {
     InsuranceGroupNumber: Math.floor(Math.random() * 10000000000),
     InsuranceSubscriberID: Math.floor(Math.random() * 10000000000),
     InsuranceSSN: Math.floor(Math.random() * 1000000000),
+    InsuranceDriversLicense: Math.floor(Math.random() * 1000000000),
     Notes: randomString(10),
   };
   return res;
@@ -137,8 +156,8 @@ function generateRegistrationTest() {
 function processRegistrationForm(params) {
 
   // this ID is already registered - likely form resubmit
-  if(searchPatients({ID:params.ID}) != null)
-    return;
+  if (searchPatients({ ID: params.ID }) != null)
+    return params.ID;
 
   var payload = {
     ID: params.ID,
@@ -152,7 +171,8 @@ function processRegistrationForm(params) {
     Race: params.Race.toUpperCase(),
     Ethnicity: params.Ethnicity.toUpperCase(),
     RelationshipToPatient: params.RelationshipToPatient,
-    SignatureName: params.SignatureName.toUpperCase(),
+    GaurdianFirstName: params.GaurdianFirstName.toUpperCase(),
+    GaurdianLastName: params.GaurdianLastName.toUpperCase(),
     AddressStreet: params.AddressStreet.toUpperCase(),
     AddressCity: params.AddressCity.toUpperCase(),
     AddressState: params.AddressState,
@@ -163,9 +183,13 @@ function processRegistrationForm(params) {
     Browser: params.Browser,
   }
 
+  if (payload.GaurdianFirstName == '')
+    payload.GaurdianFirstName = payload.FirstName
+  if (payload.GaurdianLastName == '')
+    payload.GaurdianLastName = payload.LastName
+
   // store patient info
   res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
-
   return params.ID;
 }
 
@@ -180,11 +204,12 @@ function processInsuranceForm(params) {
     InsuranceGroupNumber: params.InsuranceGroupNumber.toUpperCase(),
     InsuranceSubscriberID: params.InsuranceSubscriberID.toUpperCase(),
     InsuranceSSN: params.InsuranceSSN,
+    InsuranceDriversLicense: params.InsuranceDriversLicense,
   }
 
-  var res = setSheetValueUsingHeaders("Patients",'ID',params.ID, payload)
-  if ((res==null)||(!('spreadsheetId' in res['InsuranceType']))){
-    return ["failed to update patient profile", res, params.ID, values]    
+  var res = setSheetValueUsingHeaders("Patients", 'ID', params.ID, payload)
+  if ((res == null) || (!('spreadsheetId' in res['InsuranceType']))) {
+    return ["failed to update patient profile", res, params.ID, values]
   }
   return res
 }
@@ -222,7 +247,7 @@ function processWaitlistForm(params) {
   res = appendSheetData("Waitlist", [res])
 }
 
-function uploadInsuranceImage(patientId, firstName, lastName, imageName, data){
+function uploadInsuranceImage(patientId, firstName, lastName, imageName, data) {
   // no ID, cannot update spreadsheet
   if (patientId == '')
     return null
@@ -233,9 +258,9 @@ function uploadInsuranceImage(patientId, firstName, lastName, imageName, data){
   var values = {}
   // update the patient page
   values[imageName] = downloadUrl
-  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
-  if ((res==null)||(!('spreadsheetId' in res[imageName]))){
-    return ["failed to update patient profile", res, patientId, values]    
+  var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
+  if ((res == null) || (!('spreadsheetId' in res[imageName]))) {
+    return ["failed to update patient profile", res, patientId, values]
   }
   return res
 }
@@ -257,55 +282,55 @@ function requestSignature(name, email, dose, id) {
     return res
 
   // no ID, cannot update spreadsheet
-    if (id == null)
+  if (id == null)
     return res
   if (id == '')
     return res
 
   // update the spreadsheet
   var values = {}
-  var prefix = 'Dose'+dose
-  values[prefix+'ConsentStatus'] = res.status
-  values[prefix+'ConsentID'] = res.envelopeId
-  setSheetValueUsingHeaders("Patients",'ID',id,values)
+  var prefix = 'Dose' + dose
+  values[prefix + 'ConsentStatus'] = res.status
+  values[prefix + 'ConsentID'] = res.envelopeId
+  setSheetValueUsingHeaders("Patients", 'ID', id, values)
   return res;
 }
 
-function processDocusignComplete(id, dose, result){
+function processDocusignComplete(id, dose, result) {
   // no ID, cannot update spreadsheet
   if (id == '')
     return null
 
   var values = {}
-  var prefix = 'Dose'+dose
-  values[prefix+'ConsentStatus'] = result.status
-  values[prefix+'ConsentID'] = result.envelopeId
-  values[prefix+'ConsentUrl'] = result.downloadUrl
-  return setSheetValueUsingHeaders("Patients",'ID',id,values)
+  var prefix = 'Dose' + dose
+  values[prefix + 'ConsentStatus'] = result.status
+  values[prefix + 'ConsentID'] = result.envelopeId
+  values[prefix + 'ConsentUrl'] = result.downloadUrl
+  return setSheetValueUsingHeaders("Patients", 'ID', id, values)
 }
 
-function processReserveAppointment(patientId, dose, appointmentId, brand){
+function processReserveAppointment(patientId, dose, appointmentId, brand) {
   // no ID, cannot update spreadsheet
   if (patientId == '')
     return null
 
   var values = {}
   // update the patient page
-  var prefix = 'Dose'+dose
-  values[prefix+'AppointmentID'] = appointmentId
-  values[prefix+'Status'] = 'registered'
-  values[prefix+'VaccineBrand'] = brand
-  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
-  if ((res==null)||(!('spreadsheetId' in res[prefix+'AppointmentID']))){
-    return ["failed to update patient profile", res, patientId, values]    
+  var prefix = 'Dose' + dose
+  values[prefix + 'AppointmentID'] = appointmentId
+  values[prefix + 'Status'] = 'registered'
+  values[prefix + 'VaccineBrand'] = brand
+  var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
+  if ((res == null) || (!('spreadsheetId' in res[prefix + 'AppointmentID']))) {
+    return ["failed to update patient profile", res, patientId, values]
   }
 
   // appointment stats are updated by spreadeheet
 
-  return getAppointments(patientId)
+  return getAppointments(patientId, 'reserve')
 }
 
-function processCancelAppointment(formElem){
+function processCancelAppointment(formElem) {
 
   var patientId = formElem.ID
 
@@ -316,21 +341,21 @@ function processCancelAppointment(formElem){
   var values = {}
 
   // update the patient page
-  var prefix = 'Dose'+formElem.dose
-  values[prefix+'AppointmentID'] = ''
-  values[prefix+'Status'] = ''
-  values[prefix+'VaccineBrand'] = ''
+  var prefix = 'Dose' + formElem.dose
+  values[prefix + 'AppointmentID'] = ''
+  values[prefix + 'Status'] = ''
+  values[prefix + 'VaccineBrand'] = ''
 
-  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
-  if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
-    return "failed to update patient profile"    
+  var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
+  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+    return "failed to update patient profile"
   }
   // appointment stats are updated by spreadeheet
-  return getAppointments(patientId)
+  return getAppointments(patientId, 'cancel')
 }
 
 
-function processCheckIn(patientId, appointmentId, dose){
+function processCheckIn(patientId, appointmentId, dose) {
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -338,17 +363,17 @@ function processCheckIn(patientId, appointmentId, dose){
 
   var values = {}
 
-  debugLog('checkedin',patientId + ',' + appointmentId+','+dose)
+  debugLog('checkedin', patientId + ',' + appointmentId + ',' + dose)
   // update the patient page
-  var prefix = 'Dose'+dose
-  values[prefix+'AppointmentID'] = appointmentId
-  values[prefix+'Status'] = 'completed'
-  var res = setSheetValueUsingHeaders("Patients",'ID',patientId, values)
-  if (!('spreadsheetId' in res[prefix+'AppointmentID'])){
-    var msg = "failed to update patient profile"  
+  var prefix = 'Dose' + dose
+  values[prefix + 'AppointmentID'] = appointmentId
+  values[prefix + 'Status'] = 'completed'
+  var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
+  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+    var msg = "failed to update patient profile"
     return msg
   }
 
   // appointment stats are updated by spreadeheet
-  return getAppointments(patientId)
+  return getAppointments(patientId, 'checkin')
 }

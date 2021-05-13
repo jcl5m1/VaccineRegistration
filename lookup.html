@@ -4,11 +4,18 @@
 <head>
 	<base target="_top">
 </head>
+<?!=importHTML('css.html')?>
 
-<body>
+<body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
-	<h1>Look Up Registration</h1>
+	<table>
+		<td>
+			<div class='title'>Lookup Registration</div>
+		</td>
+		<td>
+			<?!=importHTML('help.html')?>
+	</table>
 	<form id="lookupForm" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="appointments">
     (optional) Scan QR Code/State ID barcode: <input type="file" accept="image/*"
@@ -22,11 +29,10 @@
 		<button type="button" onclick="generateLookupTest()">Generate</button>
 	</form>
 
-<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+	<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
-<script>
-
-// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
+	<script>
+		// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
 async function onImageChange(elem, canvasId){
   var canvas = document.getElementById(canvasId);
   await scaleImageToFit(elem,1000,canvas);
@@ -51,7 +57,7 @@ function generateLookupTest(){
    lookupForm.LastName.value = 'EIQHBTSQ';
    lookupForm.DateOfBirth.value = '1997-12-02';
 }
-</script>
+	</script>
 </body>
 
 </html>

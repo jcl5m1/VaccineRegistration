@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<div id="helpBtn" class='help-button'>Need<br>Help?</div>
+	<!-- The Modal -->
+	<div id="helpModal" class="help-modal">
+
+		<!-- Modal content -->
+		<div class="help-modal-content">
+			<span class="help-close">&times;</span>
+			<h1>Do you need help? No worries!</h1>
+			<p>Contact us by phone: <?=HELP_PHONE_NUMBER?> </p>
+			<p>Contact us by email: <?=HELP_EMAIL?> </p>
+		</div>
+
+	</div>
+	<script>
+		// Get the modal
+var helpModal = document.getElementById("helpModal");
+
+// Get the button that opens the modal
+var helpBtn = document.getElementById("helpBtn");
+
+// Get the <span> element that closes the modal
+var helpSpan = document.getElementsByClassName("help-close")[0];
+
+// When the user clicks on the button, open the modal
+helpBtn.onclick = function() {
+  helpModal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+helpSpan.onclick = function() {
+  helpModal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == helpModal) {
+    helpModal.style.display = "none";
+  }
+}
+	</script>
+
+	<style>
+		/* The Modal (background) */
+		.help-modal {
+			display: none;
+			/* Hidden by default */
+			position: fixed;
+			/* Stay in place */
+			z-index: 1;
+			/* Sit on top */
+			left: 0;
+			top: 0;
+			width: 100%;
+			/* Full width */
+			height: 100%;
+			/* Full height */
+			overflow: auto;
+			/* Enable scroll if needed */
+			background-color: rgb(0, 0, 0);
+			/* Fallback color */
+			background-color: rgba(0, 0, 0, 0.4);
+			/* Black w/ opacity */
+		}
+
+		/* Modal Content/Box */
+		.help-modal-content {
+			background-color: #fff;
+			margin: 15% auto;
+			/* 15% from the top and centered */
+			padding: 20px;
+			border: 20px solid #6bdcff;
+			width: 80%;
+			/* Could be more or less, depending on screen size */
+			color: black;
+			font-family: Arial, serif, bold;
+		}
+
+		/* Help button */
+		.help-button {
+			background-color: #db2c00;
+			// margin: 15% auto; /* 15% from the top and centered */
+			padding: 10px;
+			border-radius: 10px;
+			color: white;
+			font-family: Arial, serif, bold;
+			font-size: 15px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		/* The Close Button */
+		.help-close {
+			color: #aaa;
+			float: right;
+			font-size: 28px;
+			font-weight: bold;
+			cursor: pointer;
+		}
+
+		.close:hover,
+		.close:focus {
+			color: black;
+			text-decoration: none;
+			cursor: pointer;
+		}
+	</style>

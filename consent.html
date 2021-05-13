@@ -5,7 +5,7 @@
 	<base target="_top">
 </head>
 
-<body onload='checkParameters()'>
+<body onload='checkParameters()' style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Consent Form - Docusign</h1>
@@ -33,33 +33,33 @@
 			</iframe>
 		</div>
 
-	<form id='GoToAppointmentsForm' method="GET" action="<?=url?>">
-  <input type="hidden" name="ID" value="test">
-  <input type="hidden" name="dose" value="1">
-  <input type="hidden" name="prev" value="consent">
-  <input type="hidden" name="page" value="appointments">
+		<form id='GoToAppointmentsForm' method="GET" action="<?=url?>">
+			<input type="hidden" name="ID" value="test">
+			<input type="hidden" name="dose" value="1">
+			<input type="hidden" name="prev" value="consent">
+			<input type="hidden" name="page" value="appointments">
   </form>
-  <button type="button" onclick="testGotoAppointmentsForm()">Test Goto Appointments</button><br>
+			<button type="button" onclick="testGotoAppointmentsForm()">Test Goto Appointments</button><br>
 
-		<br><br>
+			<br><br>
 
-		<from id='RequestSignatureForm'>
-			<b>Request Signature via Email:</b><br>
+			<from id='RequestSignatureForm'>
+				<b>Request Signature via Email:</b><br>
     Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe' required><br>
     Recipient Email: <input type="text" id='RecipientEmail' size="50" required><br>
-			<button type="button"
+				<button type="button"
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
     </form><br>
 
-			<from id='CheckStatusForm'>
-				<b>Check Envelope Status:</b><br>
+				<from id='CheckStatusForm'>
+					<b>Check Envelope Status:</b><br>
     EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
-				<button type="button"
+					<button type="button"
       onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
     </form>
 
-				<h2>Result</h2>
-				<div id="result"></div>
+					<h2>Result</h2>
+					<div id="result"></div>
 </body>
 
 <style>
@@ -87,11 +87,11 @@
     <?
     // the URL params include everything we need for a docusign, go ahead and trigger embedded docusign form
     if(("ID" in urlParameters)&&
-    ("FirstName" in urlParameters)&&
-    ("LastName" in urlParameters)&&
+    ("GaurdianFirstName" in urlParameters)&&
+    ("GaurdianLastName" in urlParameters)&&
     ("Email" in urlParameters)) {
       ?>
-      var name = <?=urlParameters['FirstName'] + ' ' + urlParameters['LastName']?>;
+      var name = <?=urlParameters['GaurdianFirstName'] + ' ' + urlParameters['GaurdianLastName']?>;
       var email = <?=urlParameters['Email']?>;
       var id = <?=urlParameters['ID']?>;
       if ((id != '') && (email != '') && (name != '')) {

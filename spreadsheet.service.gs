@@ -1,9 +1,9 @@
 function testSpreadsheet() {
   values = getSheetData('Appointments');
   res = getCellByKey(values, 1, "Registered");
-  debug( res > 0 ? "pass" : "fail")
+  debug(res > 0 ? "pass" : "fail")
 
-  res = getColumnByKey(values,"Registered");
+  res = getColumnByKey(values, "Registered");
   debug(res.length > 0 ? "pass" : "fail")
 
   res = getSheetDataAsDict('Appointments');
@@ -29,20 +29,20 @@ function testSpreadsheet() {
   debug(res['FirstName'] == 'angela' ? "pass" : "fail")
 
   // set patient cell status
-  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HS74T8DPAFABK', {'Dose1Status':'registered'})
+  var res = setSheetValueUsingHeaders('Patients', 'ID', '9HS74T8DPAFABK', { 'Dose1Status': 'registered' })
   debug('spreadsheetId' in res['Dose1Status'] ? "pass" : "fail")
-            
+
   // test spreadsheet log
-  var res = debugLog("test","test debug log message")
+  var res = debugLog("test", "test debug log message")
   debug('spreadsheetId' in res ? "pass" : "fail")
 
   //modify appointment capacity  count
   var appointmentId = '20210415_1000_VaccineSiteA'
   var colName = 'Capacity'
   var amount = 2
-  var res = addToCellIntegerValue("Appointments","ID",appointmentId,colName,amount)
+  var res = addToCellIntegerValue("Appointments", "ID", appointmentId, colName, amount)
   debug(colName in res ? "pass" : "fail")
-  var res = addToCellIntegerValue("Appointments","ID",appointmentId,colName,-amount)
+  var res = addToCellIntegerValue("Appointments", "ID", appointmentId, colName, -amount)
   debug(colName in res ? "pass" : "fail")
 }
 
@@ -157,20 +157,20 @@ function getCheckInDataset(date) {
   }
   var checkInDataset = [];
 
-  var resultValues = ['FirstName', 
-                      'LastName', 
-                      'ID', 
-                      'Dose1AppointmentID', 
-                      'Dose1Status',
-                      'Dose1VaccineBrand',
-                      'Dose1ConsentStatus',
-                      'Dose1ConsentUrl',
-                      'Dose2AppointmentID', 
-                      'Dose2Status',
-                      'Dose2VaccineBrand',
-                      'Dose2ConsentStatus',
-                      'Dose2ConsentUrl',
-                      'Notes']
+  var resultValues = ['FirstName',
+    'LastName',
+    'ID',
+    'Dose1AppointmentID',
+    'Dose1Status',
+    'Dose1VaccineBrand',
+    'Dose1ConsentStatus',
+    'Dose1ConsentUrl',
+    'Dose2AppointmentID',
+    'Dose2Status',
+    'Dose2VaccineBrand',
+    'Dose2ConsentStatus',
+    'Dose2ConsentUrl',
+    'Notes']
 
   for (var i = 1; i < values.length; i++) {
     // if (date == dateFromDateTime(values[i]['Dose1DateTime']))
@@ -179,7 +179,7 @@ function getCheckInDataset(date) {
     //   dose = 2;
 
     var record = {}
-    for(var j = 0; j < resultValues.length; j++) {
+    for (var j = 0; j < resultValues.length; j++) {
       record[resultValues[j]] = values[i][key_lut[resultValues[j]]]
     }
 
@@ -190,31 +190,35 @@ function getCheckInDataset(date) {
 
 // search for patient profile using name and DOB
 function searchPatients(query) {
+  debug("search Patients:" + JSON.stringify(query))
   var sheetName = 'Patients'
   var values = getSheetData(sheetName)
   keys = values[0];
+
+  if (query.length == 0)
+    return null
 
   // only extract a few keys
   queryPatient = {}
   // if non-empty ID is provided, just use the ID
   if ('ID' in query) {
-    if(query['ID'].length > 0){
+    if (query['ID'].length > 0) {
       queryPatient['ID'] = query['ID']
     }
   }
-  
-  if(!('ID' in queryPatient)){
+
+  if (!('ID' in queryPatient)) {
     // if not using ID, require other components
-    if('FirstName' in query)
+    if ('FirstName' in query)
       queryPatient['FirstName'] = query['FirstName'].toUpperCase()
-    if('LastName' in query)
+    if ('LastName' in query)
       queryPatient['LastName'] = query['LastName'].toUpperCase()
-    if('DateOfBirth' in query)
+    if ('DateOfBirth' in query)
       queryPatient['DateOfBirth'] = query['DateOfBirth']
   }
- 
+
   // not enough valid parameters
-  if(Object.keys(queryPatient).length == 0)
+  if (Object.keys(queryPatient).length == 0)
     return null
 
   var key_lut = {}
@@ -279,19 +283,19 @@ function setSheetValueUsingHeaders(sheetName, id_header, id, values) {
   var data = getSheetData(sheetName) // potentially inefficient - gets entire sheet?
   var keys = data[0];
   var id_idx = keys.indexOf(id_header)
-  for (var row_idx = 1; row_idx < data.length; row_idx++) { 
+  for (var row_idx = 1; row_idx < data.length; row_idx++) {
     // find the row match in the id_header column
-    if (data[row_idx][id_idx] != id) 
+    if (data[row_idx][id_idx] != id)
       continue
 
     var res = {}
     var options = { valueInputOption: 'USER_ENTERED' }
 
     // one call per cell, how to do potentially disjoint cells?
-    for(var col in values) {
+    for (var col in values) {
       var col_idx = keys.indexOf(col)
       // not found, skip
-      if(col_idx < 0)
+      if (col_idx < 0)
         continue
       var range = sheetName + '!' + R1C1toA1(row_idx, col_idx)
       var resource = { values: [[values[col]]] }
@@ -313,17 +317,17 @@ function getSheetValueUsingHeaders(sheetName, id_header, id, headers) {
   var data = getSheetData(sheetName) // potentially inefficient - gets entire sheet?
   var keys = data[0];
   var id_idx = keys.indexOf(id_header)
-  for (var row_idx = 1; row_idx < data.length; row_idx++) { 
+  for (var row_idx = 1; row_idx < data.length; row_idx++) {
     // find the row match in the id_header column
-    if (data[row_idx][id_idx] != id) 
+    if (data[row_idx][id_idx] != id)
       continue
 
     var res = {}
     // single input, wrap in array
-    if(!Array.isArray(headers))
+    if (!Array.isArray(headers))
       headers = [headers]
 
-    for(var i in headers) {
+    for (var i in headers) {
       var col_idx = keys.indexOf(headers[i])
       res[headers[i]] = data[row_idx][col_idx]
     }
@@ -338,16 +342,16 @@ function getSheetValueUsingHeaders(sheetName, id_header, id, headers) {
   return undefined
 }
 
-function addToCellIntegerValue(sheetName, id_header, id, colName, amount){
+function addToCellIntegerValue(sheetName, id_header, id, colName, amount) {
   // get current registration count
   var res = getSheetValueUsingHeaders(sheetName, id_header, id, [colName])
-  if (!(colName in res)){
+  if (!(colName in res)) {
     return "failed to read cell value"
   }
 
   //increment registration count
   var payload = {}
-  payload[colName] = parseInt(res[colName])+amount
-  var res = setSheetValueUsingHeaders(sheetName,id_header,id, payload)
+  payload[colName] = parseInt(res[colName]) + amount
+  var res = setSheetValueUsingHeaders(sheetName, id_header, id, payload)
   return res
 }

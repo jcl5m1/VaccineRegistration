@@ -5,20 +5,20 @@
 	<base target="_top">
 </head>
 
-<body>
+<body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>COVID-19 Vaccine Questionaire</h1>
-  <p>Debug Profile ID: <?= profileData == null ? '' : profileData['ID'] ?></p>
+	<p>Debug Profile ID: <?= profileData == null ? '' : profileData['ID'] ?></p>
 	<form id="questionaire" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="consent">
 		<input type="hidden" name="action" value="questionaire">
-    <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
+		<input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
 
-    <input type="hidden" name="ID" value="<?=('ID' in urlParameters) ? urlParameters['ID']:''?>">
-    <input type="hidden" name="FirstName" value="<?=('FirstName' in urlParameters) ? urlParameters['FirstName']:''?>">
-    <input type="hidden" name="LastName" value="<?=('LastName' in urlParameters) ? urlParameters['LastName']:''?>">
-    <input type="hidden" name="Email" value="<?=('Email' in urlParameters) ? urlParameters['Email']:''?>">
+		<input type="hidden" name="ID" value="<?=('ID' in urlParameters) ? urlParameters['ID']:''?>">
+		<input type="hidden" name="FirstName" value="<?=('FirstName' in urlParameters) ? urlParameters['FirstName']:''?>">
+		<input type="hidden" name="LastName" value="<?=('LastName' in urlParameters) ? urlParameters['LastName']:''?>">
+		<input type="hidden" name="Email" value="<?=('Email' in urlParameters) ? urlParameters['Email']:''?>">
 		<ol>
 			<table border=0>
 				<tr bgcolor='#eee'>
@@ -128,14 +128,15 @@
 				</tr>
 			</table>
 		</ol>
-		<button onclick="onSubmit(this.form)">Submit</button>		<button type="button" onclick="onGenerate(this.form)">Generate</button>
+		<button onclick="onSubmit(this.form)">Submit</button>
+		<button type="button" onclick="onGenerate(this.form)">Generate</button>
 
 
 	</form>
 	<label id="results"></label>
 </body>
 <script>
-  function onGenerate(elem) {
+	function onGenerate(elem) {
     elem.prevDose[Math.random() < 0.5 ? 0:1].checked=true;
     elem.anaphylaxis[Math.random() < 0.5 ? 0:1].checked=true;
     elem.vaccineReaction[Math.random() < 0.5 ? 0:1].checked=true;

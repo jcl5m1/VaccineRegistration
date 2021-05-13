@@ -1,28 +1,41 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
+
+<head>
+	<base target="_top">
+</head>
+<?!=importHTML('css.html')?>
+
+<body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
-	<h1>Insurance</h1>
+
+
+	<table>
+		<td>
+			<div class='title'>Insurance</div>
+		</td>
+		<td>
+			<?!=importHTML('help.html')?>
+	</table>
 	<form id="myform" method="GET" action="<?=url?>">
-		<input type="hidden" name="page" value="questionaire">
+		<input type="hidden" name="page" value="consent">
 		<input type="hidden" name="action" value="insurance">
-    <input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
-    <?
+		<input type="hidden" name="dose" value="<?=('dose' in urlParameters) ? urlParameters['dose']:1?>">
+		<?
       if(profileData != null) {
         ?>
-    		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
-    		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
-    		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
-    		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
-        <?
+		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
+		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
+		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
+		<input type="hidden" name="GaurdianFirstName" value="<?=profileData['GaurdianFirstName']?>">
+		<input type="hidden" name="GaurdianLastName" value="<?=profileData['GaurdianLastName']?>">
+		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
+		<?
       }
     ?>
 		Do you have insurance?
-		<select name="InsuranceType" onchange="onSelectInsurace(this)">
+		<select name="InsuranceType" required onchange="onSelectInsurace(this)">
         <option disabled selected>--select--</option>
         <option value="Private">Yes (Private)</option>
         <option value="Medicare">Yes (Medicare)</option>
@@ -30,9 +43,9 @@
       </select><br>
 		<div id='insuranceField'></div>
 		<br>
-    <canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
-    <canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
-		<button type="submit">Submit</button>
+		<canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
+		<canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
+		<button id='submit' type="submit" disabled>Submit</button>
 		<button type="button"
       onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
 	</form>
@@ -41,7 +54,7 @@
 <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
 
 <script>
-function onSelectInsurace(elem) {
+	function onSelectInsurace(elem) {
   html = '';
   switch(elem.value) {
     case 'Private':
@@ -50,13 +63,14 @@ Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" c
   onchange="uploadImage(this,'canvasInsuranceFront')"><br>
 Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
   onchange="uploadImage(this,'canvasInsuranceBack')"><br>
-Policy Holder Name: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
-Insurance Company: <input type='text' name='InsuranceCompany'><br>
-Insurance Claim Address: <input type='text' name='InsuranceClaimAddress'><br>
+Policy Holder Name: <input type='text' required name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' required name='InsurancePolicyHolderDateOfBirth'><br>
+Insurance Company: <input type='text' required name='InsuranceCompany'><br>
+Insurance Claim Address: <input type='text' required name='InsuranceClaimAddress'><br>
 Group Number: <input type='text' name='InsuranceGroupNumber'><br>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+Subscriber ID: <input type='text' required name='InsuranceSubscriberID'><br>
 <input type='text' hidden name='InsuranceSSN'>
+<input type='text' hidden name='InsuranceDriversLicense'>
       `;
       break;
     case 'Medicare':
@@ -67,13 +81,14 @@ Photo of FRONT:
 Photo of BACK:
 <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
   onchange="uploadImage(this,'canvasInsuranceBack')"><br>
-Policy Holder: <input type='text' name='InsurancePolicyHolder'><br>
-Policy Holder Date Of Birth: <input type='text' name='InsurancePolicyHolderDateOfBirth'><br>
+Policy Holder: <input type='text' required name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' required name='InsurancePolicyHolderDateOfBirth'><br>
 <input type='text' name='InsuranceCompany' hidden value='Medicare'>
 <input type='text' name='InsuranceClaimAddress' hidden value=''>
 <input type='text' name='InsuranceGroupNumber' hidden value=''>
-Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
+Subscriber ID: <input type='text' required name='InsuranceSubscriberID'><br>
 <input type='text' hidden name='InsuranceSSN'>
+<input type='text' hidden name='InsuranceDriversLicense'>
       `;
       break;
     default:
@@ -86,11 +101,15 @@ Subscriber ID: <input type='text' name='InsuranceSubscriberID'><br>
 <input type='text' name='InsuranceClaimAddress' hidden value=''>
 <input type='text' name='InsuranceGroupNumber' hidden value=''>
 <input type='text' name='InsuranceSubscriberID' hidden value=''>
+<br>
+If you have the following, please enter<br><br>
 Social Security Number: <input type='text' name='InsuranceSSN'><br>
+Drivers License: <input type='text' name='InsuranceDriversLicense'><br>
       `;
       break;
   }
   document.getElementById('insuranceField').innerHTML = html;
+  document.getElementById('submit').disabled = false;
 }
 
 
@@ -107,6 +126,7 @@ function onGenerate(record){
   myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
   myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
   myform.InsuranceSSN.value = record.InsuranceSSN;
+  myform.InsuranceDriversLicense.value = record.InsuranceDriversLicense;
 }
 
 async function uploadImage(elem, canvasId) {
@@ -127,4 +147,5 @@ function uploadComplete(result){
 }
 
 </script>
+
 </html>

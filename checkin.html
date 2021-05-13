@@ -5,7 +5,8 @@
 	<base target="_top">
 </head>
 
-<body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')">
+<body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')"
+	style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
@@ -19,7 +20,7 @@
 	<div id="results"></div>
 </body>
 <script>
-var data;
+	var data;
 
 function onKeyUp(e) {
   showMatches(e.value);

@@ -5,20 +5,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=2.0" />
 	<base target="_top">
 </head>
+<?!=importHTML('css.html')?>
+<?!=importHTML('modaldialog.html')?>
 
-<body>
+<body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
-  
-  <h1>COVID-19 Vaccine Registration</h1><br>
 
-
-	<h2>Patient/Public Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=register'>New Registration</a></li>
-		<li><a href='<?=url?>?page=lookup'>Lookup Registration</a></li>
-	</ul>
-
+	<div class="title">COVID-19 Vaccine Registration</div><br>
+	<table>
+		<tr>
+			<td>
+				<h1><a href='<?=url?>?page=register'>New Registration</a></h1>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<h1><a href='<?=url?>?page=lookup'>Lookup Registration</a></h1>
+			</td>
+		</tr>
+	</table>
+	<br><br><br>
 	<h2>Staff Only Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=checkin'>Check-In</a></li>
@@ -34,16 +41,21 @@
 		<li><a href='<?=url?>?page=email'>Email Testing</a></li>
 		<li><a href='<?=url?>?page=upload'>Upload Testing</a></li>
 		<li><a href='<?=url?>?page=consent'>Consent Form Testing - Docusign</a></li>
+		<li onclick="showModalDialog('Test')">Test Modal Dialog</li>
+		<li
+			onclick="showModalDialog('Select one',[{text:'Go Back', callback: 'console.log(\'goback\')'},{text:'Confirm', callback: 'console.log(\'confirm\')'}])">
+			Test OK-Cancel Modal Dialog</li>
+
 	</ul>
 
 
-  <h2>User Info</h2>
-  Active User Email: <?=getUserEmail() ?><br>
+	<h2>User Info</h2>
+	Active User Email: <?=getUserEmail() ?><br>
   Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
   Browser: <div id="browser"></div><br>
-  <br>
+	<br>
 
-  <a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>'>Destination Drive Folder</a>
+	<a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>'>Destination Drive Folder</a>
 
 	<br>
 	<form id='feedback' method="POST" action="<?=url?>">
@@ -54,7 +66,7 @@
 		account required)<br><br>
 
 		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
-    <input type='hidden' name='action' value='feedback'><br>
+		<input type='hidden' name='action' value='feedback'><br>
     Your Name: <input type='text' name="CreatedBy"><br>
     Type: <select name='Type'>
         <option value="support">Support Request</option>
@@ -67,12 +79,12 @@
 		<button>Submit</button>
 	</form>
 
-  <br><br>            
-  Scan to send mobile device to this page:<br>            
-  <img src="<?=QR_CODE_URL?><?=url?>">
-  <script>
-    document.getElementById("browser").innerHTML = navigator.appVersion;
-  </script>
+	<br><br>
+  Scan to send mobile device to this page:<br>
+	<img src="<?=QR_CODE_URL?><?=url?>">
+	<script>
+		document.getElementById("browser").innerHTML = navigator.appVersion;
+	</script>
 </body>
 
 </html>
