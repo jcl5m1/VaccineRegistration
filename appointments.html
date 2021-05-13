@@ -19,14 +19,16 @@
 	</table>
 
 	<table width=400>
-		<td align=center>
-			<? if((profileData != null) &&(ENABLE_QR_CODE)){?>
-			<img src='<?=QR_CODE_URL?><?=profileData['ID']?>'>
-			<div class='qr-caption'>
-				<?=profileData['ID']?></div>
-			<?} else {?>
-			ID: <?=profileData['ID']?>
-			<?}?>
+		<td align=center>        
+			<? if('ID' in urlParameters) {
+        if(ENABLE_QR_CODE){?>
+          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
+          <div class='qr-caption'>
+  				<?=urlParameters['ID']?></div>
+		  	<?} else {?>
+	  		  ID: <?=urlParameters['ID']?>
+		  <?}
+      }?>
 		</td>
 	</table><br>
 
