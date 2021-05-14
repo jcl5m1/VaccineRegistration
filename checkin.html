@@ -8,10 +8,11 @@
 <body onload="onLoad()" style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
   <?!=importHTML('modaldialog.html') ?>
+  <?!=importHTML('css.html')?>
 
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
-<? if (validateStaffSession()) {?>
+
   <table>
   <tr><td>
 	  <b>Lot:</b> 
@@ -22,6 +23,7 @@
       <option value='3'>3</option>
     </select>
   </td></tr>  
+  </table>
   <br>
 
   Filter by day: 
@@ -39,11 +41,6 @@
 	</form>
 	<br><br>
 	<div id="results"></div>
-
-  <?} else {?>
-    Hi! This is a staff only page.<br>
-    Please <a href='<?=url?>?page=login'>login</a></li> to access check-in or return home if you arrived here in error.
-<? } ?>
 </body>
 <script>
 	var data = null;
@@ -200,6 +197,7 @@ function showMatches() {
     html += "<td><b>Brand:</b></td>";
     html += "<td><b>Consent:</b></td>";
     html += "<td><b>Status:</b></td>";
+    html += "<td><b>HighRisk:</b></td>";
     html += "<td><b>Notes:</b></td>";
     html += "</tr>";
 
@@ -241,6 +239,13 @@ function showMatches() {
       var brand2 = matches[i]['Dose2VaccineBrand'];
       var consent2url = matches[i]['Dose2ConsentUrl'];
 
+      var highrisk = matches[i]['HighRisk'];
+      var highriskHTML = ''
+      if((highrisk == '')||(highrisk === undefined)||(highrisk == false)||(highrisk == 'FALSE')) {
+        highriskHTML = `<button class='low-risk-button' type='button' id="highrisk${id}" onclick="toggleHighRisk('${id}')">Low Risk</button>`
+      } else {
+        highriskHTML = `<button class='high-risk-button' type='button' id="highrisk${id}" onclick="toggleHighRisk('${id}')">High Risk</button>`
+      }
 
       if(consent2 == 'completed') {
         consent2 = `<a href='${consent2url}'>${consent2}</a>`
@@ -278,9 +283,7 @@ function showMatches() {
       html += `<td width=300>${nameAppointmentUrl}</td>`      
       html += `<td>${profileUrl}</td>`
       var name = `${lastName}, ${firstName}`
-      if(status=='registered') { // use status as checkin button
-        status = `<div id='status${dose}_${id}'><button type='button' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button></div>`
-      }
+      var statusHTML = `<button type='button' class='${status}-status-button' id='status${dose}_${id}' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button>`
       var date = appointmentId // show ID by default, can occur if appointment not found
       if((date == null)||(date==''))
         date = `<button type='button' onclick="scheduleNow()" disabled>schedule now</button>`
@@ -289,12 +292,12 @@ function showMatches() {
         date = appointment['Date'] + "@" + appointment['Time']
       }
 
-
       html += `<td>${date}</td>`;
       html += `<td>${dose}</td>`;
       html += `<td>${brand}</td>`;
       html += `<td>${consent}</td>`;
-      html += `<td>${status}</td>`;
+      html += `<td>${statusHTML}</td>`;
+      html += `<td>${highriskHTML}</td>`;
       html += `<td>${notes}</td>`;
       html += "</tr>"
     } // for each match
@@ -309,32 +312,68 @@ function scheduleNow(){
 }
 
 function doCheckin(name, id, appointmentId, dose){
-  var modalHTML = `<h1>Confirm Check-in?</h1>${name}`
-  var callback = `onCheckinConfirm('${id}','${appointmentId}', '${dose}')`
+  var btn = document.getElementById('status'+dose + "_"+id)
+  if(btn.innerHTML.includes('completed'))
+    var modalHTML = `<h1>Undo Check-in?</h1>${name}`
+
+  if(btn.innerHTML.includes('registered'))
+    var modalHTML = `<h1>Confirm Check-in?</h1>${name}`
+
+  var callback = `onCheckInConfirm('${id}','${appointmentId}', '${dose}')`
   showModalDialog(modalHTML,[{text:'No'},{text:'Yes',callback:callback}])
 }
 
-function onCheckinConfirm(id, appointmentId, dose){
-
+function onCheckInConfirm(id, appointmentId, dose){
   var lot = document.getElementById('lot').value
-  var division = document.getElementById('division').value
-  var state = 'completed'
+  var btn = document.getElementById('status'+dose + "_"+id)
 
-  console.log("checkin",id, appointmentId, dose, lot, division)
+  var status = 'completed'
+  if(btn.innerHTML.includes('completed'))
+    status = 'registered'
+
+  console.log("checkin",id, appointmentId, dose, lot, status)
 
   //change google sheet data
-  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose, lot, division)
+  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose, lot, status)
 
   //change in memory data used by live update
   for(var i = 0; i < data.length; i++) {
     if(id == data[i]['ID'].toUpperCase()){
-      data[i]['Dose'+dose+'Status'] = state
+      data[i]['Dose'+dose+'Status'] = status
+      break;
     }
   }
 
   //change current displayed HTML
-  document.getElementById('status'+dose + "_"+id).innerHTML = 'completed'
+  btn.className = status+'-status-button'
+  btn.innerHTML = status
+}
 
+function toggleHighRisk(id) {
+  var btn = document.getElementById('highrisk'+id)
+
+  var setHighRisk = !btn.innerHTML.includes("High")
+
+  //update current html
+  if(setHighRisk) {
+    btn.className = "high-risk-button"
+    btn.innerHTML = "High Risk"
+  }
+  else {
+    btn.className = "low-risk-button"
+    btn.innerHTML = "Low Risk"
+  }
+
+  //change in memory data used by live update
+  for(var i = 0; i < data.length; i++) {
+    if(id == data[i]['ID'].toUpperCase()){
+      data[i]['HighRisk'] = setHighRisk;
+      break;
+    }
+  }
+
+  // update database
+  google.script.run.setSheetValueUsingHeaders("Patients", 'ID', id, {HighRisk: setHighRisk})
 }
 
 // reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output

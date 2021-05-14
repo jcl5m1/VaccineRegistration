@@ -2,7 +2,7 @@ var profileData = null;
 var urlParameters = null;
 var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'upload', 'insurance', 'docusign', 'login', 'logout'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'upload', 'insurance', 'docusign', 'email.test'];
 
 function doGet(e) {
 
@@ -36,7 +36,7 @@ function doGet(e) {
     profileData = { 'ID': hashTimestamp() }
   }
 
-  if ((page == 'profile') || (page == 'appointments')) {
+  if ((page == 'profile') || (page == 'appointments')|| (page == 'email.test')) {
     if (profileData == null) {
       profileData = searchPatients(e.parameter);
     }
@@ -48,6 +48,10 @@ function doGet(e) {
   }
 
   return routePage(page);
+}
+
+function loadProfile(id){
+  profileData = searchPatients(id);
 }
 
 // post was having trouble with HTMLService return, so using doGet right now
@@ -355,7 +359,7 @@ function processCancelAppointment(formElem) {
 }
 
 
-function processCheckIn(patientId, appointmentId, dose, lot, division) {
+function processCheckIn(patientId, appointmentId, dose, lot, status) {
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -366,12 +370,12 @@ function processCheckIn(patientId, appointmentId, dose, lot, division) {
   debugLog('checkedin', patientId + ',' + appointmentId + ',' + dose)
   // update the patient page
   var prefix = 'Dose' + dose
-  values[prefix + 'AppointmentID'] = appointmentId
-  values[prefix + 'Status'] = 'completed'
-  values[prefix + 'Lot'] = lot
-  values[prefix + 'Division'] = division
+//  values[prefix + 'AppointmentID'] = appointmentId. //shouldn't be needed
+  values[prefix + 'Status'] = status
+  if(status == 'completed')
+    values[prefix + 'Lot'] = lot
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
-  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+  if (!('spreadsheetId' in res[prefix + 'Status'])) {
     var msg = "failed to update patient profile"
     return msg
   }
