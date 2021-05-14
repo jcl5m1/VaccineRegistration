@@ -104,7 +104,7 @@
         html += `<td>${firstName} ${lastName}<br>`;
         html += `<a href='tel: ${phone}'>${phone}</a> <a href='mailto: ${email}'>${email}</a></td>`;
         html += `<td>${notes}</td>`;
-        html += `<td> Status: <b><div id='${r['ID']}status'>${r['Status'].toUpperCase()} </div></b></td>`;
+        html += `<td> <div id='${r['ID']}status'>${r['Status']} </div></td>`;
         html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED')">Invite</button></td>`;
         html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED')">Cancel</button></td>`;
         html += "</tr>";
