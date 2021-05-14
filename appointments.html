@@ -18,27 +18,13 @@
 			<?!=importHTML('help.html')?>
 	</table>
 
-	<table width=400>
-		<td align=center>        
-			<? if('ID' in urlParameters) {
-        if(ENABLE_QR_CODE){?>
-          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
-          <div class='qr-caption'>
-  				<?=urlParameters['ID']?></div>
-		  	<?} else {?>
-	  		  ID: <?=urlParameters['ID']?>
-		  <?}
-      }?>
-		</td>
-	</table><br>
-
-	<div id='existingReservations'></div>
 	<br>
 	<table class='section-bar'>
 		<td width=400 align=center>
 			<div id="selectionHeader">Select Appointment</div>
 		</td>
 	</table><br>
+
 	<div id='selectionBody'>
 		<form id='DateForm'>
 			<div id="selectDate">
@@ -52,9 +38,24 @@
 				<div id="dayInfo"></div>
 			</form>
 	</div>
-	<br><br><br>
+	<br>
 
-	<div class="time-check">Last checked: <?= new Date().toLocaleString() ?></div><br>
+	<div id='existingReservations'></div>
+	<table width=400>
+		<td align=center>        
+			<? if('ID' in urlParameters) {
+        if(ENABLE_QR_CODE){?>
+          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
+          <div class='qr-caption'>
+  				<?=urlParameters['ID']?></div>
+		  	<?} else {?>
+	  		  ID: <?=urlParameters['ID']?>
+		  <?}
+      }?>
+		</td>
+	</table><br><br>
+
+  <div class="time-check">Last checked: <?= new Date().toLocaleString() ?></div><br>
 
 </body>
 	<script>
@@ -128,7 +129,7 @@
     }
 
     if(appointment== null)
-      return '<br><br><br><br>'
+      return '<br><br>'
 
     //show appointment information
     html = "<table ><td class='appointment-details'>"
@@ -225,7 +226,7 @@
       if(status == 'registered'){
         statusHTML = `<p class='status-registered' id='status${dose}'>REGISTERED</p>`
         if(data.action == 'reserve'){
-          var modalHTML = `<h1>Your appointment is confirmed!</h1>`
+          var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
           modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
           showModalDialog(modalHTML,[{text:'Okay'}])
         }
@@ -248,8 +249,6 @@
       html += "</td></tr>"
       html += "</table>"
     }
-
-
     document.getElementById("existingReservations").innerHTML = html;
   }
 

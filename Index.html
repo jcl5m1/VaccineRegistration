@@ -33,6 +33,7 @@
 		<li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
 	</ul>
 
+<? if(DEVELOPER_MODE) { ?>
 	<h2>Development/Test Pages</h2>
 	<ul>
 		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
@@ -83,21 +84,23 @@
 	<br><br>
   Scan to send mobile device to this page:<br>
 	<img src="<?=QR_CODE_URL?><?=url?>">
-
+<?}?>
 </body>
+<? if(DEVELOPER_MODE) { ?>
+  <script>
+    document.getElementById("browser").innerHTML = navigator.appVersion;
 
-<script>
-  document.getElementById("browser").innerHTML = navigator.appVersion;
+    document.addEventListener('keydown', function(event) {
+    if(event.keyCode == 37) {
+        console.log('Left was pressed');
+        showWaitScreen();
+    }
+    else if(event.keyCode == 39) {
+        console.log('Right was pressed');
+        hideWaitScreen();
+    }
+  });
+  </script>
+<?}?>
 
-  document.addEventListener('keydown', function(event) {
-  if(event.keyCode == 37) {
-      console.log('Left was pressed');
-      showWaitScreen();
-  }
-  else if(event.keyCode == 39) {
-      console.log('Right was pressed');
-      hideWaitScreen();
-  }
-});
-</script>
 </html>

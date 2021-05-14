@@ -218,8 +218,8 @@ function showMatches() {
       if(notes == null)
         notes = ''
 
-      var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}'>${lastName}, ${firstName}</a>`;
-      var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}'>profile</a>`;
+      var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}' target=new>${lastName}, ${firstName}</a>`;
+      var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}' target=new>profile</a>`;
 
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
