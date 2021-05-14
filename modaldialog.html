@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!-- The Modal -->
+<div id="modalDialog" class="modal">
+	<!-- Modal content -->
+	<div id='modalContent' class="modal-content">
+		<span class="close" onclick='closeModal()'>&times;</span>
+		default content
+	</div>
+
+</div>
+<script>
+	// Get the modal
+var modal = document.getElementById("modalDialog");
+
+function showModalDialog(content, buttons) {
+  var html = ''
+  if(buttons == null)
+    html = `<span  onclick='closeModal()' class="close">&times;</span>`
+  html += "<table width=100%><tr><td>"
+  html += content
+  html += "</td></tr>"
+  html += "<tr><td align=center>"
+  
+  for(var b in buttons){
+    html += `<button type='button' class='modal-content-button' onclick="closeModal();${buttons[b].callback}">${buttons[b].text}</button> `
+  }
+  html += "</td></tr></table>"
+
+  document.getElementById("modalContent").innerHTML = html;
+  document.getElementById("modalDialog").style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+function closeModal() {
+  document.getElementById("modalDialog").style.display = "none";
+}
+
+</script>
+
+<style>
+	/* The Modal (background) */
+	.modal {
+		display: none;
+		/* Hidden by default */
+		position: fixed;
+		/* Stay in place */
+		z-index: 1;
+		/* Sit on top */
+		left: 0;
+		top: 0;
+		width: 100%;
+		/* Full width */
+		height: 100%;
+		/* Full height */
+		overflow: auto;
+		/* Enable scroll if needed */
+		background-color: rgb(0, 0, 0);
+		/* Fallback color */
+		background-color: rgba(0, 0, 0, 0.4);
+		/* Black w/ opacity */
+	}
+
+	/* Modal Content/Box */
+	.modal-content {
+		background-color: #fff;
+		margin: 15% auto;
+		/* 15% from the top and centered */
+		padding: 20px;
+		border: 20px solid #6bdcff;
+		width: 80%;
+		/* Could be more or less, depending on screen size */
+		color: black;
+		font-family: Arial, serif, bold;
+	}
+
+	.modal-content-button {
+		background-color: #63b4ff;
+		border: none;
+		color: white;
+		padding: 10px 15px;
+		text-align: center;
+		border-radius: 10px;
+		text-decoration: none;
+		display: inline-block;
+		cursor: pointer;
+		font-size: 16px;
+	}
+
+	.modal-content-button:hover {
+		background-color: #0000ff;
+	}
+
+	/* The Close Button */
+	.close {
+		color: #aaa;
+		float: right;
+		font-size: 28px;
+		font-weight: bold;
+	}
+
+	.close:hover,
+	.close:focus {
+		color: black;
+		text-decoration: none;
+		cursor: pointer;
+	}
+</style>

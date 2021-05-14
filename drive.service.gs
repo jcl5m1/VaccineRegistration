@@ -13,7 +13,7 @@ function uploadFileWithBase64String(name, imgString) {
 
   // example prefix
   // "data:image/jpeg;base64,/9j/4AAQSkZJR...."
-  var prefix = imgString.substring(0,i);
+  var prefix = imgString.substring(0, i);
   var contentType = prefix.substring(prefix.indexOf(":"), prefix.indexOf(";"));
 
   var payload = imgString.substring(i + 1);

@@ -4,19 +4,42 @@
 <head>
 	<base target="_top">
 </head>
+<?!=importHTML('css.html')?>
 
-<body onload="onLoad()">
-	<? 
-  var url = getScriptUrl();
-  ?>
-
+<body onload="onLoad()" style="font-family: sans-serif">
+	<? var url = getScriptUrl(); ?>
+	<?!=importHTML('modaldialog.html') ?>
 	<a href='<?=url?>'>Home</a><br>
+	<table width=400>
+		<td>
+			<div class='title'>Appointments</div>
+		</td>
+		<td>
+			<?!=importHTML('help.html')?>
+	</table>
+
+	<table width=400>
+		<td align=center>        
+			<? if('ID' in urlParameters) {
+        if(ENABLE_QR_CODE){?>
+          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
+          <div class='qr-caption'>
+  				<?=urlParameters['ID']?></div>
+		  	<?} else {?>
+	  		  ID: <?=urlParameters['ID']?>
+		  <?}
+      }?>
+		</td>
+	</table><br>
+
 	<div id='existingReservations'></div>
-	<h1>
-		<div id='selectionHeader'>Select Available Appointment:</div>
-	</h1>
+	<br>
+	<table class='section-bar'>
+		<td width=400 align=center>
+			<div id="selectionHeader">Select Appointment</div>
+		</td>
+	</table><br>
 	<div id='selectionBody'>
-		Last checked: <?= new Date().toLocaleString() ?><br>
 		<form id='DateForm'>
 			<div id="selectDate">
 				<select name='date' onchange='onDateSelect(this)'>
@@ -29,14 +52,27 @@
 				<div id="dayInfo"></div>
 			</form>
 	</div>
+	<br><br><br>
+
+	<div class="time-check">Last checked: <?= new Date().toLocaleString() ?></div><br>
+
 </body>
-<script>
-	var days = {};
+	<script>
+		var days = {};
   var hasAvailability = {};
   var appointments;
 
   function onLoad() {
-    google.script.run.withSuccessHandler(onAppointmentData).getSheetDataAsDict('Appointments')
+    <? if(appointmentData == null) {?>
+      google.script.run.withSuccessHandler(onAppointmentData).getSheetDataAsDict('Appointments')
+    <?} else {?>
+      var res = []
+      <? for(i in appointmentData){ ?>
+        var a = <?!=JSON.stringify(appointmentData[i])?>;
+        res.push(a);
+      <?}?>
+      onAppointmentData(res);
+    <?}?>
   }
 
   function onSuccess(result){
@@ -64,16 +100,17 @@
     // construct date drop down with availability
     for (var day in days) {
       var disabled = (day in hasAvailability) ? '' : 'disabled';
-      html += "<option value='" + day + "' " + disabled + ">" + day+ "</option>";
+      html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
     }
     html += "</select>"
     document.getElementById("selectDate").innerHTML = html;
 
-    // get appointments for this profile ID, and display
-
-    <? if(profileData != null) {?>
-      var profileId = '<?=profileData['ID']?>'
-      google.script.run.withSuccessHandler(updateExistingReservations).getAppointments(profileId);
+    // get appointments for this profile and display
+    <? if(profileData != null) {
+      var data = getOnlyAppointmentData(profileData)
+      ?>
+      var res = <?!=JSON.stringify(data)?>;
+      updateExistingReservations(res);
     <?  } else { ?>
       updateExistingReservations();
     <? } ?>
@@ -91,33 +128,48 @@
     }
 
     if(appointment== null)
-      return ''
+      return '<br><br><br><br>'
 
     //show appointment information
-    html = `<b>${appointment['Name']}</b><br>`;
+    html = "<table ><td class='appointment-details'>"
+    html += `${appointment['Name']}<br>`;
     var loc = appointment['Location']
-    html += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
-    html += `${appointment['Date']} ${appointment['Time']}<br>`
-    html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`
+    html += `When: ${convertDateToString(appointment['Date'])} ${convert24to12hr(appointment['Time'])}<br>`
+    html += `Where: <a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
+    html += `Brand: ${appointment['VaccineBrand']}<br>`
     html += `Notes: ${appointment['Notes']}<br>`
+    html += `</td></table>`
 
     return html
   }
 
   function generateAppointmentCancelButton(profileId, dose){
-    html = `<form action="<?=url?>">`
+    var formId = `formCancel${dose}`
+    html = `<form id='${formId}' action="<?=url?>">`
     html += `<input type="hidden" name='prev' value='appointments'>`
     html += `<input type="hidden" name='page' value='appointments'>`
     html += `<input type="hidden" name='ID' value='${profileId}'>`
     html += `<input type="hidden" name='dose' value='${dose}'>`
-    html += `<button type='button' onclick="google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(this.form)">Cancel</button>`
+    var modalHTML = `<h1>Are you sure you want to cancel?</h1>`
+    var callback = `onCancelConfirm(${formId})`
+    html += `<button type='button' id='buttonCancel${dose}' class='cancel-button' onclick="showModalDialog('${modalHTML}',[{text:'No'},{text:'Yes',callback:'${callback}'}])">Cancel</button>`
     html += `</form>`
     return html
   }
 
+  function onCancelConfirm(formElem){
+    //hide cancel button
+    document.getElementById('buttonCancel'+formElem.dose.value).style.display="none"
+    //update status string
+    var status = document.getElementById('status'+formElem.dose.value)
+    status.innerHTML = "CANCELLING..."
+    status.className = 'status-cancelling'
+    google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(formElem)
+  }
+
   function updateExistingReservations(data){
 
-    var valid = true
+    var valid = true;
     // no data, return
     if((data == null)||(typeof data == undefined)) {
       valid = false;
@@ -135,21 +187,24 @@
 
     var dose1status = data['Dose1Status']
     if(dose1status == ''){
-      dose1status = 'not yet scheduled'
+      dose1status = ''
+      document.getElementById('selectionHeader').innerHTML = "Select Dose 1 Appointment:"
     }
     else {
-      if(dose1status == 'registered')
+      if(dose1status == 'registered') {
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
+      }
       if(dose1status == 'completed')
         document.getElementById('selectionHeader').innerHTML = "Select Dose 2 Appointment:"
     }
 
     var dose2status = data['Dose2Status']
     if((dose2status == '')||(dose2status == null))
-      dose2status = 'not yet scheduled'
+      dose2status = ''
     else {
-      if(dose2status == 'registered')
+      if(dose2status == 'registered') {
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
+      }
       if(dose2status == 'completed') {
         document.getElementById('selectionHeader').innerHTML = "No Additional Appointments Needed"
       }
@@ -160,28 +215,40 @@
       document.getElementById('selectionBody').innerHTML = ""
     }
 
-    var profileId = data['ID']
+    var html = "<table class='section-bar'><td width=400 align=center>Your Appointments</td></table><br>"
+    var arr =[dose1status, dose2status]
+    for(var dose = 1; dose < arr.length+1; dose++)
+    {
+      var status = arr[dose-1]
+      var statusHTML = `<p class='status-unscheduled' id='status${dose}'>NOT SCHEDULED</p>`
+      // more patient readable status
+      if(status == 'registered'){
+        statusHTML = `<p class='status-registered' id='status${dose}'>REGISTERED</p>`
+        if(data.action == 'reserve'){
+          var modalHTML = `<h1>Your appointment is confirmed!</h1>`
+          modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
+          showModalDialog(modalHTML,[{text:'Okay'}])
+        }
+      }
+      if(status == 'completed')
+        statusHTML = `<p class='status-completed' id='status${dose}'>RECIEVED</p>`
 
-    var html = "<h1>Your Appointments:</h1>"
-    html += `<table><td valign=top>`
-    html += `<b>Dose 1: ${dose1status}</b><br>`
-    html += `Consent: ${data['Dose1ConsentStatus']}<br>`
-    html += generateAppointmentHtml(data['Dose1AppointmentID'])
-    if(dose1status == "registered")
-      html += generateAppointmentCancelButton(profileId, 1)
+      html += `<table>`
+      html += `<tr><td valign=top>`
+      html += `<b>Dose ${dose}: ${statusHTML}</b><br>`
+      html += `Consent: ${data['Dose' + dose + 'ConsentStatus']}`
+      html += "</td><td>"
+      html += "</td><td>"
+      if(status == "registered") {
+        html += generateAppointmentCancelButton(data['ID'], dose)
+      }
+      html += "</td></tr>"
+      html += "<tr><td colspan=2>"
+      html += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
+      html += "</td></tr>"
+      html += "</table>"
+    }
 
-    html += "<br>"
-    html += `<b>Dose 2: ${dose2status}</b><br>`
-    html += `Consent: ${data['Dose2ConsentStatus']}<br>`
-    html += generateAppointmentHtml(data['Dose2AppointmentID'])
-    if(dose2status == "registered")
-      html += generateAppointmentCancelButton(profileId,2)
-
-    html += `</td><td width=50>`
-    html += `</td><td align=center>`
-    html += `<img src='<?=QR_CODE_URL?>${data['ID']}'><br>`
-    html += `PatientID: ${data['ID']}<br>This code may help with check-in.`
-    html += "</td></table>"
 
     document.getElementById("existingReservations").innerHTML = html;
   }
@@ -224,10 +291,26 @@
       return;
     }
 
-    //console.log(patientId, appointmentId, dose)
     google.script.run.withSuccessHandler(updateExistingReservations).processReserveAppointment(patientId, dose, appointmentId, appointment.VaccineBrand)
   }
 
+  function convert24to12hr(time){
+    //format time to 12hr
+    hrs = parseInt(time.split(':')[0]);
+    suffix = (hrs >= 12) ? " PM" : " AM";
+    hrs = (hrs >= 13) ? hrs-12: hrs;
+    return '' + hrs + ':' + time.split(':')[1] + suffix;
+  }
+
+  function convertDateToString(date){
+    //format time to 12hr
+    var parts = date.split('-')
+    var year = parts[0];
+    var month = parseInt(parts[1]);
+    var day = parts[2];
+    months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    return year + '-' + months[month-1] + '-'+day;
+  }
 
   function onDateSelect(e){
     var day = e.value;
@@ -251,13 +334,7 @@
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {
         var appointment = appts[i];
-        time = appointment['Time'];
-
-        //format time to 12hr
-        hrs = parseInt(time.split(':')[0]);
-        suffix = (hrs >= 12) ? " PM" : " AM";
-        hrs = (hrs >= 13) ? hrs-12: hrs;
-        time = '' + hrs + ':' + time.split(':')[1] + suffix;
+        time = convert24to12hr(appointment['Time']);
 
         disabled = '';
         if (appointment['Remaining'] == 0)
@@ -272,6 +349,6 @@
     }
     document.getElementById("dayInfo").innerHTML = html;
   }
-</script>
+	</script>
 
 </html>

@@ -4,32 +4,46 @@
 <head>
 	<base target="_top">
 </head>
+<?!=importHTML('css.html')?>
 
-<body onload="onLoad()">
+<body onload="onLoad()" style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
-	<h1>New Registration</h1>
+	<table>
+		<td>
+			<div class='title'>New Registration</div>
+		</td>
+		<td>
+			<?!=importHTML('help.html')?>
+	</table>
+
 	<form id="myform" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="insurance">
 		<input type="hidden" name="action" value="register">
-    <input type="hidden" name="dose" value="1">
-    <input type="hidden" name="ID" value="<?=profileData['ID']?>">
+		<input type="hidden" name="dose" value="1">
+		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
 
-		<h2>Patient Information</h2>
-		(optional) Scan State ID Barcode: 
-    <input type="file" accept="image/*"
-      name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
-    		<canvas hidden id="canvasID" width="0" height="0"></canvas>
-      First Name: <input type="text" required name="FirstName"><br>
+		<table class='section-bar'>
+			<td width=400 align=center>
+				Patient Information
+			</td>
+		</table><br>
+		<? if(ENABLE_QR_CODE) {?>
+		(optional) Scan State ID Barcode:
+		<input type="file" accept="image/*"
+        name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
+		<canvas hidden id="canvasID" width="0" height="0"></canvas>
+		<?}?>
+		First Name: <input type="text" required name="FirstName"><br>
       Last Name: <input type="text" required name="LastName"><br>
       Date of Birth <input type="date" required name="DateOfBirth"><br>
-      Gender: <select name="Gender">
+      Gender: <select required name="Gender">
         <option value="male">Male</option>
         <option value="female">Female</option>
         <option value="other">Other</option>
       </select><br>
       Race:
-		<select name="Race">
+		<select required name="Race">
         <option value="White">White</option>
         <option value="BlackOrAfricanAmerican">Black or African American</option>
         <option value="AmericanIndianOrAlaskaNative">American Indian or Alaska Native</option>
@@ -39,32 +53,47 @@
         <option value="DeclineToSpecify">Decline to Specify</option>
       </select><br>
       Ethnicity:
-		<select name="Ethnicity">
+		<select required name="Ethnicity">
         <option value="HispanicOrLatino">Hispanic or Latino</option>
         <option value="NonHispanicOrLatino">Non Hispanic or Latino</option>
         <option value="Other">Other</option>
         <option value="DeclineToSpecify">Decline to Specify</option>
       </select><br>
 		<br>
-		<h2>Parent/Gaurdian/Self</h2>
-		What is your relationship to Patient? <select name="RelationshipToPatient">
+
+
+
+
+		What is your relationship to Patient? <select name="RelationshipToPatient" onchange="onRelationshipSelect(this.value)">
         <option value="self">Self</option>
-        <option value="gaurdian">Parent/Gaurdian</option>
-      </select><br>
-      If you are not the patient, enter your name: <input type="text" name="SignatureName"><br>
+        <option value="guardian">Parent/Guardian</option>
+      </select><br><br>
+      <div id='GuardianInfo' style="display: none">
+      <table><td>
+      Since you are not the patient, enter your name:<br>
+      Guardian First Name <input type="text" name="GuardianFirstName"><br>
+      Guardian Last Name <input type="text" name="GuardianLastName"><br>
+      </td></table>
+      </div>
 		<br>
-		<b>Preferred Contact Infomation:</b><br>
+
+		<table class='section-bar'>
+			<td width=400 align=center>
+				Contact Infomation
+			</td>
+		</table><br>
+
       Phone: <input type="text" required name="Phone"><br>
       Email: <input type="text" name="Email"><br>
 		<br>
 		<b>Address:</b><br>
-      Street: <input type="text" name="AddressStreet"><br>
-      City: <input type="text" name="AddressCity"><br>
-      State: <input type="text" name="AddressState"><br>
-      Zip: <input type="text" name="AddressZip"><br><br>
+      Street: <input type="text" required name="AddressStreet"><br>
+      City: <input type="text" required name="AddressCity"><br>
+      State: <input type="text" required name="AddressState" value="VA"><br>
+      Zip: <input type="text" required name="AddressZip"><br><br>
       Any notes we should know?<br>
 		<textarea name="Notes" rows="4" cols="50"></textarea><br>
-    <input type="hidden" id="Browser" name="Browser" value="">
+		<input type="hidden" id="Browser" name="Browser" value="">
 
 		<button type="submit">Submit</button>
 		<button type="button"
@@ -79,6 +108,14 @@ function onLoad(){
   document.getElementById("Browser").value = navigator.appVersion;
 }
 
+function onRelationshipSelect(value){
+  if(value == 'self') {
+    document.getElementById('GuardianInfo').style.display='none'
+  } else {
+    document.getElementById('GuardianInfo').style.display='block'
+  }
+}
+
 function onGenerate(record){
   myform.FirstName.value = record.FirstName;
   myform.LastName.value = record.LastName;
@@ -89,7 +126,10 @@ function onGenerate(record){
   myform.Race.value = record.Race;
   myform.Ethnicity.value = record.Ethnicity;
   myform.RelationshipToPatient.value = record.RelationshipToPatient;
-  myform.SignatureName.value = record.SignatureName;
+  onRelationshipSelect(myform.RelationshipToPatient.value)
+
+  myform.GuardianFirstName.value = record.GuardianFirstName;
+  myform.GuardianLastName.value = record.GuardianLastName;
   myform.AddressStreet.value = record.AddressStreet;
   myform.AddressCity.value = record.AddressCity;
   myform.AddressState.value = record.AddressState;
@@ -121,4 +161,5 @@ async function onBarcodeImageChange(elem, canvasId){
 }
 
 </script>
+
 </html>

@@ -21,8 +21,7 @@
 </body>
 
 <script>
-
-// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
+	// reads file into memory, draws scaled version to canvas, runs barcode detection on canvas, displays output
 async function onImageChange(elem, canvasId){
   var canvas = document.getElementById(canvasId);
   await scaleImageToFit(elem,1000,canvas);

@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <base target="_top">
-  </head>
-  <body>
-  <?var url = getScriptUrl();?>
+
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Email Test</h1>
 
-  TODO - option to use mail server to avoid gmail 100/day limit<br><br>
-  	<form id="myform" onsubmit="google.script.run.sendAppointmentEmail(this)" method="GET" action="<?=url?>">
+	TODO - option to use mail server to avoid gmail 100/day limit<br><br>
+	<form id="myform" onsubmit="google.script.run.sendAppointmentEmail(this)" method="GET" action="<?=url?>">
 		<input type="hidden" name="page" value="email">
       Email: <input type="text" name="Email"><br>
 		<button type="submit">Send</button>
 	</form>
-  </body>
+</body>
+
 </html>

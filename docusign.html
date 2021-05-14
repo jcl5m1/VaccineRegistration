@@ -8,27 +8,59 @@
 
 <body onload='checkParameters()' style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Consent Form - Docusign</h1>
+
+	<b>NOTE:</b> This page requires a Docusign account with API keys defined in config.gs (<a
+		href="https://developers.docusign.com/">https://developers.docusign.com/</a>)<br><br>
+
+    TODO: consider PandaDoc integration as well which has a free unlimited eSign account?<br>
+    TODO: consider AdobeSign integration<br>
+    TODO: Change Waiver to Consent in spreadsheet and other views <br>
+    TODO: add click to accept option (no e-sign)
+
+	<a href='https://appdemo.docusign.com/home' target=new>Docusign Dashboard</a><br><br>
 
 	<form id='EmbeddedSignatureForm'>
-    <input type="text" hidden id='EmbeddedRecipientName' size="50" value='Myldfebe Ygaysefh' required><br>
-    <input type="text" hidden id='EmbeddedRecipientEmail' size="50" value='mpzpz@lzjnt.com' required><br>
-    <input type="text" hidden id='EnvelopeID' size="50" value=''><br>
-		<button type="button" hidden
+		<b>Embedded Signature Form:</b><br>
+    Recipient Name: <input type="text" id='EmbeddedRecipientName' size="50" value='Myldfebe Ygaysefh' required><br>
+    Recipient Email: <input type="text" id='EmbeddedRecipientEmail' size="50" value='mpzpz@lzjnt.com' required><br>
+		<button type="button"
       onclick="onGenerateEmbeddedForm(document.getElementById('EmbeddedRecipientName').value, document.getElementById('EmbeddedRecipientEmail').value)">Generate Consent Form</button><br>
     </form>
+
+		<div id='framecontainer' style="display: none;">
+			<iframe id="EmbeddedDocusignFrame" onLoad="onIFrameLoad(this)">
+			</iframe>
+		</div>
 
 		<form id='GoToAppointmentsForm' method="GET" action="<?=url?>">
 			<input type="hidden" name="ID" value="test">
 			<input type="hidden" name="dose" value="1">
 			<input type="hidden" name="prev" value="consent">
 			<input type="hidden" name="page" value="appointments">
-   </form>
- 		<div id='framecontainer' style="display: none;">
-			<iframe id="EmbeddedDocusignFrame" onLoad="onIFrameLoad(this)">
-			</iframe>
-		</div>
+  </form>
+			<button type="button" onclick="testGotoAppointmentsForm()">Test Goto Appointments</button><br>
 
-    <div id="result"></div>
+			<br><br>
+
+			<from id='RequestSignatureForm'>
+				<b>Request Signature via Email:</b><br>
+    Recipient Name: <input type="text" id='RecipientName' size="50" value='John Doe' required><br>
+    Recipient Email: <input type="text" id='RecipientEmail' size="50" required><br>
+				<button type="button"
+      onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).requestDocusignSignatureUsingConfigTemplate(document.getElementById('RecipientName').value, document.getElementById('RecipientEmail').value)">Send</button><br>
+    </form><br>
+
+				<from id='CheckStatusForm'>
+					<b>Check Envelope Status:</b><br>
+    EnvelopeID: <input type="text" id='EnvelopeID' size="50" value='71741d0a-bf3f-4755-86d5-dddb629ba1cd'><br>
+					<button type="button"
+      onclick="google.script.run.withSuccessHandler(onDocusignAPIComplete).getDocusignEnvelopeStatus(document.getElementById('EnvelopeID').value)">Check</button><br>
+    </form>
+
+					<h2>Result</h2>
+					<div id="result"></div>
 </body>
 
 <style>
@@ -52,7 +84,6 @@
   var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
   function checkParameters(){
-    showWaitScreen();
     <?
     // the URL params include everything we need for a docusign, go ahead and trigger embedded docusign form
     if(("ID" in urlParameters)&&
@@ -96,11 +127,8 @@
   }
 
   function onRequestedSignature(result){
-    hideWaitScreen();
-
     // docusignAPI is requesting login, show authorization link
     if ('authUrl' in result) {
-
       // hide the waiting frame if it is visible
       document.getElementById('framecontainer').style.display = "none";
 
@@ -121,6 +149,8 @@
 
 
   function onDocusignAPIComplete(result){
+    console.log(result)
+
 
     // docusignAPI is requesting login, show authorization link
     if ('authUrl' in result) {
