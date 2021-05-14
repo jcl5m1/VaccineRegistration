@@ -18,11 +18,12 @@
     <!-- Display registration header or staff page header -->
     <? if( staff_session ) {?>
     <br />
-    You are already logged in!<br><br>
-    Current Session Key: <?=Session.getTemporaryActiveUserKey() ?><br>
+    You are already logged in!<br /><br />
+    Current Session Key:
+    <?=Session.getTemporaryActiveUserKey() ?><br />
 
     <?} else {?>
-    
+
     <p>
       <b>Directions:</b>
       <br /><br />
@@ -64,58 +65,59 @@
     <script>
       // On authorization completion
       function onOauthAPIComplete(result) {
-        html = "User Email: " + result.email + "<br><br>"
-        document.getElementById("result").innerHTML = html
-        google.script.run.withSuccessHandler(onValidateComplete).searchStaff(result.email)
+        html = "User Email: " + result.email + "<br><br>";
+        document.getElementById("result").innerHTML = html;
+        google.script.run
+          .withSuccessHandler(onValidateComplete)
+          .searchStaff(result.email);
       }
 
       // On staff validation completion
       function onValidateComplete(result) {
         if (result == true) {
-          msg = "Success!"
+          msg = "Success!";
         } else {
-          msg = "Failed!<br>  Please check with your administrator that your email was correct entered in the staff whitelist."
+          msg =
+            "Failed!<br>  Please check with your administrator that your email was correct entered in the staff whitelist.";
         }
 
-        html += "Staff Verification Result: " + msg
+        html += "Staff Verification Result: " + msg;
 
-        document.getElementById("result").innerHTML = html
+        document.getElementById("result").innerHTML = html;
 
         // Set user unique session ID
         if (result == true) {
-        /**
-        *First tests if GAS code is successful,
-        * attempts to run GAS-side function.
-        * on failure sends to onFailure function with nature of error.
-        * on success sends to result function with returned result.
-        */    
-        google.script.run.withFailureHandler(onGetIDFailure)
-                          .withSuccessHandler(onGetIDSuccess)
-                          .getID();
+          /**
+           *First tests if GAS code is successful,
+           * attempts to run GAS-side function.
+           * on failure sends to onFailure function with nature of error.
+           * on success sends to result function with returned result.
+           */
+          google.script.run
+            .withFailureHandler(onGetIDFailure)
+            .withSuccessHandler(onGetIDSuccess)
+            .getID();
         }
-
       }
-  
-    /** Displays error if there is an error on the call to server-side.
-      * run from withFailureHandler.
-      *
-      * @param {string} error - Error warninig. 
-      */ 
-    function onGetIDFailure(error){
-      let errorTxt = `<em style="color:red">The following error occurred: ${error}</em>` ;
-      document.querySelector("#staff_status").innerHTML = errorTxt;
-    };
- 
-    /** Display returned HTML from server-side. 
-      * run from withSuccessHandler. 
-      *
-      * @param {string} uniqueID - HTML containing details of unique user key. 
-      */ 
-    function onGetIDSuccess(uniqueID){
-      document.querySelector("#staff_status").innerHTML = uniqueID;
-    };
-    
-  </script>
-  
+
+      /** Displays error if there is an error on the call to server-side.
+       * run from withFailureHandler.
+       *
+       * @param {string} error - Error warninig.
+       */
+      function onGetIDFailure(error) {
+        let errorTxt = `<em style="color:red">The following error occurred: ${error}</em>`;
+        document.querySelector("#staff_status").innerHTML = errorTxt;
+      }
+
+      /** Display returned HTML from server-side.
+       * run from withSuccessHandler.
+       *
+       * @param {string} uniqueID - HTML containing details of unique user key.
+       */
+      function onGetIDSuccess(uniqueID) {
+        document.querySelector("#staff_status").innerHTML = uniqueID;
+      }
+    </script>
   </body>
 </html>

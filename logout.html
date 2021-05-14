@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <base target="_top">
+    <base target="_top" />
   </head>
   <body>
     <?var url = getScriptUrl();?>
@@ -10,13 +10,14 @@
 
     <!-- Display registration header or staff page header -->
     <? if( staff_session ) {?>
-    Error! You are still in a staff session.  Please try refreshing the page or logging out again. <BR>
-    TODO(hellojas): Sometimes we end up here after clicking logout, but works on refresh.  Check this.
+    Error! You are still in a staff session. Please try refreshing the page or
+    logging out again. <br />
+    <!-- TODO: Sometimes we end up here after clicking logout, but works on
+    refresh. Check this. -->
 
     <?} else {?>
-    You have successfully logged out.  
-    Return to public <a href="<?=url?>">Home.</a><br />
+    You have successfully logged out. Return to public
+    <a href="<?=url?>">Home.</a><br />
     <? } ?>
-
-    </body>
+  </body>
 </html>
