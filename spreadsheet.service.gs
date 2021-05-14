@@ -170,6 +170,7 @@ function getCheckInDataset() {
     'Dose2VaccineBrand',
     'Dose2ConsentStatus',
     'Dose2ConsentUrl',
+    'HighRisk',
     'Notes']
 
   for (var i = 1; i < values.length; i++) {
@@ -358,9 +359,9 @@ function addToCellIntegerValue(sheetName, id_header, id, colName, amount) {
 
 /**#####################################
  * Search staff by email address from spreadsheet.
- * 
+ *
  * @param {string} An email address.
- * 
+ *
  * @return {bool} Whether the email address was listed as staff.
  */
 function searchStaff(query) {
@@ -373,7 +374,7 @@ function searchStaff(query) {
   if(!query)
     return false
 
-  // Remove case dependency. 
+  // Remove case dependency.
   query = query.toUpperCase()
 
   // Get index of email column.
@@ -388,7 +389,7 @@ function searchStaff(query) {
     var v = values[i][email_column].toUpperCase();
     debug(v)
     if (query == v) {
-      return true  
+      return true
       }
     }
   return false

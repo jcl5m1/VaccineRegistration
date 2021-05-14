@@ -131,6 +131,7 @@ function testGetId() {
  * @return {bool} Validated staff session.
  */
 function validateStaffSession() {
+
   var userKey = Session.getTemporaryActiveUserKey();
   var prop_keys = PropertiesService.getScriptProperties().getKeys();
   var validated_session = false;
