@@ -7,6 +7,8 @@
 
 <body onload="onLoad()" style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
+  <?!=importHTML('modaldialog.html') ?>
+
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
 
@@ -278,9 +280,9 @@ function showMatches() {
       html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
       html += `<td width=300>${nameAppointmentUrl}</td>`      
       html += `<td>${profileUrl}</td>`
-
+      var name = `${lastName}, ${firstName}`
       if(status=='registered') { // use status as checkin button
-        status = `<div id='status${dose}_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId}',${dose})">${status}</button></div>`
+        status = `<div id='status${dose}_${id}'><button type='button' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button></div>`
       }
       var date = appointmentId // show ID by default, can occur if appointment not found
       if((date == null)||(date==''))
@@ -309,11 +311,19 @@ function scheduleNow(){
   console.log("schedule now not yet implemented")
 }
 
-function doCheckin(id, appointmentId, dose){
+function doCheckin(name, id, appointmentId, dose){
+  var modalHTML = `<h1>Confirm Check-in?</h1>${name}`
+  var callback = `onCheckinConfirm('${id}','${appointmentId}', '${dose}')`
+  showModalDialog(modalHTML,[{text:'No'},{text:'Yes',callback:callback}])
+}
+
+function onCheckinConfirm(id, appointmentId, dose){
+
   var lot = document.getElementById('lot').value
   var division = document.getElementById('division').value
-  console.log('checkin',id,appointmentId, dose, lot, division)
   var state = 'completed'
+
+  console.log("checkin",id, appointmentId, dose, lot, division)
 
   //change google sheet data
   google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose, lot, division)
