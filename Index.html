@@ -1,105 +1,159 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=2.0" />
+    <base target="_top" />
+  </head>
+  <?!=importHTML('css.html')?>
+  <?!=importHTML('modaldialog.html')?>
+  <?!=importHTML('wait.html')?>
+  <body style="font-family: sans-serif">
+    <?var url = getScriptUrl();?>
+    <img src="<?!=FRONT_PAGE_LOGO_IMAGE?>" /><br />
 
-<head>
-	<meta name="viewport" content="width=device-width, initial-scale=2.0" />
-	<base target="_top">
-</head>
-<?!=importHTML('css.html')?>
-<?!=importHTML('modaldialog.html')?>
-<?!=importHTML('wait.html')?>
+    <?var staff_session = validateStaffSession();?>
 
-<body style="font-family: sans-serif">
-	<?var url = getScriptUrl();?>
-	<img src='<?!=FRONT_PAGE_LOGO_IMAGE?>'><br>
+    <!-- Display registration header or staff page header -->
+    <? if( staff_session ) {?>
 
-	<div class="title">COVID-19 Vaccine Registration</div><br>
-	<table>
-		<tr>
-			<td>
-				<h1><a href='<?=url?>?page=register'>New Registration</a></h1>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<h1><a href='<?=url?>?page=lookup'>Lookup Registration</a></h1>
-			</td>
-		</tr>
-	</table>
-	<br><br><br>
-	<h2>Staff Only Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=checkin'>Check-In</a></li>
-		<li><a href='<?=url?>?page=waitlist'>Waitlist</a></li>
-	</ul>
+    <div class="title">COVID-19 Vaccine Staff Dashboard</div>
+    <br />
+    <?} else {?>
+    <div class="title">COVID-19 Vaccine Registration</div>
+    <br />
+    <? } ?>
+
+    <table>
+      <tr>
+        <td>
+          <h1><a href="<?=url?>?page=register">New Registration</a></h1>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <h1><a href="<?=url?>?page=lookup">Lookup Registration</a></h1>
+        </td>
+      </tr>
+    </table>
+    <br /><br /><br />
+
+    <!-- Display staff only pages if staff-->
+    <? if( staff_session) {?>
+    <h2>Staff Only Pages</h2>
+    <ul>
+      <li><a href="<?=url?>?page=checkin">Check-In</a></li>
+      <li><a href="<?=url?>?page=waitlist">Waitlist</a></li>
+      <li>
+        <a
+          onclick="google.script.run.withSuccessHandler(onLogout).deleteCurrentUserSession()"
+          href="<?=url?>?page=logout"
+          >Log Out</a
+        >
+      </li>
+    </ul>
+
+    <!-- Else display staff login page -->
+    <?} else {?>
+
+    <h2>Staff</h2>
+    <ul>
+      <li><a href="<?=url?>?page=login">Staff Login</a></li>
+    </ul>
+
+    <? } ?>
 
 <? if(DEVELOPER_MODE) { ?>
-	<h2>Development/Test Pages</h2>
-	<ul>
-		<li><a href='<?=url?>?page=appointments'>Appointments</a></li>
-		<li><a href='<?=url?>?page=questionaire'>COVID Questionaire</a></li>
-		<li><a href='<?=url?>?page=camera'>Parse Image Testing</a></li>
-		<li><a href='<?=url?>?page=barcode'>Parse Barcode Testing</a></li>
-		<li><a href='<?=url?>?page=email'>Email Testing</a></li>
-		<li><a href='<?=url?>?page=upload'>Upload Testing</a></li>
-		<li><a href='<?=url?>?page=docusign'>Docusign Form Testing - Docusign</a></li>
-		<li onclick="showModalDialog('Test')">Test Modal Dialog</li>
-		<li
-			onclick="showModalDialog('Select one',[{text:'Go Back', callback: 'console.log(\'goback\')'},{text:'Confirm', callback: 'console.log(\'confirm\')'}])">
-			Test OK-Cancel Modal Dialog</li>
+    <!-- Development pages -->
 
-	</ul>
+    <h2>Development/Test Pages</h2>
+    <ul>
+      <li><a href="<?=url?>?page=appointments">Appointments</a></li>
+      <li><a href="<?=url?>?page=questionaire">COVID Questionaire</a></li>
+      <li><a href="<?=url?>?page=camera">Parse Image Testing</a></li>
+      <li><a href="<?=url?>?page=barcode">Parse Barcode Testing</a></li>
+      <li><a href="<?=url?>?page=email">Email Testing</a></li>
+      <li><a href="<?=url?>?page=upload">Upload Testing</a></li>
+      <li>
+        <a href="<?=url?>?page=docusign">Docusign Form Testing - Docusign</a>
+      </li>
+      <li><a href="<?=url?>?page=login">Google Login Testing</a></li>
+      <li onclick="showModalDialog('Test')">Test Modal Dialog</li>
+      <li
+        onclick="showModalDialog('Select one',[{text:'Go Back', callback: 'console.log(\'goback\')'},{text:'Confirm', callback: 'console.log(\'confirm\')'}])"
+      >
+        Test OK-Cancel Modal Dialog
+      </li>
+    </ul>
 
+    <h2>User Info</h2>
+    Active User Email:
+    <?=getUserEmail() ?><br />
+    Temp User Key:
+    <?=Session.getTemporaryActiveUserKey() ?><br />
+    Browser:
+    <div id="browser"></div>
+    <br />
+    <br />
 
-	<h2>User Info</h2>
-	Active User Email: <?=getUserEmail() ?><br>
-  Temp User Key: <?=Session.getTemporaryActiveUserKey() ?><br>
-  Browser: <div id="browser"></div><br>
-	<br>
+    <a
+      href="https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>"
+      target="new"
+      >Destination Drive Folder</a
+    >
 
-	<a href='https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>' target=new>Destination Drive Folder</a>
+    <br />
+    <form id="feedback" method="POST" action="<?=url?>">
+      <br /><br />
+      <a href="https://github.com/jcl5m1/VaccineRegistration" target="new"
+        >Github Page</a
+      >
+      <h2>Feedback/Feature Request/Bug Reporting:</h2>
+      <a
+        href="https://github.com/jcl5m1/VaccineRegistration/issues"
+        target="new"
+        >Create a Github Issue</a
+      >
+      (github account required)<br /><br />
 
-	<br>
-	<form id='feedback' method="POST" action="<?=url?>">
-		<br><br>
-		<a href='https://github.com/jcl5m1/VaccineRegistration' target=new>Github Page</a>
-		<h2>Feedback/Feature Request/Bug Reporting:</h2>
-		<a href='https://github.com/jcl5m1/VaccineRegistration/issues' target=new>Create a Github Issue</a> (github
-		account required)<br><br>
-
-		<b>Create a Spreadsheet Ticket</b> (no account required) <br>
-		<input type='hidden' name='action' value='feedback'><br>
-    Your Name: <input type='text' name="CreatedBy"><br>
-    Type: <select name='Type'>
+      <b>Create a Spreadsheet Ticket</b> (no account required) <br />
+      <input type="hidden" name="action" value="feedback" /><br />
+      Your Name: <input type="text" name="CreatedBy" /><br />
+      Type:
+      <select name="Type">
         <option value="support">Support Request</option>
         <option value="feedback">General Feedback</option>
         <option value="feature">Feature Request</option>
-        <option value="bug">Report Bug</option>
-      </select><br>
-      Description:<br>
-		<textarea name="Description" rows="4" cols="50"></textarea><br>
-		<button>Submit</button>
-	</form>
+        <option value="bug">Report Bug</option></select
+      ><br />
+      Description:<br />
+      <textarea name="Description" rows="4" cols="50"></textarea><br />
+      <button>Submit</button>
+    </form>
 
-	<br><br>
-  Scan to send mobile device to this page:<br>
-	<img src="<?=QR_CODE_URL?><?=url?>">
-<?}?>
-</body>
+    <br /><br />
+    Scan to send mobile device to this page:<br />
+    <img src="<?=QR_CODE_URL?><?=url?>" />
+    <script>
+      document.getElementById("browser").innerHTML = navigator.appVersion;
+
+      function onLogout() {
+        Utilities.sleep(5000);
+      }
+    </script>
+  </body>
 <? if(DEVELOPER_MODE) { ?>
   <script>
     document.getElementById("browser").innerHTML = navigator.appVersion;
 
-    document.addEventListener('keydown', function(event) {
-    if(event.keyCode == 37) {
-        console.log('Left was pressed');
+    document.addEventListener("keydown", function (event) {
+      if (event.keyCode == 37) {
+        console.log("Left was pressed");
         showWaitScreen();
-    }
-    else if(event.keyCode == 39) {
-        console.log('Right was pressed');
+      } else if (event.keyCode == 39) {
+        console.log("Right was pressed");
         hideWaitScreen();
-    }
-  });
+      }
+    });
   </script>
 <?}?>
 

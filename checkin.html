@@ -11,7 +11,7 @@
 
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
-
+<? if (validateStaffSession()) {?>
   <table>
   <tr><td>
 	  <b>Lot:</b> 
@@ -19,17 +19,9 @@
     <select id='lot'>
       <option value='1'>1</option>
       <option value='2'>2</option>
+      <option value='3'>3</option>
     </select>
   </td></tr>  
-  <tr><td>
-    <b>Division:</b>
-  </td><td>
-    <select id='division'>
-      <option value='A'>A</option>
-      <option value='B'>B</option>
-    </select>
-  </td></tr>  
-  </table>
   <br>
 
   Filter by day: 
@@ -47,6 +39,11 @@
 	</form>
 	<br><br>
 	<div id="results"></div>
+
+  <?} else {?>
+    Hi! This is a staff only page.<br>
+    Please <a href='<?=url?>?page=login'>login</a></li> to access check-in or return home if you arrived here in error.
+<? } ?>
 </body>
 <script>
 	var data = null;

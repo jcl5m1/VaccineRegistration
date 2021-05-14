@@ -354,3 +354,43 @@ function addToCellIntegerValue(sheetName, id_header, id, colName, amount) {
   var res = setSheetValueUsingHeaders(sheetName, id_header, id, payload)
   return res
 }
+
+
+/**#####################################
+ * Search staff by email address from spreadsheet.
+ * 
+ * @param {string} An email address.
+ * 
+ * @return {bool} Whether the email address was listed as staff.
+ */
+function searchStaff(query) {
+
+  var sheetName = 'Staff'
+  var values = getSheetData(sheetName)
+  keys = values[0];
+
+  // Not enough valid parameters.
+  if(!query)
+    return false
+
+  // Remove case dependency. 
+  query = query.toUpperCase()
+
+  // Get index of email column.
+  var email_column = keys.indexOf("Email")
+  debug(email_column)
+  if (email_column == -1) {
+    return false
+  }
+
+  // Check if email is found in email column of spreadsheet.
+  for (var i = 1; i < values.length; i++) {
+    var v = values[i][email_column].toUpperCase();
+    debug(v)
+    if (query == v) {
+      return true  
+      }
+    }
+  return false
+  }
+
