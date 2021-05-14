@@ -366,11 +366,14 @@ function processCheckIn(patientId, appointmentId, dose, lot, status) {
   var values = {}
 
   debugLog('checkedin', patientId + ',' + appointmentId + ',' + dose)
+
   // update the patient page
   var prefix = 'Dose' + dose
   values[prefix + 'Status'] = status
   if(status == 'completed')
     values[prefix + 'Lot'] = lot
+  else
+    values[prefix + 'Lot'] = ''
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
   if (!('spreadsheetId' in res[prefix + 'Status'])) {
     var msg = "failed to update patient profile"
