@@ -12,7 +12,7 @@
 
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
-
+<? if (validateStaffSession()) {?>
   <table>
   <tr><td>
 	  <b>Lot:</b> 
@@ -41,6 +41,11 @@
 	</form>
 	<br><br>
 	<div id="results"></div>
+
+  <?} else {?>
+    Hi! This is a staff only page.<br>
+    Please <a href='<?=url?>?page=login'>login</a></li> to access check-in or return home if you arrived here in error.
+<? } ?>
 </body>
 <script>
 	var data = null;
