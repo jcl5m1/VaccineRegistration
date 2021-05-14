@@ -1,0 +1,123 @@
+<!-- TODO() add redirect? after logging in -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+  </head>
+
+  <body>
+    <?var url = getScriptUrl();?>
+    <?var auth_url = generateAuthUrl();?>
+    <?var user_email = getUserEmail();?>
+    <?var staff_session = validateStaffSession();?>
+
+    <a href="<?=url?>">Home</a><br />
+    <h1>Login</h1>
+
+    <!-- Display registration header or staff page header -->
+    <? if( staff_session ) {?>
+    <br />
+    You are already logged in!<br /><br />
+    Current Session Key:
+    <?=Session.getTemporaryActiveUserKey() ?><br />
+
+    <?} else {?>
+
+    <p>
+      <b>Directions:</b>
+      <br /><br />
+      Please click the <i>login</i> button below (it will take you to the
+      standard 'Sign in With Google' page)<br />
+    </p>
+
+    <a href="<?=auth_url?>" target="_blank"><button>login</button></a>
+
+    <br /><br />
+    <p>
+      After you successfully login, it will provide you with an authorization
+      token.<br />
+      You will need to copy and paste the token in the form below.<br />
+    </p>
+
+    <form id="myform">
+      <input type="hidden" name="page" value="login" />
+      <input type="hidden" name="prev" value="login" />
+      <label for="auth_code">Authorization Code:</label><br />
+      <input type="text" id="auth_code" name="auth_code" /><br />
+      <br />
+      <button
+        type="button"
+        onclick="google.script.run.withSuccessHandler(onOauthAPIComplete).tryGetEmailWithToken(document.getElementById('auth_code').value)"
+      >
+        Submit</button
+      ><br />
+    </form>
+    <br /><br />
+
+    <!-- Populates result of email login -->
+    <div id="result"></div>
+    <!-- Populates user session key if email is validated to be staff -->
+    <div id="staff_status"></div>
+
+    <? } ?>
+
+    <script>
+      // On authorization completion
+      function onOauthAPIComplete(result) {
+        html = "User Email: " + result.email + "<br><br>";
+        document.getElementById("result").innerHTML = html;
+        google.script.run
+          .withSuccessHandler(onValidateComplete)
+          .searchStaff(result.email);
+      }
+
+      // On staff validation completion
+      function onValidateComplete(result) {
+        if (result == true) {
+          msg = "Success!";
+        } else {
+          msg =
+            "Failed!<br>  Please check with your administrator that your email was correct entered in the staff whitelist.";
+        }
+
+        html += "Staff Verification Result: " + msg;
+
+        document.getElementById("result").innerHTML = html;
+
+        // Set user unique session ID
+        if (result == true) {
+          /**
+           *First tests if GAS code is successful,
+           * attempts to run GAS-side function.
+           * on failure sends to onFailure function with nature of error.
+           * on success sends to result function with returned result.
+           */
+          google.script.run
+            .withFailureHandler(onGetIDFailure)
+            .withSuccessHandler(onGetIDSuccess)
+            .getID();
+        }
+      }
+
+      /** Displays error if there is an error on the call to server-side.
+       * run from withFailureHandler.
+       *
+       * @param {string} error - Error warninig.
+       */
+      function onGetIDFailure(error) {
+        let errorTxt = `<em style="color:red">The following error occurred: ${error}</em>`;
+        document.querySelector("#staff_status").innerHTML = errorTxt;
+      }
+
+      /** Display returned HTML from server-side.
+       * run from withSuccessHandler.
+       *
+       * @param {string} uniqueID - HTML containing details of unique user key.
+       */
+      function onGetIDSuccess(uniqueID) {
+        document.querySelector("#staff_status").innerHTML = uniqueID;
+      }
+    </script>
+  </body>
+</html>
