@@ -43,7 +43,7 @@ function doGet(e) {
   }
 
   // gets all appointments
-  if (page == 'appointments') {
+  if ((page == 'appointments')||(page == 'checkin')) {
     appointmentData = getSheetDataAsDict('Appointments')
   }
 
@@ -355,7 +355,7 @@ function processCancelAppointment(formElem) {
 }
 
 
-function processCheckIn(patientId, appointmentId, dose) {
+function processCheckIn(patientId, appointmentId, dose, lot, division) {
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -368,6 +368,8 @@ function processCheckIn(patientId, appointmentId, dose) {
   var prefix = 'Dose' + dose
   values[prefix + 'AppointmentID'] = appointmentId
   values[prefix + 'Status'] = 'completed'
+  values[prefix + 'Lot'] = lot
+  values[prefix + 'Division'] = division
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
   if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
     var msg = "failed to update patient profile"

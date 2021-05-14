@@ -5,14 +5,30 @@
 	<base target="_top">
 </head>
 
-<body onload="google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset('2021-04-01')"
-	style="font-family: sans-serif">
+<body onload="onLoad()" style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
-<h1>Check-In (Staff Only)</h1>
+  <?!=importHTML('modaldialog.html') ?>
 
-<!-- If staff session, show full profile, else limit. -->
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Check-In (Staff Only)</h1>
 <? if (validateStaffSession()) {?>
+  <table>
+  <tr><td>
+	  <b>Lot:</b> 
+  </td><td>
+    <select id='lot'>
+      <option value='1'>1</option>
+      <option value='2'>2</option>
+      <option value='3'>3</option>
+    </select>
+  </td></tr>  
+  <br>
+
+  Filter by day: 
+  <select id='dateSelect' name='date' onchange='onDateSelect(this)'>
+    <option value='all' selected>all</option>
+  </select><br>
+
 	<form id="myform">
 		Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
 		<? if(ENABLE_QR_CODE) {?>
@@ -27,30 +43,101 @@
   <?} else {?>
     Hi! This is a staff only page.<br>
     Please <a href='<?=url?>?page=login'>login</a></li> to access check-in or return home if you arrived here in error.
-    <? } ?>
+<? } ?>
 </body>
 <script>
-	var data;
+	var data = null;
+var days = {};
+var appointmentsLUT = {};
 
 function onKeyUp(e) {
-  showMatches(e.value);
+  showMatches();
+}
+
+function convert24to12hr(time){
+  //format time to 12hr
+  hrs = parseInt(time.split(':')[0]);
+  suffix = (hrs >= 12) ? " PM" : " AM";
+  hrs = (hrs >= 13) ? hrs-12: hrs;
+  return '' + hrs + ':' + time.split(':')[1] + suffix;
+}
+
+function convertDateToString(date){
+  //format time to 12hr
+  var parts = date.split('-')
+  var year = parts[0];
+  var month = parseInt(parts[1]);
+  var day = parts[2];
+  months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return year + '-' + months[month-1] + '-'+day;
+}
+
+function onLoad(){
+
+  <? if(appointmentData != null) {?>
+    var res = []
+    <? for(i in appointmentData){ ?>
+      var a = <?!=JSON.stringify(appointmentData[i])?>;
+      res.push(a);
+    <?}?>
+    onAppointmentData(res);
+  <?}?>
+
+  google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset()
+
+}
+
+function onAppointmentData(results){
+  var appointments = results
+  //load appointments group by day and by name
+  for (var i in appointments) {
+    var appointment = appointments[i];
+    var day = appointment['Date'];
+    var name = appointment['Name'];
+    if (!(day in days))
+      days[day] = {}
+    if (!(name in days[day]))
+      days[day][name] = []
+    days[day][name].push(appointment);
+    appointmentsLUT[appointment['ID']] = appointment
+  }
+
+  // construct date drop down with availability
+  var dateSelecter = document.getElementById("dateSelect");
+  for (var day in days) {
+    var option = document.createElement("option");
+    option.text = convertDateToString(day);
+    option.value = day;
+    dateSelecter.add(option);
+  }
+
+  showMatches()
+}
+
+function onDateSelect(elem){
+  showMatches()
 }
 
 function onCheckInData(result) {
   data = result
-  console.log(data.length);
-  showMatches('');
+  showMatches();
 }
 
 function onSuccess(result){
-  console.log(result);
+//  console.log(result);
 }
 
-function showMatches(query) {
+function showMatches() {
+  if(data == null)
+    return
+
+  query = document.getElementById('query').value
+  day = document.getElementById('dateSelect').value
 
   // all upper without whitespace
   query = query.toUpperCase().replace(' ','');
   var matches = []
+  day = day.replaceAll('-','')
 
   // case insensitive first or last name search
   for(var i = 0; i < data.length; i++) {
@@ -59,7 +146,23 @@ function showMatches(query) {
     var fullName = firstName + lastName;
     var id = data[i]['ID'].toUpperCase();
 
-    // soft match on name?
+    var dayhit = false
+    if((day != null)&&(day != 'all')) {
+      var appointmentId = data[i]['Dose1AppointmentID']
+      if(appointmentId != null){
+        if(appointmentId.includes(day))
+          dayhit = true
+      }
+      var appointmentId = data[i]['Dose2AppointmentID']
+      if(appointmentId != null){
+        if(appointmentId.includes(day))
+          dayhit = true
+      }
+      // if day was select, must have a hit
+      if(!dayhit)
+        continue;
+    }
+
     if (lastName.includes(query) || firstName.includes(query) || fullName.includes(query) || id.includes(query))
       matches.push(data[i]);
   }
@@ -88,15 +191,16 @@ function showMatches(query) {
 
     html = '';
     html += "<div><table width=100%><tr bgcolor='#ddf'>"
-    html += "<td width=300>Name</td>"
-    html += "<td>Full Profile</td>"
-    html += "<td>Dose1Status:</td>";
-    html += "<td>Dose1Consent:</td>";
-    html += "<td>Dose1Brand:</td>";
-    html += "<td>Dose2Status:</td>";
-    html += "<td>Dose2Consent:</td>";
-    html += "<td>Dose2Brand:</td>";
-    html += "<td>Notes:</td>";
+    html += "<td width=300><b>Name</b></td>"
+    html += "<td><b>Profile</b></td>"
+
+    // only show the first incomplete dose
+    html += "<td><b>Date@Time:</b></td>";
+    html += "<td><b>Dose:</b></td>";
+    html += "<td><b>Brand:</b></td>";
+    html += "<td><b>Consent:</b></td>";
+    html += "<td><b>Status:</b></td>";
+    html += "<td><b>Notes:</b></td>";
     html += "</tr>";
 
     for(var i in matches){
@@ -110,19 +214,16 @@ function showMatches(query) {
       var brand1 = matches[i]['Dose1VaccineBrand'];
       var notes = matches[i]['Notes'];
 
-
       if(notes == null)
         notes = ''
 
-      var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}'>${lastName}, ${firstName}</a>`;
-      var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}'>profile</a>`;
+      var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}' target=new>${lastName}, ${firstName}</a>`;
+      var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}' target=new>profile</a>`;
 
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
-      }
-
-      if(status1=='registered') { // allow cancelled people to still be checked in?
-        status1 = `<div id='status1_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId1}',1)">${status1}</button></div>`
+      } else {
+        consent1 = `<button type='button' disabled>request</button>`        
       }
 
       if(status1 == null)
@@ -140,16 +241,15 @@ function showMatches(query) {
       var brand2 = matches[i]['Dose2VaccineBrand'];
       var consent2url = matches[i]['Dose2ConsentUrl'];
 
+
       if(consent2 == 'completed') {
         consent2 = `<a href='${consent2url}'>${consent2}</a>`
+      } else {
+        consent2 = `<button type='button' disabled>request</button>`        
       }
 
       if(status2 == null)
         status2 = ''
-
-      if(status2=='registered') { // allow cancelled people to still be checked in?
-        status2 = `<div id='status2_${id}'><button type='button' onclick="doCheckin('${id}','${appointmentId2}',2)">${status2}</button></div>`
-      }
 
       if(consent2 == null)
         consent2 = ''
@@ -157,16 +257,44 @@ function showMatches(query) {
       if(brand2 == null)
         brand2 = ''
 
+      // only show the first incomplete dose
+
+      var appointmentId = appointmentId1
+      var status = status1
+      var brand = brand1
+      var consent = consent1
+      var dose = 1
+
+      if(status1 == 'completed') {
+        dose = 2
+        appointmentId = appointmentId2
+        status = status2
+        brand = brand2
+        consent = consent2
+      }
+
       var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
       html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
-      html += `<td width=300>${nameAppointmentUrl}</td>`
+      html += `<td width=300>${nameAppointmentUrl}</td>`      
       html += `<td>${profileUrl}</td>`
-      html += `<td>${status1}</td>`;
-      html += `<td>${consent1}</td>`;
-      html += `<td>${brand1}</td>`;
-      html += `<td>${status2}</td>`;
-      html += `<td>${consent2}</td>`;
-      html += `<td>${brand2}</td>`;
+      var name = `${lastName}, ${firstName}`
+      if(status=='registered') { // use status as checkin button
+        status = `<div id='status${dose}_${id}'><button type='button' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button></div>`
+      }
+      var date = appointmentId // show ID by default, can occur if appointment not found
+      if((date == null)||(date==''))
+        date = `<button type='button' onclick="scheduleNow()" disabled>schedule now</button>`
+      var appointment = appointmentsLUT[appointmentId]
+      if(appointment != null){
+        date = appointment['Date'] + "@" + appointment['Time']
+      }
+
+
+      html += `<td>${date}</td>`;
+      html += `<td>${dose}</td>`;
+      html += `<td>${brand}</td>`;
+      html += `<td>${consent}</td>`;
+      html += `<td>${status}</td>`;
       html += `<td>${notes}</td>`;
       html += "</tr>"
     } // for each match
@@ -176,11 +304,26 @@ function showMatches(query) {
   document.getElementById('results').innerHTML = html;
 }
 
-function doCheckin(id, appointmentId, dose){
-  console.log(id,appointmentId, dose)
+function scheduleNow(){
+  console.log("schedule now not yet implemented")
+}
+
+function doCheckin(name, id, appointmentId, dose){
+  var modalHTML = `<h1>Confirm Check-in?</h1>${name}`
+  var callback = `onCheckinConfirm('${id}','${appointmentId}', '${dose}')`
+  showModalDialog(modalHTML,[{text:'No'},{text:'Yes',callback:callback}])
+}
+
+function onCheckinConfirm(id, appointmentId, dose){
+
+  var lot = document.getElementById('lot').value
+  var division = document.getElementById('division').value
   var state = 'completed'
+
+  console.log("checkin",id, appointmentId, dose, lot, division)
+
   //change google sheet data
-  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose)
+  google.script.run.withSuccessHandler(onSuccess).processCheckIn(id, appointmentId, dose, lot, division)
 
   //change in memory data used by live update
   for(var i = 0; i < data.length; i++) {

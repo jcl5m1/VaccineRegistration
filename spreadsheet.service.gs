@@ -147,7 +147,7 @@ function dateFromDateTime(datetTime) {
 }
 
 // for a given day, get patient info needed for checkin only
-function getCheckInDataset(date) {
+function getCheckInDataset() {
   var sheetName = 'Patients';
   var values = getSheetData(sheetName);
   keys = values[0];

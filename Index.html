@@ -7,7 +7,6 @@
   <?!=importHTML('css.html')?>
   <?!=importHTML('modaldialog.html')?>
   <?!=importHTML('wait.html')?>
-
   <body style="font-family: sans-serif">
     <?var url = getScriptUrl();?>
     <img src="<?!=FRONT_PAGE_LOGO_IMAGE?>" /><br />
@@ -62,6 +61,8 @@
     </ul>
 
     <? } ?>
+
+<? if(DEVELOPER_MODE) { ?>
     <!-- Development pages -->
 
     <h2>Development/Test Pages</h2>
@@ -140,7 +141,7 @@
       }
     </script>
   </body>
-
+<? if(DEVELOPER_MODE) { ?>
   <script>
     document.getElementById("browser").innerHTML = navigator.appVersion;
 
@@ -154,4 +155,6 @@
       }
     });
   </script>
+<?}?>
+
 </html>
