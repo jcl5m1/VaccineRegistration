@@ -52,17 +52,15 @@
   var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
   function checkParameters(){
-    showWaitScreen();
-    <?
-    // the URL params include everything we need for a docusign, go ahead and trigger embedded docusign form
-    if(("ID" in urlParameters)&&
-    ("GuardianFirstName" in urlParameters)&&
-    ("GuardianLastName" in urlParameters)&&
-    ("Email" in urlParameters)) {
-      ?>
-      var name = <?=urlParameters['GuardianFirstName'] + ' ' + urlParameters['GuardianLastName']?>;
-      var email = <?=urlParameters['Email']?>;
-      var id = <?=urlParameters['ID']?>;
+
+    <? if(profileData == null) {?>
+      document.getElementById('result').innerHTML = "<table width=100%><td align=center>Error: ID not found</td></table>"
+    <? } else { ?>
+      showWaitScreen();
+
+      var name = <?=profileData['GuardianFirstName'] + ' ' + profileData['GuardianLastName']?>;
+      var email = <?=profileData['Email']?>;
+      var id = <?=profileData['ID']?>;
 
       var dose = <?=("Dose" in urlParameters) ? urlParameters['Dose'] : '1'?>;
 
@@ -71,9 +69,8 @@
         document.getElementById('EmbeddedRecipientEmail').value = email;
         onGenerateEmbeddedForm(name, email, dose, id);
       }
-      <?
-    }
-    ?>
+
+    <?}?>
   }
 
   function onIFrameLoad(elem){

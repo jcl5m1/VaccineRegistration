@@ -38,7 +38,7 @@ function doGet(e) {
     profileData = { 'ID': hashTimestamp() }
   }
 
-  if ((page == 'profile') || (page == 'appointments')) {
+  if ((page == 'profile') || (page == 'appointments')|| (page == 'consent')) {
     if (profileData == null) {
       profileData = searchPatients(e.parameter);
     }
