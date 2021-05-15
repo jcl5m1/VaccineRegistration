@@ -175,7 +175,7 @@ function onStatsData(results) {
   var html = `<table>`
   html += `<td align=center>Registered<h1>${dayRegistered}</h1></td>`
   html += `<td width=25> </td>`
-  html += `<td align=center>Checked-In<h1>${dayCompleted}</h1></td>`
+  html += `<td align=center>Completed<h1>${dayCompleted}</h1></td>`
   html += `<td width=25> </td>`
   html += `<td align=center>Unarrived<h1>${remaining}</h1></td>`
   html += `</table>`
@@ -346,13 +346,27 @@ function showMatches() {
       var consent = consent1
       var dose = 1
 
-      if(status1 == 'completed') {
-        dose = 2
-        appointmentId = appointmentId2
-        status = status2
-        brand = brand2
-        consent = consent2
+      // day 1 in completed
+      if((day != null)&&(day != 'all')) {
+        //day selected, show dose 2 is that matches the selected day, otherwise leave on day 1
+        if(appointmentId2.includes(day)) {
+          dose = 2
+          appointmentId = appointmentId2
+          status = status2
+          brand = brand2
+          consent = consent2
+        }
+      } else {
+        // no day selected, show 2nd day if first is completed
+        if(status1 == 'completed') {
+          dose = 2
+          appointmentId = appointmentId2
+          status = status2
+          brand = brand2
+          consent = consent2
+        }
       }
+
 
       var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
       html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
