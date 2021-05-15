@@ -185,10 +185,11 @@ function processRegistrationForm(params) {
     Browser: params.Browser,
   }
 
-  if (payload.GuardianFirstName == '')
+  // if patient is self
+  if (payload.RelationshipToPatient == 'self') {
     payload.GuardianFirstName = payload.FirstName
-  if (payload.GuardianLastName == '')
     payload.GuardianLastName = payload.LastName
+  }
 
   // store patient info
   res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
@@ -346,13 +347,13 @@ function processCancelAppointment(formElem) {
   var values = {}
 
   // update the patient page
-  var prefix = 'Dose' + formElem.dose
+  var prefix = 'Dose' + formElem.Dose
   values[prefix + 'AppointmentID'] = ''
   values[prefix + 'Status'] = ''
   values[prefix + 'VaccineBrand'] = ''
 
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
-  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+  if (!('spreadsheetId' in res[prefix + 'Status'])) {
     return "failed to update patient profile"
   }
   // appointment stats are updated by spreadeheet

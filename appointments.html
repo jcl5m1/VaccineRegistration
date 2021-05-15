@@ -19,12 +19,14 @@
 	</table>
 
 	<br>
+
+	<div id='existingReservations'></div>
+
 	<table class='section-bar'>
 		<td width=400 align=center>
 			<div id="selectionHeader">Select Appointment</div>
 		</td>
 	</table><br>
-
 	<div id='selectionBody'>
 		<form id='DateForm'>
 			<div id="selectDate">
@@ -35,12 +37,12 @@
 			<form id='AppointmentForm' action="<?=url?>">
 				<input type="hidden" name='page' value='appointments'>
 				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+				<input type="hidden" name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
 				<div id="dayInfo"></div>
 			</form>
 	</div>
 	<br>
 
-	<div id='existingReservations'></div>
 	<table width=400>
 		<td align=center>        
 			<? if('ID' in urlParameters) {
@@ -150,7 +152,7 @@
     html += `<input type="hidden" name='prev' value='appointments'>`
     html += `<input type="hidden" name='page' value='appointments'>`
     html += `<input type="hidden" name='ID' value='${profileId}'>`
-    html += `<input type="hidden" name='dose' value='${dose}'>`
+    html += `<input type="hidden" name='Dose' value='${dose}'>`
     var modalHTML = `<h1>Are you sure you want to cancel?</h1>`
     var callback = `onCancelConfirm(${formId})`
     html += `<button type='button' id='buttonCancel${dose}' class='cancel-button' onclick="showModalDialog('${modalHTML}',[{text:'No'},{text:'Yes',callback:'${callback}'}])">Cancel</button>`
@@ -160,9 +162,9 @@
 
   function onCancelConfirm(formElem){
     //hide cancel button
-    document.getElementById('buttonCancel'+formElem.dose.value).style.display="none"
+    document.getElementById('buttonCancel'+formElem.Dose.value).style.display="none"
     //update status string
-    var status = document.getElementById('status'+formElem.dose.value)
+    var status = document.getElementById('status'+formElem.Dose.value)
     status.innerHTML = "CANCELLING..."
     status.className = 'status-cancelling'
     google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(formElem)
@@ -186,23 +188,32 @@
       return
     }
 
+    var dose = <?=('Dose' in urlParameters) ? urlParameters['Dose'] : '1'?>
+
     var dose1status = data['Dose1Status']
-    if(dose1status == ''){
+    if((dose1status == '')||(dose1status == null))
       dose1status = ''
-      document.getElementById('selectionHeader').innerHTML = "Select Dose 1 Appointment:"
-    }
-    else {
-      if(dose1status == 'registered') {
-        document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
-      }
-      if(dose1status == 'completed')
-        document.getElementById('selectionHeader').innerHTML = "Select Dose 2 Appointment:"
-    }
 
     var dose2status = data['Dose2Status']
     if((dose2status == '')||(dose2status == null))
       dose2status = ''
-    else {
+
+    if(dose == 1) {
+      if(dose1status == ''){
+        document.getElementById('selectionHeader').innerHTML = "Select Dose 1 Appointment:"
+      }
+      if(dose1status == 'registered') {
+        document.getElementById('selectionHeader').innerHTML = "Modify Dose 1 Appointment:"
+      }
+      if(dose1status == 'completed') {
+        dose = 2
+      }
+    }
+
+    if(dose == 2) {
+      if(dose2status == '') {
+        document.getElementById('selectionHeader').innerHTML = "Select Dose 2 Appointment:"
+      }
       if(dose2status == 'registered') {
         document.getElementById('selectionHeader').innerHTML = "Modify Dose 2 Appointment:"
       }
@@ -269,21 +280,10 @@
     }
 
     var patientId = '';
-    var dose=1;
+    var dose= form.Dose.value;
     <? if(profileData != null) { ?>
       patientId = '<?=profileData['ID']?>'
-
-      // if dose 1 is completed according to profile data, set dose =2
-      <? if(profileData['Dose1Status']=="completed"){ ?>
-        dose = 2;
-        <?
-      }
-    } ?>
-
-    //allows url dose override
-    <? if ('dose' in urlParameters) { ?>
-      dose = parseInt(<?=urlParameters['dose']?>)
-    <? } ?>
+    <? } ?>    
     
     if(patientId == '') {
       alert("No Patient ID provided.  Cannot register.")
@@ -329,7 +329,8 @@
       html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`;
       html += `Notes: ${appointment['Notes']}<br>`
 
-      html += `<form><select id='appointment' onchange="onAppointmentSelect('${selectId}button')"">`
+      html += `<form>`
+      html += `<select id='appointment' onchange="onAppointmentSelect('${selectId}button')"">`
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {
         var appointment = appts[i];
