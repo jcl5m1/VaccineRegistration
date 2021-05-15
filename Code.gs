@@ -316,6 +316,9 @@ function processReserveAppointment(patientId, dose, appointmentId, brand) {
   if (patientId == '')
     return null
 
+  // store in cloud logs
+  debug('reserved appointment,' + patientId + ','+dose+','+appointmentId+',' +brand)
+
   var values = {}
   // update the patient page
   var prefix = 'Dose' + dose

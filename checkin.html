@@ -7,53 +7,56 @@
 
 <body onload="onLoad()" style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
-  <?!=importHTML('modaldialog.html') ?>
-  <?!=importHTML('css.html')?>
+	<?!=importHTML('modaldialog.html') ?>
+	<?!=importHTML('css.html')?>
 
 	<a href='<?=url?>'>Home</a><br>
 	<h1>Check-In (Staff Only)</h1>
-<? if (validateStaffSession()) {?>
-  <table>
-  <td>
-	  <b>Lot:</b> 
-    <select id='lot'>
+	<? if (validateStaffSession()) {?>
+	<table>
+		<td>
+			<b>Lot:</b>
+			<select id='lot'>
       <option value='1'>1</option>
       <option value='2'>2</option>
       <option value='3'>3</option>
     </select>
-  <br><br>
+			<br><br>
 
-  Filter by day: 
-  <select id='dateSelect' name='date' onchange='onDateSelect(this)'>
-    <option value='all' selected>all</option>
+  Filter by day:
+			<select id='dateSelect' name='date' onchange='onDateSelect(this)'>
+    <option value='all'>all</option>
   </select><br>
 
-	<form id="myform">
-		Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
-		<? if(ENABLE_QR_CODE) {?>
-		Scan QR code/ID barcode: <input type="file" accept="image/*"
+			<form id="myform">
+				Search: <input type="text" id="query" onkeyup="onKeyUp(this)"><br>
+				<? if(ENABLE_QR_CODE) {?>
+				Scan QR code/ID barcode: <input type="file" accept="image/*"
       name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
-		<canvas hidden id="canvas" width="0" height="0"></canvas>
-		<?}?>
-	</form>
-  </td>
-  <td>
-    <h3><div id='summaryStatsHeader'>Summary Stats:</div></h3>
-    <div id='summaryStats'></div>
-  </td>
-  </table><br>
-	
+				<canvas hidden id="canvas" width="0" height="0"></canvas>
+				<?}?>
+			</form>
+		</td>
+		<td>
+			<h3>
+				<div id='summaryStatsHeader'>Summary Stats:</div>
+			</h3>
+			<div id='summaryStats'></div>
+		</td>
+	</table><br>
+
 	<div id="results"></div>
 
-  <?} else {?>
-    Hi! This is a staff only page.<br>
+	<?} else {?>
+	Hi! This is a staff only page.<br>
     Please <a href='<?=url?>?page=login'>login</a></li> to access check-in or return home if you arrived here in error.
-<? } ?>
+	<? } ?>
 </body>
 <script>
-	var data = null;
+var data = null;
 var days = {};
 var appointmentsLUT = {};
+var todayApppointmentId = null
 
 function onKeyUp(e) {
   showMatches();
@@ -77,6 +80,21 @@ function convertDateToString(date){
   return year + '-' + months[month-1] + '-'+day;
 }
 
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+
+
 function onLoad(){
 
   <? if(appointmentData != null) {?>
@@ -94,6 +112,10 @@ function onLoad(){
 
 function onAppointmentData(results){
   var appointments = results
+
+  var today = new Date()
+  var todayStr = today.getFullYear() + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2)
+
   //load appointments group by day and by name
   for (var i in appointments) {
     var appointment = appointments[i];
@@ -105,7 +127,13 @@ function onAppointmentData(results){
       days[day][name] = []
     days[day][name].push(appointment);
     appointmentsLUT[appointment['ID']] = appointment
+
+    // if today is an appointment day, keeps the last appointmentID of the day
+    if(day == todayStr) {
+      todayApppointmentId = appointment['ID']
+    }
   }
+
 
   // construct date drop down with availability
   var dateSelecter = document.getElementById("dateSelect");
@@ -113,9 +141,12 @@ function onAppointmentData(results){
     var option = document.createElement("option");
     option.text = convertDateToString(day);
     option.value = day;
+
+    // auto select today if date matches - uses client timezone?
+    if(option.value == todayStr)
+      option.selected = true
     dateSelecter.add(option);
   }
-
   showMatches()
 }
 
@@ -146,7 +177,7 @@ function onStatsData(results) {
   html += `<td width=25> </td>`
   html += `<td align=center>Checked-In<h1>${dayCompleted}</h1></td>`
   html += `<td width=25> </td>`
-  html += `<td align=center>Remaining<h1>${remaining}</h1></td>`
+  html += `<td align=center>Unarrived<h1>${remaining}</h1></td>`
   html += `</table>`
 
   stats.innerHTML = html
@@ -165,6 +196,8 @@ function onCheckInData(result) {
 
 function onSuccess(result){
 //  console.log(result);
+  updateStats()
+
 }
 
 function showMatches() {
@@ -328,8 +361,10 @@ function showMatches() {
       var name = `${lastName}, ${firstName}`
       var statusHTML = `<button type='button' class='${status}-status-button' id='status${dose}_${id}' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button>`
       var date = appointmentId // show ID by default, can occur if appointment not found
-      if((date == null)||(date==''))
-        date = `<button type='button' onclick="scheduleNow()" disabled>schedule now</button>`
+      if((date == null)||(date=='')) {
+
+        date = `<button type='button' onclick="scheduleToday('${id}', '${todayApppointmentId}', ${dose})" ${(todayApppointmentId == null) ? 'disabled' : '' }>Schedule Today</button>`
+      }
       var appointment = appointmentsLUT[appointmentId]
       if(appointment != null){
         date = appointment['Date'] + "@" + appointment['Time']
@@ -350,8 +385,61 @@ function showMatches() {
   document.getElementById('results').innerHTML = html;
 }
 
-function scheduleNow(){
-  console.log("schedule now not yet implemented")
+function scheduleToday(id, appointmentId, dose){
+  console.log("schedule today:", id, appointmentId, dose)
+  var appointment = appointmentsLUT[appointmentId]
+  var brand = appointment['Brand']
+
+  //update database
+  google.script.run.withSuccessHandler(onScheduledToday).processReserveAppointment(id, dose, appointmentId, brand)
+
+}
+
+// called when scheduleToday spreadsheet update finishes
+function onScheduledToday(result){
+
+
+  // var resultValues = ['FirstName',
+  //   'LastName',
+  //   'ID',
+  //   'Dose1AppointmentID',
+  //   'Dose1Status',
+  //   'Dose1VaccineBrand',
+  //   'Dose1ConsentStatus',
+  //   'Dose1ConsentUrl',
+  //   'Dose2AppointmentID',
+  //   'Dose2Status',
+  //   'Dose2VaccineBrand',
+  //   'Dose2ConsentStatus',
+  //   'Dose2ConsentUrl',
+  //   'HighRisk',
+  //   'Notes']
+
+// {"Dose1ConsentID":"","Dose2Status":"registered","Dose1ConsentUrl":"","Dose2ConsentID":"","Dose2VaccineBrand":"","Dose2Lot":"","Dose1ConsentStatus":"","Dose2ConsentUrl":"","Dose1Status":"completed","Dose1VaccineBrand":"Pfizer","Dose1AppointmentID":"20210416_1200_VaccineSiteB","Dose2AppointmentID":"20210514_1300_VaccineSiteF","action":"reserve","Dose1Lot":"1","Dose1Division":"","ID":"9HS7F7VBBL8V0G","Dose2ConsentStatus":"","Dose2Division":""}
+
+//  console.log(JSON.stringify(result))
+  // update page data
+  for(var i in data){
+    if(data[i].ID == result.ID) {
+      data[i].Dose1ConsentID = result.Dose1ConsentID;
+      data[i].Dose1ConsentStatus = result.Dose1ConsentStatus;
+      data[i].Dose1ConsentUrl = result.Dose1ConsentUrl;
+      data[i].Dose1AppointmentID = result.Dose1AppointmentID;
+      data[i].Dose1VaccineBrand = result.Dose1VaccineBrand;
+      data[i].Dose1Status = result.Dose1Status;
+
+      data[i].Dose2ConsentID = result.Dose2ConsentID;
+      data[i].Dose2ConsentStatus = result.Dose2ConsentStatus;
+      data[i].Dose2ConsentUrl = result.Dose2ConsentUrl;
+      data[i].Dose2AppointmentID = result.Dose2AppointmentID;
+      data[i].Dose2VaccineBrand = result.Dose2VaccineBrand;
+      data[i].Dose2Status = result.Dose2Status;
+      break;
+    }
+  }
+
+  //refresh list
+  showMatches()
 }
 
 function doCheckin(name, id, appointmentId, dose){
