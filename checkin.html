@@ -14,17 +14,14 @@
 	<h1>Check-In (Staff Only)</h1>
 <? if (validateStaffSession()) {?>
   <table>
-  <tr><td>
+  <td>
 	  <b>Lot:</b> 
-  </td><td>
     <select id='lot'>
       <option value='1'>1</option>
       <option value='2'>2</option>
       <option value='3'>3</option>
     </select>
-  </td></tr>  
-  </table>
-  <br>
+  <br><br>
 
   Filter by day: 
   <select id='dateSelect' name='date' onchange='onDateSelect(this)'>
@@ -39,7 +36,13 @@
 		<canvas hidden id="canvas" width="0" height="0"></canvas>
 		<?}?>
 	</form>
-	<br><br>
+  </td>
+  <td>
+    <h3><div id='summaryStatsHeader'>Summary Stats:</div></h3>
+    <div id='summaryStats'></div>
+  </td>
+  </table><br>
+	
 	<div id="results"></div>
 
   <?} else {?>
@@ -86,7 +89,7 @@ function onLoad(){
   <?}?>
 
   google.script.run.withSuccessHandler(onCheckInData).getCheckInDataset()
-
+  updateStats()
 }
 
 function onAppointmentData(results){
@@ -116,8 +119,43 @@ function onAppointmentData(results){
   showMatches()
 }
 
+function updateStats() {
+  if(document.getElementById('dateSelect').value == 'all') {
+    document.getElementById('summaryStats').innerHTML = '(stats valid only if filtering by day)'
+  } else {
+    google.script.run.withSuccessHandler(onStatsData).getSheetDataAsDict('Appointments')
+  }
+}
+
+function onStatsData(results) {
+  var dayRegistered = 0
+  var dayCompleted = 0
+  var dateSelecter = document.getElementById("dateSelect");
+  var stats = document.getElementById("summaryStats");
+  var day = dateSelecter.value.replaceAll('-','')
+
+  for(var i in results) {
+    if(results[i]['ID'].includes(day)) {
+      dayRegistered += parseInt(results[i]['Registered'])
+      dayCompleted += parseInt(results[i]['Completed'])
+    }
+  }
+  var remaining = dayRegistered - dayCompleted
+  var html = `<table>`
+  html += `<td align=center>Registered<h1>${dayRegistered}</h1></td>`
+  html += `<td width=25> </td>`
+  html += `<td align=center>Checked-In<h1>${dayCompleted}</h1></td>`
+  html += `<td width=25> </td>`
+  html += `<td align=center>Remaining<h1>${remaining}</h1></td>`
+  html += `</table>`
+
+  stats.innerHTML = html
+   document.getElementById("summaryStatsHeader").innerHTML = `Summary for ${convertDateToString(dateSelecter.value)}:`
+}
+
 function onDateSelect(elem){
   showMatches()
+  updateStats()
 }
 
 function onCheckInData(result) {
