@@ -385,7 +385,7 @@ function showMatches() {
       }
 
       html += `<td>${date}</td>`;
-      html += `<td>${dose}</td>`;
+      html += `<td align=center>${dose}</td>`;
       html += `<td>${brand}</td>`;
       html += `<td>${consent}</td>`;
       html += `<td>${statusHTML}</td>`;
@@ -402,7 +402,7 @@ function showMatches() {
 function scheduleToday(id, appointmentId, dose){
   console.log("schedule today:", id, appointmentId, dose)
   var appointment = appointmentsLUT[appointmentId]
-  var brand = appointment['Brand']
+  var brand = appointment['VaccineBrand']
 
   //update database
   google.script.run.withSuccessHandler(onScheduledToday).processReserveAppointment(id, dose, appointmentId, brand)
@@ -412,26 +412,6 @@ function scheduleToday(id, appointmentId, dose){
 // called when scheduleToday spreadsheet update finishes
 function onScheduledToday(result){
 
-
-  // var resultValues = ['FirstName',
-  //   'LastName',
-  //   'ID',
-  //   'Dose1AppointmentID',
-  //   'Dose1Status',
-  //   'Dose1VaccineBrand',
-  //   'Dose1ConsentStatus',
-  //   'Dose1ConsentUrl',
-  //   'Dose2AppointmentID',
-  //   'Dose2Status',
-  //   'Dose2VaccineBrand',
-  //   'Dose2ConsentStatus',
-  //   'Dose2ConsentUrl',
-  //   'HighRisk',
-  //   'Notes']
-
-// {"Dose1ConsentID":"","Dose2Status":"registered","Dose1ConsentUrl":"","Dose2ConsentID":"","Dose2VaccineBrand":"","Dose2Lot":"","Dose1ConsentStatus":"","Dose2ConsentUrl":"","Dose1Status":"completed","Dose1VaccineBrand":"Pfizer","Dose1AppointmentID":"20210416_1200_VaccineSiteB","Dose2AppointmentID":"20210514_1300_VaccineSiteF","action":"reserve","Dose1Lot":"1","Dose1Division":"","ID":"9HS7F7VBBL8V0G","Dose2ConsentStatus":"","Dose2Division":""}
-
-//  console.log(JSON.stringify(result))
   // update page data
   for(var i in data){
     if(data[i].ID == result.ID) {
