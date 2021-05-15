@@ -71,7 +71,7 @@
       <li><a href="<?=url?>?page=questionaire">COVID Questionaire</a></li>
       <li><a href="<?=url?>?page=camera">Parse Image Testing</a></li>
       <li><a href="<?=url?>?page=barcode">Parse Barcode Testing</a></li>
-      <li><a href="<?=url?>?page=email">Email Testing</a></li>
+      <li><a href="<?=url?>?page=email.test">Email Testing</a></li>
       <li><a href="<?=url?>?page=upload">Upload Testing</a></li>
       <li>
         <a href="<?=url?>?page=docusign">Docusign Form Testing - Docusign</a>
@@ -133,6 +133,8 @@
     <br /><br />
     Scan to send mobile device to this page:<br />
     <img src="<?=QR_CODE_URL?><?=url?>" />
+    <? } ?>
+
     <script>
       document.getElementById("browser").innerHTML = navigator.appVersion;
 

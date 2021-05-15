@@ -1,0 +1,45 @@
+ma<!DOCTYPE html>
+<html>
+
+<head>
+	<base target="_top">
+</head>
+
+<body>
+	<?var url = getScriptUrl();?>
+	<a href='<?=url?>'>Home</a><br>
+	<h1>Email Test</h1>
+
+	TODO - option to use mail server to avoid gmail 100/day limit<br><br>
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="email.test">
+		Message Type: <select id='EmailType'>
+      <option value='confirmation'>Confirmation</option>
+      <option value='invitation'>Waitlist Invitation</option>
+      <option value='seconddose'>Second Dose Registration</option>
+    </select><br>
+      Email: <input type="text" name="Email"><br>
+		<button type="button" onclick='onSendEmail()'>Send</button>
+	</form>
+  <div id='status'></div>
+</body>
+<script>
+
+function onSendEmail() {
+  var email = myform.Email.value
+  var type = myform.EmailType.value
+  console.log(email, type)
+  if(type == 'confirmation') {
+    google.script.run.sendEmail(email, 'COVID-19 Vaccine Appointment Confirmation',
+    `<?!=importHTML('confirmation.email.html')?>`)
+  }
+  if(type == 'invitation') {
+    google.script.run.sendEmail(email, 'COVID-19 Vaccine Appointment Invitation',
+    `<?=importHTML('invitation.email.html')?>`)
+  }
+
+  document.getElementById('status').innerHTML = "sent at " + Date.now()
+}
+
+</script>
+</html>

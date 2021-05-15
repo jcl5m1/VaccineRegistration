@@ -4,6 +4,20 @@ function sendAppointmentEmail(formObject) {
   MailApp.sendEmail(formObject.Email, subject, message);
 }
 
+function sendEmail(email, subject, body) {
+  MailApp.sendEmail({
+    to: email,
+    subject: subject,
+    htmlBody: body,
+    // inlineImages:
+    //   {
+    //     googleLogo: googleLogoBlob,
+    //     youtubeLogo: youtubeLogoBlob
+    //   }
+  });
+
+}
+
 function testMail() {
   var emailQuotaRemaining = MailApp.getRemainingDailyQuota();
   console.log("Remaining email quota: " + emailQuotaRemaining);

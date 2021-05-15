@@ -2,7 +2,9 @@ var profileData = null;
 var urlParameters = null;
 var appointmentData = null;
 
-var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera', 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent', 'email', 'upload', 'insurance', 'docusign', 'login', 'logout'];
+var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
+'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
+'email', 'upload', 'insurance', 'docusign', 'email.test','login', 'logout'];
 
 function doGet(e) {
 
@@ -36,7 +38,7 @@ function doGet(e) {
     profileData = { 'ID': hashTimestamp() }
   }
 
-  if ((page == 'profile') || (page == 'appointments')) {
+  if ((page == 'profile') || (page == 'appointments')|| (page == 'consent')) {
     if (profileData == null) {
       profileData = searchPatients(e.parameter);
     }
@@ -183,10 +185,11 @@ function processRegistrationForm(params) {
     Browser: params.Browser,
   }
 
-  if (payload.GuardianFirstName == '')
+  // if patient is self
+  if (payload.RelationshipToPatient == 'self') {
     payload.GuardianFirstName = payload.FirstName
-  if (payload.GuardianLastName == '')
     payload.GuardianLastName = payload.LastName
+  }
 
   // store patient info
   res = appendSheetData("Patients", [dictToValueArray("Patients", payload)])
@@ -314,6 +317,9 @@ function processReserveAppointment(patientId, dose, appointmentId, brand) {
   if (patientId == '')
     return null
 
+  // store in cloud logs
+  debug('reserved appointment,' + patientId + ','+dose+','+appointmentId+',' +brand)
+
   var values = {}
   // update the patient page
   var prefix = 'Dose' + dose
@@ -341,13 +347,13 @@ function processCancelAppointment(formElem) {
   var values = {}
 
   // update the patient page
-  var prefix = 'Dose' + formElem.dose
+  var prefix = 'Dose' + formElem.Dose
   values[prefix + 'AppointmentID'] = ''
   values[prefix + 'Status'] = ''
   values[prefix + 'VaccineBrand'] = ''
 
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
-  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+  if (!('spreadsheetId' in res[prefix + 'Status'])) {
     return "failed to update patient profile"
   }
   // appointment stats are updated by spreadeheet
@@ -355,7 +361,7 @@ function processCancelAppointment(formElem) {
 }
 
 
-function processCheckIn(patientId, appointmentId, dose, lot, division) {
+function processCheckIn(patientId, appointmentId, dose, lot, status) {
 
   // no ID, cannot update spreadsheet
   if (patientId == '')
@@ -364,14 +370,16 @@ function processCheckIn(patientId, appointmentId, dose, lot, division) {
   var values = {}
 
   debugLog('checkedin', patientId + ',' + appointmentId + ',' + dose)
+
   // update the patient page
   var prefix = 'Dose' + dose
-  values[prefix + 'AppointmentID'] = appointmentId
-  values[prefix + 'Status'] = 'completed'
-  values[prefix + 'Lot'] = lot
-  values[prefix + 'Division'] = division
+  values[prefix + 'Status'] = status
+  if(status == 'completed')
+    values[prefix + 'Lot'] = lot
+  else
+    values[prefix + 'Lot'] = ''
   var res = setSheetValueUsingHeaders("Patients", 'ID', patientId, values)
-  if (!('spreadsheetId' in res[prefix + 'AppointmentID'])) {
+  if (!('spreadsheetId' in res[prefix + 'Status'])) {
     var msg = "failed to update patient profile"
     return msg
   }

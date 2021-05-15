@@ -19,7 +19,7 @@
 
 		<form id='GoToAppointmentsForm' method="GET" action="<?=url?>">
 			<input type="hidden" name="ID" value="test">
-			<input type="hidden" name="dose" value="1">
+			<input type="hidden" name="Dose" value="<?=('Dose' in urlParameters) ? urlParameters['Dose'] : '1'?>">
 			<input type="hidden" name="prev" value="consent">
 			<input type="hidden" name="page" value="appointments">
    </form>
@@ -52,25 +52,25 @@
   var wait_html = `<body style="margin: 0;padding: 0;"><div style="display: flex; height: 100vh;background-color: white;"><img src='<?=WAIT_GIF_URL?>' style=" margin: auto;"></div></body>`;
 
   function checkParameters(){
-    showWaitScreen();
-    <?
-    // the URL params include everything we need for a docusign, go ahead and trigger embedded docusign form
-    if(("ID" in urlParameters)&&
-    ("GuardianFirstName" in urlParameters)&&
-    ("GuardianLastName" in urlParameters)&&
-    ("Email" in urlParameters)) {
-      ?>
-      var name = <?=urlParameters['GuardianFirstName'] + ' ' + urlParameters['GuardianLastName']?>;
-      var email = <?=urlParameters['Email']?>;
-      var id = <?=urlParameters['ID']?>;
+
+    <? if(profileData == null) {?>
+      document.getElementById('result').innerHTML = "<table width=100%><td align=center>Error: ID not found</td></table>"
+    <? } else { ?>
+      showWaitScreen();
+
+      var name = <?=profileData['GuardianFirstName'] + ' ' + profileData['GuardianLastName']?>;
+      var email = <?=profileData['Email']?>;
+      var id = <?=profileData['ID']?>;
+
+      var dose = <?=("Dose" in urlParameters) ? urlParameters['Dose'] : '1'?>;
+
       if ((id != '') && (email != '') && (name != '')) {
         document.getElementById('EmbeddedRecipientName').value = name;
         document.getElementById('EmbeddedRecipientEmail').value = email;
-        onGenerateEmbeddedForm(name, email, id);
+        onGenerateEmbeddedForm(name, email, dose, id);
       }
-      <?
-    }
-    ?>
+
+    <?}?>
   }
 
   function onIFrameLoad(elem){
@@ -83,7 +83,7 @@
     lastIFrameURL = elem.src;
   }
 
-  function onGenerateEmbeddedForm(name, email, id){
+  function onGenerateEmbeddedForm(name, email, dose, id){
     if(lastIFrameURL.includes('docusign')) {
       console.log("already submitted form - reload page")
       return;
@@ -92,7 +92,7 @@
     document.getElementById('framecontainer').style.display = "block";
 
     //generate full window waiting iframe which will get new src when docusign load
-    google.script.run.withSuccessHandler(onRequestedSignature).requestSignature(name, email,1,id);
+    google.script.run.withSuccessHandler(onRequestedSignature).requestSignature(name, email, dose,id);
   }
 
   function onRequestedSignature(result){
@@ -143,10 +143,10 @@
     if("ID" in urlParameters) {
       ?>
       var id = '<?=urlParameters['ID']?>'
-      var dose = parseInt('<?=('dose' in urlParameters) ? urlParameters['dose']:1?>')
+      var dose = parseInt('<?=('Dose' in urlParameters) ? urlParameters['Dose']:1?>')
       google.script.run.processDocusignComplete(id,dose,result)
       GoToAppointmentsForm.ID.value = id
-      GoToAppointmentsForm.dose.value = dose
+      GoToAppointmentsForm.Dose.value = dose
       GoToAppointmentsForm.submit();
       <?
     } else {
@@ -155,7 +155,7 @@
       // hide the waiting frame if it is visible to show debug data
       document.getElementById('framecontainer').style.display = "none";
 
-      // convert dict to table   
+      // convert dict to html table   
       html += '<table border=0>'
       var i = 0
       for(var key in result ){
