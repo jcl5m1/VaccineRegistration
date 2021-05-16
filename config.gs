@@ -25,7 +25,7 @@ var DOCUSIGN_TEST_ENVELOPE_ID = 'YOUR_TEST_ID'
 
 //3rd party utilities/links
 var WAIT_GIF_URL = 'https://media1.giphy.com/media/3oEjI6SIIHBdRxXI40/200.gif';
-var QR_CODE_URL = 'http://chart.googleapis.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl='
+var QR_CODE_URL = 'https://chart.googleapis.com/chart?chs=150x150&cht=qr&choe=UTF-8&chl='
 var ENABLE_QR_CODE = true
 
 var HELP_PHONE_NUMBER = '555-555-5555';
