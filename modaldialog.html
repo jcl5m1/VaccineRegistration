@@ -12,10 +12,13 @@
 	// Get the modal
 var modal = document.getElementById("modalDialog");
 
-function showModalDialog(content, buttons) {
+function showModalDialog(content, buttons, disableClose) {
   var html = ''
-  if(buttons == null)
-    html = `<span  onclick='closeModal()' class="close">&times;</span>`
+  if(buttons == null) {
+    if(disableClose !== true){
+      html = `<span  onclick='closeModal()' class="close">&times;</span>`
+    }
+  }
   html += "<table width=100%><tr><td>"
   html += content
   html += "</td></tr>"

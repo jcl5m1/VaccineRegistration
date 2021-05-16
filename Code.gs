@@ -4,7 +4,8 @@ var appointmentData = null;
 
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
-'email', 'upload', 'insurance', 'docusign', 'email.test','login', 'logout'];
+'email', 'upload', 'insurance', 'docusign', 'email.test',
+'login', 'logout','confirmation'];
 
 function doGet(e) {
 
@@ -38,14 +39,14 @@ function doGet(e) {
     profileData = { 'ID': hashTimestamp() }
   }
 
-  if ((page == 'profile') || (page == 'appointments')|| (page == 'consent')) {
+  if (['profile', 'appointments', 'consent','confirmation'].indexOf(page) >= 0) {
     if (profileData == null) {
       profileData = searchPatients(e.parameter);
     }
   }
 
   // gets all appointments
-  if ((page == 'appointments')||(page == 'checkin')) {
+  if (['appointments','checkin','confirmation'].indexOf(page) >= 0) {
     appointmentData = getSheetDataAsDict('Appointments')
   }
 

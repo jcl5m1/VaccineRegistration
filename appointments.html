@@ -239,7 +239,9 @@
         if(data.action == 'reserve'){
           var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
           modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-          showModalDialog(modalHTML,[{text:'Okay'}])
+          modalHTML += "<h1>Your done. You can close this page</h1>"
+          modalHTML += "We've sent a confirmation message to your email. If you need to make any modifications to your appointment, click use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
+          showModalDialog(modalHTML, null) // add third parameter to disable closing.
         }
       }
       if(status == 'completed')
