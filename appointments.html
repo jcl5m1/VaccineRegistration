@@ -248,7 +248,6 @@
           dateSelect.value=''
           onDateSelect(dateSelect)
 
-
           // send confirmation email
           google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose)
         }
@@ -356,6 +355,7 @@
 
       html += `<form>`
       html += `<select id='appointment' onchange="onAppointmentSelect()">`
+
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {
         var appointment = appts[i];

@@ -9,6 +9,7 @@ var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'email', 'upload', 'insurance', 'docusign', 'email.test',
 'login', 'logout','confirmation', 'confirmation.email'];
 
+
 function doGet(e) {
 
   if (!(e)) {
