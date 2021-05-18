@@ -4,6 +4,8 @@ function sendAppointmentEmail(formObject) {
   MailApp.sendEmail(formObject.Email, subject, message);
 }
 
+var dataFromServerTemplate = null
+
 function sendAppointmentConfirmationEmail(id, dose) {
 
   if(profileData == null)
@@ -16,6 +18,7 @@ function sendAppointmentConfirmationEmail(id, dose) {
   var prefix = "Dose"+dose
   var email = profileData['Email']  
   var appointmentId = profileData[prefix+"AppointmentID"]
+
   var appointment = null
   for(var i in appointmentData) {
     var a = appointmentData[i]
@@ -24,9 +27,21 @@ function sendAppointmentConfirmationEmail(id, dose) {
       break;
     }
   }
-  email='jcl5m1@gmail.com'
-  sendEmail(email, 'COVID-19 Vaccine Appointment Confirmation', importHTML('confirmation.email.html'))
-  return [id, dose, email, appointment]
+
+  // override email with developer recipient email address
+  if(DEVELOPER_MODE)
+    email=DEVELOPER_RECIPIENT_EMAIL
+
+  var params = {
+    'id': id,
+    'email': email,
+    'appointmentId': appointmentId,
+    'appointment': appointment,
+    'dose': dose
+  }
+  dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
+  sendEmail(email, 'COVID-19 Vaccine Appointment Confirmation', importHTML('confirmation.email.html', params))
+  return [id, dose, email, appointmentId]
 }
 
 function sendEmail(email, subject, body) {
