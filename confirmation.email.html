@@ -1,7 +1,48 @@
 <html>
-  <body>
-    <h1>Your appointment is confirmed!</h1>
-    <? profileData['ID'] ?><br>
-    <a href='http://google.com'>test link</a>
+
+<body style="font-family: sans-serif">
+	<? var url = getScriptUrl(); ?>
+	<h1>Your appointment registration is confirmed!</h1><br>
+
+	<?
+      var id = dataFromServerTemplate.id;
+      var dose = dataFromServerTemplate.dose;
+      var appointment = dataFromServerTemplate.appointment;
+      var appointmentId = dataFromServerTemplate.appointmentId
+    ?>
+
+  <? if(appointment == null){ ?>
+    Error: Could not find AppointmentID: <?=appointmentId?><br>
+  <?} else {?>
+    <table ><td class='appointment-details'>
+    <b><?=appointment['Name']?></b><br>
+    Dose: <?=dose?><br>
+    When: <?= convertDateToString(appointment['Date'])?> <?=convert24to12hr(appointment['Time'])?><br>
+    Where: <a href="https://www.google.com/maps/search/?api=1&query=<?=appointment['Location']?>" target=new> <?=appointment['Location']?></a><br>
+    Brand: <?=appointment['VaccineBrand']?><br>
+    Notes: <?=appointment['Notes']?><br>
+    </td></table>
+  <?}?>
+  <table width=400>
+  <td align=center>        
+    <?if(ENABLE_QR_CODE){?>
+      <img src='<?=QR_CODE_URL?><?=id?>'>
+      <div class='qr-caption'>
+      ID: <?=id?></div>
+    <?} else {?>
+      ID: <?=id?>
+  <?}?>
+  </td>
+	</table><br><br>
+
+  If you have questions about your appointment, please contact email <a href="mailto:<?=HELP_EMAIL?>"><?=HELP_EMAIL?><a/> or call <a href="tel:<?=HELP_PHONE_NUMBER?>"><?=HELP_PHONE_NUMBER?></a><br>
+
+	<br>
+  If you need to modify or cancel your appointment, <a href='<?=url?>?page=appointments&ID=<?=id?>&Dose=<?=dose?>'>use this
+		link.</a>.<br>
+
+
+
+
   </body>
 </html>

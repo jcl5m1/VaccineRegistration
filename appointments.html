@@ -49,7 +49,7 @@
         if(ENABLE_QR_CODE){?>
           <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
           <div class='qr-caption'>
-  				<?=urlParameters['ID']?></div>
+  				ID: <?=urlParameters['ID']?></div>
 		  	<?} else {?>
 	  		  ID: <?=urlParameters['ID']?>
 		  <?}
@@ -84,7 +84,7 @@
 
   function onAppointmentData(results) {
     appointments = results;
-    html = "<select name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
+    html = "<select id='dateSelect' name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
 
     //load appointments group by day and by name
     for (var i in appointments) {
@@ -239,9 +239,17 @@
         if(data.action == 'reserve'){
           var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
           modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-          modalHTML += "<h1>Your done. You can close this page</h1>"
-          modalHTML += "We've sent a confirmation message to your email. If you need to make any modifications to your appointment, click use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
+          modalHTML += "<h1>Your done! You can close this page</h1>"
+          modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
           showModalDialog(modalHTML, null) // add third parameter to disable closing.
+
+          // reset date select
+          var dateSelect = document.getElementById('dateSelect')
+          dateSelect.value=''
+          onDateSelect(dateSelect)
+
+          // send confirmation email
+          google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose)
         }
       }
       if(status == 'completed')
@@ -266,13 +274,21 @@
   }
 
   function onAppointmentSelect(selectId) {
-    document.getElementById(selectId).disabled=false
+    document.getElementById(`appointmentSelectButton`).disabled=false
   }
 
   function onRegister(form) {
+
     var appointmentId = form.appointment.value
     var appointment = null
 
+    // disable the select button while we are processing
+    var buttonId = `appointmentSelectButton`
+    var selectBtn = document.getElementById(buttonId)
+    console.log(buttonId, selectBtn)
+    selectBtn.disabled = true
+    selectBtn.innerHTML = "processing..."
+    
     //get the appointment that matches this ID
     for (var i in appointments) {
       if(appointments[i]['ID'] == appointmentId){
@@ -318,6 +334,12 @@
     var names = days[day];
 
     html = ''
+
+    if(day == '') {
+      document.getElementById("dayInfo").innerHTML = html;
+      return
+    }
+
     for(var j in names) {
       var appts = names[j]
       var appointment = appts[0];// use the first appointment of this day for displaying general information
@@ -332,7 +354,8 @@
       html += `Notes: ${appointment['Notes']}<br>`
 
       html += `<form>`
-      html += `<select id='appointment' onchange="onAppointmentSelect('${selectId}button')"">`
+      html += `<select id='appointment' onchange="onAppointmentSelect()">`
+
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {
         var appointment = appts[i];
@@ -346,7 +369,7 @@
 
       }
       html += "</select><br>";
-      html += `<button id='${selectId}button' type='button' disabled onclick='onRegister(this.form)'>Select</button>`
+      html += `<button id='appointmentSelectButton' type='button' disabled onclick='onRegister(this.form)'>Select</button>`
       html += `</form><br><br>`;
     }
     document.getElementById("dayInfo").innerHTML = html;

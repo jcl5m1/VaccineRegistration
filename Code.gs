@@ -1,11 +1,14 @@
-var profileData = null;
-var urlParameters = null;
-var appointmentData = null;
+var profileData = null; // info for one patient
+var urlParameters = null; // object containing URL parameters
+var appointmentData = null; // all appointments
+
+
 
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
 'email', 'upload', 'insurance', 'docusign', 'email.test',
-'login', 'logout','confirmation'];
+'login', 'logout','confirmation', 'confirmation.email'];
+
 
 function doGet(e) {
 
@@ -48,6 +51,12 @@ function doGet(e) {
   // gets all appointments
   if (['appointments','checkin','confirmation'].indexOf(page) >= 0) {
     appointmentData = getSheetDataAsDict('Appointments')
+  }
+
+  //allows testing of email templates
+  if(page == 'confirmation.email') {
+    id = urlParameters['ID']
+    sendAppointmentConfirmationEmail(id, 1)
   }
 
   return routePage(page);

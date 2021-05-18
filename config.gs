@@ -3,6 +3,7 @@
 
 // use to toggle developer version of the tool on/off
 var DEVELOPER_MODE = false
+var DEVELOPER_RECIPIENT_EMAIL = "test@testemail.com"
 
 //Google drive id of your project folder
 var GOOGLE_DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID'
