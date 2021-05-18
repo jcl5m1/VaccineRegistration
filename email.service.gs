@@ -44,6 +44,27 @@ function sendAppointmentConfirmationEmail(id, dose) {
   return [id, dose, email, appointmentId]
 }
 
+function sendAppointmentCancellationEmail(id, dose) {
+  if(profileData == null)
+    profileData = searchPatients({ 'ID': id });
+
+  var email = profileData['Email']  
+
+  // override email with developer recipient email address
+  if(DEVELOPER_MODE)
+    email=DEVELOPER_RECIPIENT_EMAIL
+
+  var params = {
+    'id': id,
+    'email': email,
+    'dose': dose
+  }
+  dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
+  sendEmail(email, 'COVID-19 Vaccine Appointment Cancelled', importHTML('cancel.email.html', params))
+  return [id, dose, email]
+}
+
+
 function sendEmail(email, subject, body) {
   MailApp.sendEmail({
     to: email,

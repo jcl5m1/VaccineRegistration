@@ -168,6 +168,7 @@
     status.innerHTML = "CANCELLING..."
     status.className = 'status-cancelling'
     google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(formElem)
+
   }
 
   function updateExistingReservations(data){
@@ -227,6 +228,30 @@
       document.getElementById('selectionBody').innerHTML = ""
     }
 
+
+    // process data action if specified
+    if(data.action == 'cancel') {
+      // send cancel email
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentCancellationEmail(data['ID'], dose)
+    }
+
+    if(data.action == 'reserve'){
+      var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
+      modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
+      modalHTML += "<h1>Your done! You can close this page</h1>"
+      modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
+      showModalDialog(modalHTML, null) // add third parameter to disable closing.
+
+      // reset date select
+      var dateSelect = document.getElementById('dateSelect')
+      dateSelect.value=''
+      onDateSelect(dateSelect)
+
+      // send confirmation email
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose)
+    }
+
+    // create table of dose appointments
     var html = "<table class='section-bar'><td width=400 align=center>Your Appointments</td></table><br>"
     var arr =[dose1status, dose2status]
     for(var dose = 1; dose < arr.length+1; dose++)
@@ -236,28 +261,14 @@
       // more patient readable status
       if(status == 'registered'){
         statusHTML = `<p class='status-registered' id='status${dose}'>REGISTERED</p>`
-        if(data.action == 'reserve'){
-          var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
-          modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-          modalHTML += "<h1>Your done! You can close this page</h1>"
-          modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
-          showModalDialog(modalHTML, null) // add third parameter to disable closing.
-
-          // reset date select
-          var dateSelect = document.getElementById('dateSelect')
-          dateSelect.value=''
-          onDateSelect(dateSelect)
-
-          // send confirmation email
-          google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose)
-        }
       }
-      if(status == 'completed')
+      if(status == 'completed') {
         statusHTML = `<p class='status-completed' id='status${dose}'>RECIEVED</p>`
+      }
 
       html += `<table>`
       html += `<tr><td valign=top>`
-      html += `<b>Dose ${dose}: ${statusHTML}</b><br>`
+      html += `Dose ${dose}: ${statusHTML}<br>`
       html += `Consent: ${data['Dose' + dose + 'ConsentStatus']}`
       html += "</td><td>"
       html += "</td><td>"

@@ -7,7 +7,7 @@ var appointmentData = null; // all appointments
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
 'email', 'upload', 'insurance', 'docusign', 'email.test',
-'login', 'logout','confirmation', 'confirmation.email'];
+'login', 'logout','confirmation', 'confirmation.email', 'cancel.email'];
 
 
 function doGet(e) {
@@ -57,6 +57,10 @@ function doGet(e) {
   if(page == 'confirmation.email') {
     id = urlParameters['ID']
     sendAppointmentConfirmationEmail(id, 1)
+  }
+  if(page == 'cancel.email') {
+    id = urlParameters['ID']
+    sendAppointmentCancellationEmail(id, 1)
   }
 
   return routePage(page);
