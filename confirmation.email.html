@@ -17,7 +17,7 @@
     <table ><td class='appointment-details'>
     <b><?=appointment['Name']?></b><br>
     Dose: <?=dose?><br>
-    When: <?= convertDateToString(appointment['Date'])?> <?=convert24to12hr(appointment['Time'])?><br>
+    When: <?= convertDateToString(appointment['Date'])?> @ <?=convert24to12hr(appointment['Time'])?><br>
     Where: <a href="https://www.google.com/maps/search/?api=1&query=<?=appointment['Location']?>" target=new> <?=appointment['Location']?></a><br>
     Brand: <?=appointment['VaccineBrand']?><br>
     Notes: <?=appointment['Notes']?><br>
