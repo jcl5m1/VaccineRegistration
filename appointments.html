@@ -284,8 +284,8 @@
     document.getElementById("existingReservations").innerHTML = html;
   }
 
-  function onAppointmentSelect(selectId) {
-    document.getElementById(`appointmentSelectButton`).disabled=false
+  function onAppointmentSelect(formElem) {
+    formElem.appointmentSelectButton.disabled=false
   }
 
   function onRegister(form) {
@@ -294,9 +294,7 @@
     var appointment = null
 
     // disable the select button while we are processing
-    var buttonId = `appointmentSelectButton`
-    var selectBtn = document.getElementById(buttonId)
-    console.log(buttonId, selectBtn)
+    var selectBtn = form.appointmentSelectButton
     selectBtn.disabled = true
     selectBtn.innerHTML = "processing..."
     
@@ -309,7 +307,8 @@
     }
 
     var patientId = '';
-    var dose= form.Dose.value;
+    var dose = <?=('Dose' in urlParameters) ? urlParameters['Dose'] : '1'?>
+
     <? if(profileData != null) { ?>
       patientId = '<?=profileData['ID']?>'
     <? } ?>    
@@ -351,6 +350,8 @@
       return
     }
 
+
+
     for(var j in names) {
       var appts = names[j]
       var appointment = appts[0];// use the first appointment of this day for displaying general information
@@ -365,7 +366,7 @@
       html += `Notes: ${appointment['Notes']}<br>`
 
       html += `<form>`
-      html += `<select id='appointment' onchange="onAppointmentSelect()">`
+      html += `<select id='appointment' onchange="onAppointmentSelect(this.form)">`
 
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {

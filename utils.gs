@@ -79,9 +79,6 @@ function getErrorObject() {
   try { throw Error('') } catch (err) { return err; }
 }
 
-// using a global becuase email generators were getting a different URL?
-var scriptURL = null;
-
 function getScriptUrl() {
   return ScriptApp.getService().getUrl();
 }

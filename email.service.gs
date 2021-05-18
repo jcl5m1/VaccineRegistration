@@ -103,6 +103,28 @@ function sendAppointmentFollowupEmail(id, dose, url) {
   return [id, dose, email]
 }
 
+
+function sendAppointmentConsentEmail(id, dose, url) {
+  if(profileData == null)
+    profileData = searchPatients({ 'ID': id });
+
+  var email = profileData['Email']  
+
+  // override email with developer recipient email address
+  if(DEVELOPER_MODE)
+    email=DEVELOPER_RECIPIENT_EMAIL
+
+  var params = {
+    'id': id,
+    'email': email,
+    'dose': dose,
+    'url': url
+  }
+  dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
+  sendEmail(email, 'COVID-19 Vaccine - Schedule Your Followup', importHTML('followup.email.html', params))
+  return [id, dose, email]
+}
+
 function sendEmail(email, subject, body) {
   MailApp.sendEmail({
     to: email,
