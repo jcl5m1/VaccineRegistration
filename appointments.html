@@ -232,7 +232,7 @@
     // process data action if specified
     if(data.action == 'cancel') {
       // send cancel email
-      google.script.run.withSuccessHandler(onSuccess).sendAppointmentCancellationEmail(data['ID'], dose)
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentCancellationEmail(data['ID'], dose,'<?=url?>')
     }
 
     if(data.action == 'reserve'){
@@ -248,7 +248,7 @@
       onDateSelect(dateSelect)
 
       // send confirmation email
-      google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose)
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose,'<?=url?>')
     }
 
     // create table of dose appointments

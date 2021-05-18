@@ -6,7 +6,7 @@ function sendAppointmentEmail(formObject) {
 
 var dataFromServerTemplate = null
 
-function sendAppointmentConfirmationEmail(id, dose) {
+function sendAppointmentConfirmationEmail(id, dose, url) {
 
   if(profileData == null)
     profileData = searchPatients({ 'ID': id });
@@ -37,14 +37,15 @@ function sendAppointmentConfirmationEmail(id, dose) {
     'email': email,
     'appointmentId': appointmentId,
     'appointment': appointment,
-    'dose': dose
+    'dose': dose,
+    'url': url
   }
   dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
   sendEmail(email, 'COVID-19 Vaccine - Appointment Confirmation', importHTML('confirmation.email.html', params))
   return [id, dose, email, appointmentId]
 }
 
-function sendAppointmentCancellationEmail(id, dose) {
+function sendAppointmentCancellationEmail(id, dose, url) {
   if(profileData == null)
     profileData = searchPatients({ 'ID': id });
 
@@ -57,7 +58,8 @@ function sendAppointmentCancellationEmail(id, dose) {
   var params = {
     'id': id,
     'email': email,
-    'dose': dose
+    'dose': dose,
+    'url': url
   }
   dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
   sendEmail(email, 'COVID-19 Vaccine - Appointment Cancelled', importHTML('cancel.email.html', params))
@@ -65,7 +67,22 @@ function sendAppointmentCancellationEmail(id, dose) {
 }
 
 
-function sendAppointmentFollowupEmail(id, dose) {
+function sendRegisterInvitationEmail(email, url) {
+  // override email with developer recipient email address
+  if(DEVELOPER_MODE)
+    email=DEVELOPER_RECIPIENT_EMAIL
+
+  var params = {
+    'email': email,
+    'url': url
+  }
+  dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
+  sendEmail(email, 'COVID-19 Vaccine - Begin Your Registration', importHTML('invitation.email.html'), params)
+  return [email, url]
+}
+
+
+function sendAppointmentFollowupEmail(id, dose, url) {
   if(profileData == null)
     profileData = searchPatients({ 'ID': id });
 
@@ -78,7 +95,8 @@ function sendAppointmentFollowupEmail(id, dose) {
   var params = {
     'id': id,
     'email': email,
-    'dose': dose
+    'dose': dose,
+    'url': url
   }
   dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
   sendEmail(email, 'COVID-19 Vaccine - Schedule Your Followup', importHTML('followup.email.html', params))

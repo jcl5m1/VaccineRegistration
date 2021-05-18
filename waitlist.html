@@ -115,8 +115,8 @@
         html += `<a href='tel: ${phone}'>${phone}</a> <a href='mailto: ${email}'>${email}</a></td>`;
         html += `<td>${notes}</td>`;
         html += `<td> <div id='${r['ID']}status'>${r['Status']} </div></td>`;
-        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED')">Invite</button></td>`;
-        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED')">Cancel</button></td>`;
+        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED','${email}')">Invite</button></td>`;
+        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED','${email}')">Cancel</button></td>`;
         html += "</tr>";
       }
       html += "</table>"
@@ -125,14 +125,27 @@
     }
 
     function onUpdateStatus(result) {
-      if(result['Status']['updatedCells'] == 1)
-        document.getElementById(result.input.ID+'status').innerHTML = result.input.Status.toUpperCase();
+      if(result['Status']['updatedCells'] == 1) {
+        var status = result.input.Status.toUpperCase()
+        document.getElementById(result.input.ID+'status').innerHTML = status;
+        if(status == 'INVITED') {
+          google.script.run.withSuccessHandler(onSuccess).sendRegisterInvitationEmail(result.input.Email, '<?=url?>')
+        }
+      }
       else
         console.log(result)
     }
 
-    function updateStatus(id, status){
-      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, {'Status': status})
+    function onSuccess(result) {
+      console.log(result)
+    }
+
+    function updateStatus(id, status, email){
+      var payload = {
+        'Status': status,
+        'Email': email // don't actually have to update it, but the call back needs this to send the email
+        }
+      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, payload)
     }
 
     function generateTest(){

@@ -79,9 +79,11 @@ function getErrorObject() {
   try { throw Error('') } catch (err) { return err; }
 }
 
+// using a global becuase email generators were getting a different URL?
+var scriptURL = null;
+
 function getScriptUrl() {
-  var url = ScriptApp.getService().getUrl();
-  return url;
+  return ScriptApp.getService().getUrl();
 }
 
 
@@ -93,7 +95,8 @@ function testUserEmail() {
 // imports html file and evaluates with Appscript using optional parameters
 function importHTML(filename, params) {
   var htmlTemplate = HtmlService.createTemplateFromFile(filename);
-  htmlTemplate.dataFromServerTemplate = params
+  if(params != null)
+    htmlTemplate.dataFromServerTemplate = params
   return htmlTemplate.evaluate().getContent();
 }
 

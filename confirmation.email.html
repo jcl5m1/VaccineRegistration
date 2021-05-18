@@ -1,15 +1,15 @@
 <html>
 
 <body style="font-family: sans-serif">
-	<? var url = getScriptUrl(); ?>
 	<h1>Your appointment registration is confirmed!</h1><br>
 
 	<?
-      var id = dataFromServerTemplate.id;
-      var dose = dataFromServerTemplate.dose;
-      var appointment = dataFromServerTemplate.appointment;
-      var appointmentId = dataFromServerTemplate.appointmentId
-    ?>
+    var id = dataFromServerTemplate.id;
+    var dose = dataFromServerTemplate.dose;
+    var appointment = dataFromServerTemplate.appointment;
+    var appointmentId = dataFromServerTemplate.appointmentId;
+    var url = dataFromServerTemplate.url;
+  ?>
 
   <? if(appointment == null){ ?>
     Error: Could not find AppointmentID: <?=appointmentId?><br>
