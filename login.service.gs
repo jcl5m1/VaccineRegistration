@@ -132,6 +132,9 @@ function testGetId() {
  */
 function validateStaffSession() {
 
+  if(DEVELOPER_BYPASS_STAFF_AUTHENTICATION)
+    return true;
+
   var userKey = Session.getTemporaryActiveUserKey();
   var prop_keys = PropertiesService.getScriptProperties().getKeys();
   var validated_session = false;

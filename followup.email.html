@@ -2,14 +2,15 @@
 
 <body style="font-family: sans-serif">
 	<? var url = getScriptUrl(); ?>
-	<h1>Your appointment has been cancelled.</h1><br>
-
 	<?
       var id = dataFromServerTemplate.id;
       var dose = dataFromServerTemplate.dose;
     ?>
 
-  You don't have to do anything else.<br><br>
+	<h1>You've recieved a vaccine dose!</h1><br>
+	<br>
+   To schedule your next appointment, <a href='<?=url?>?page=appointments&ID=<?=id?>&Dose=<?=dose?>' target=new>use this
+		link</a>.<br>
 
   <table width=400>
   <td align=center>        
@@ -25,9 +26,6 @@
 
   If you have any futher question, please email <a href="mailto:<?=HELP_EMAIL?>"><?=HELP_EMAIL?><a/> or call <a href="tel:<?=HELP_PHONE_NUMBER?>"><?=HELP_PHONE_NUMBER?></a><br>
 
-	<br>
-  If you need to reschedule your appointment, <a href='<?=url?>?page=appointments&ID=<?=id?>&Dose=<?=dose?>' target=new>use this
-		link</a>.<br>
 
   </body>
 </html>

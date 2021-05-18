@@ -7,7 +7,7 @@ var appointmentData = null; // all appointments
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
 'email', 'upload', 'insurance', 'docusign', 'email.test',
-'login', 'logout','confirmation', 'confirmation.email', 'cancel.email'];
+'login', 'logout','confirmation', 'confirmation.email', 'cancel.email', 'followup.email'];
 
 
 function doGet(e) {
@@ -62,6 +62,12 @@ function doGet(e) {
     id = urlParameters['ID']
     sendAppointmentCancellationEmail(id, 1)
   }
+
+  if(page == 'followup.email') {
+    id = urlParameters['ID']
+    sendAppointmentFollowupEmail(id, 2)
+  }
+  
 
   return routePage(page);
 }
@@ -398,6 +404,12 @@ function processCheckIn(patientId, appointmentId, dose, lot, status) {
     return msg
   }
 
+  var res = {
+    'id': patientId,
+    'action': 'checkin',
+    'dose': dose
+  }
+
   // appointment stats are updated by spreadeheet
-  return getAppointments(patientId, 'checkin')
+  return res;
 }

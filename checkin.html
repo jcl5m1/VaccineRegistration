@@ -195,7 +195,9 @@ function onCheckInData(result) {
 }
 
 function onSuccess(result){
-//  console.log(result);
+  if(result.action == "checkin") {
+    google.script.run.sendAppointmentFollowupEmail(result.id, result.dose) 
+  }
   updateStats()
 
 }
