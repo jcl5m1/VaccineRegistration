@@ -121,7 +121,7 @@ function sendAppointmentConsentEmail(id, dose, url) {
     'url': url
   }
   dataFromServerTemplate = params // for debugging allows loading the email html template as a page instead of sending email
-  sendEmail(email, 'COVID-19 Vaccine - Schedule Your Followup', importHTML('followup.email.html', params))
+  sendEmail(email, 'COVID-19 Vaccine - Complete Consent', importHTML('consent.email.html', params))
   return [id, dose, email]
 }
 

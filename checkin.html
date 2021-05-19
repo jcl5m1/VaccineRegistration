@@ -292,7 +292,7 @@ function showMatches() {
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
       } else {
-        consent1 = `<button type='button' disabled>request</button>`        
+        consent1 = `<button type='button' onclick="onRequestConsent(this, '${id}',1)">request</button>`        
       }
 
       if(status1 == null)
@@ -321,7 +321,7 @@ function showMatches() {
       if(consent2 == 'completed') {
         consent2 = `<a href='${consent2url}'>${consent2}</a>`
       } else {
-        consent2 = `<button type='button' disabled>request</button>`        
+        consent2 = `<button type='button' onclick="onRequestConsent(this, '${id}',2)">request</button>`        
       }
 
       if(status2 == null)
@@ -411,6 +411,13 @@ function onSuccess(result){
 
 }
 
+function onRequestConsent(elem, id,dose) {            
+  var now = new Date()            
+  elem.innerHTML = "requested @ " + now.getHours() + ":" + ('0' + now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2)            
+  var url = '<?=url?>'
+  google.script.run.sendAppointmentConsentEmail(id, dose, url)
+}
+
 function scheduleToday(id, appointmentId, dose){
   console.log("schedule today:", id, appointmentId, dose)
   var appointment = appointmentsLUT[appointmentId]
@@ -418,7 +425,6 @@ function scheduleToday(id, appointmentId, dose){
 
   //update database
   google.script.run.withSuccessHandler(onScheduledToday).processReserveAppointment(id, dose, appointmentId, brand)
-
 }
 
 // called when scheduleToday spreadsheet update finishes
