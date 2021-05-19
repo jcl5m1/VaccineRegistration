@@ -194,13 +194,7 @@ function onCheckInData(result) {
   showMatches();
 }
 
-function onSuccess(result){
-  if(result.action == "checkin") {
-    google.script.run.sendAppointmentFollowupEmail(result.id, result.dose, '<?=url?>') 
-  }
-  updateStats()
 
-}
 
 function showMatches() {
   if(data == null)
@@ -295,7 +289,6 @@ function showMatches() {
 
       var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}' target=new>${lastName}, ${firstName}</a>`;
       var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}' target=new>profile</a>`;
-
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
       } else {
@@ -399,6 +392,23 @@ function showMatches() {
   } // no matches
 
   document.getElementById('results').innerHTML = html;
+}
+
+function onSuccess(result){
+  if(result.action == 'checkin') {
+    var url = '<?=url?>'
+    // don't send follow up email if J&J or 2nd dose
+    if((result.brand == 'J&J') || 
+        (result.dose == "2") || 
+        (result.status == "registered")){
+      console.log("no follow up email")
+    } else {
+      google.script.run.sendAppointmentFollowupEmail(result.id, parseInt(result.dose)+1, url);
+    }
+
+  }
+  updateStats()
+
 }
 
 function scheduleToday(id, appointmentId, dose){

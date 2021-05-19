@@ -419,9 +419,10 @@ function processCheckIn(patientId, appointmentId, dose, lot, status) {
 
   var res = {
     'id': patientId,
-    'action': 'checkin',
+    'action': "checkin",
     'dose': dose,
-    'brand': brand
+    'brand': brand,
+    'status': status
   }
 
   // appointment stats are updated by spreadeheet

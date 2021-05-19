@@ -37,7 +37,7 @@
 			<form id='AppointmentForm' action="<?=url?>">
 				<input type="hidden" name='page' value='appointments'>
 				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-				<input type="hidden" name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
+				<input type="hidden" id='Dose' name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
 				<div id="dayInfo"></div>
 			</form>
 	</div>
@@ -223,6 +223,9 @@
       }
     }
 
+    // store this in the page form
+    document.getElementById("Dose").value = dose
+
     // both doses done, remove selection body
     if((dose1status == 'completed')&&(dose2status == 'completed')) {
       document.getElementById('selectionBody').innerHTML = ""
@@ -307,7 +310,7 @@
     }
 
     var patientId = '';
-    var dose = <?=('Dose' in urlParameters) ? urlParameters['Dose'] : '1'?>
+    var dose = document.getElementById("Dose").value
 
     <? if(profileData != null) { ?>
       patientId = '<?=profileData['ID']?>'
