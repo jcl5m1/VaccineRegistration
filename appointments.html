@@ -36,7 +36,7 @@
 			</div><br>
 			<form id='AppointmentForm' action="<?=url?>">
 				<input type="hidden" name='page' value='appointments'>
-				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
+				<input type="hidden" name='ID' value='<?=(profileData == null) ? '' : profileData['ID']?>'>
 				<input type="hidden" id='Dose' name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
 				<div id="dayInfo"></div>
 			</form>
@@ -44,14 +44,14 @@
 	<br>
 
 	<table width=400>
-		<td align=center>        
-			<? if('ID' in urlParameters) {
+		<td align=center>
+			<? if(profileData != null) {
         if(ENABLE_QR_CODE){?>
-          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
+          <img src='<?=QR_CODE_URL?><?=profileData['ID']?>'>
           <div class='qr-caption'>
-  				ID: <?=urlParameters['ID']?></div>
+  				ID: <?=profileData['ID']?></div>
 		  	<?} else {?>
-	  		  ID: <?=urlParameters['ID']?>
+          ID not found
 		  <?}
       }?>
 		</td>
@@ -92,6 +92,7 @@
     // get appointments for this profile and display
     <? if(profileData != null) {
       var res = getOnlyAppointmentData(profileData)
+
       ?>
       profileAppointments = <?!=JSON.stringify(res)?>;
       dose1brand = profileAppointments.Dose1VaccineBrand
@@ -123,8 +124,10 @@
 
     var dose1appointment = null
     // if 1st appointment is done, restrict the list based on date range and brand
-    if(profileAppointments.Dose1Status == "completed") {
-      var dose1appointment = appointmentsLUT[profileAppointments.Dose1AppointmentID];
+    if(profileAppointments != null){
+      if(profileAppointments.Dose1Status == "completed") {
+        var dose1appointment = appointmentsLUT[profileAppointments.Dose1AppointmentID];
+      }
     }
 
     // construct date drop down with availability
