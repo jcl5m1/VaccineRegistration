@@ -41,3 +41,64 @@ The (optional, but recommended) steps below use a Chrome extension to help synch
 1.  When doing rapid edits, you can use **Deploy > Test Deployments** to create a web app instance that will refresh everytime you save your changes in the editor.  This avoids having to create a new deployment for each small change you make.
 1. (optional, but recommended) If you have the Github assistant installed, you can upload/push your code changes to Github for safe keeping allowing you to roll back code changes in case something happens.  This is particularly valuable if you are using multiple computers to edit the project.  
 1.  Once you are ready anyone on the internet to use your Web app, create a New Deployment and set **Who has access** to **Anyone**.  You will get a new URL, that you can now share with others.  You should see data appear in the your Google sheet.
+
+## Setting Up Staff Login with Google Login (OAuth API) 
+
+
+
+1. Create a new Project at Google API Console: 
+https://console.cloud.google.com/cloud-resource-manager
+
+Name: Vaccine Registration App (Or any name)
+
+<img width="554" alt="Screen Shot 2021-05-15 at 1 52 01 PM" src="https://user-images.githubusercontent.com/1888003/118377358-c931b080-b59a-11eb-82e4-46b4e2e182dd.png">
+
+2.  Click the triple bar menu on the left,  go to APIs & Services, and click Credentials. 
+<img width="486" alt="Screen Shot 2021-05-15 at 1 54 25 PM" src="https://user-images.githubusercontent.com/1888003/118377367-d353af00-b59a-11eb-913a-0805b1b93d31.png">
+
+From the drop down click "Create Credentials" and click OAuth Client ID.
+<img width="943" alt="Screen Shot 2021-05-15 at 1 38 25 PM" src="https://user-images.githubusercontent.com/1888003/118377369-d77fcc80-b59a-11eb-8a28-bfc06d68dad1.png">
+
+
+3. Fill out the following and hit create. 
+
+Application type: "Desktop app"
+
+Name: "Vaccine Registration App" (or any name you want)
+
+<img width="552" alt="Screen Shot 2021-05-15 at 1 45 11 PM" src="https://user-images.githubusercontent.com/1888003/118377371-dc448080-b59a-11eb-8afa-6e5b4277a86b.png">
+
+
+4.  A popup that says "OAuth client created" will appear with your client ID and client secret.
+<img width="536" alt="47d3f5ff-b10e-42bc-ac05-ccd176bea799" src="https://user-images.githubusercontent.com/1888003/118377376-e36b8e80-b59a-11eb-883e-36cba7979a38.png">
+
+
+Copy your Client ID and Client Secret into the file login.service.gs
+
+Replace YOUR_CLIENT_ID and YOUR_CLIENT_SECRET with your pasted ID (within the double quotes).
+
+It should be a long string of letters "abcdefg12345679".
+
+Make sure to click save after you update the config.gs.
+
+<img width="769" alt="Screen Shot 2021-05-15 at 4 39 20 PM" src="https://user-images.githubusercontent.com/1888003/118377596-30039980-b59c-11eb-9491-37902e3fbd8c.png">
+
+
+
+If you leave the OAuth dashboard page that has the ID you can always go back and click your app to find it.
+
+It will be under "OAuth 2.0 Client IDs" section in the same Credentials section from step 2.  
+
+You can click into the application to get your client secret. 
+<img width="1004" alt="Screen Shot 2021-05-15 at 1 57 38 PM" src="https://user-images.githubusercontent.com/1888003/118377386-ebc3c980-b59a-11eb-929a-3122f6326249.png">
+
+
+For more information about Google Cloud API:
+
+Creating and Managing Projects: 
+https://cloud.google.com/resource-manager/docs/creating-managing-projects
+
+
+
+
+
