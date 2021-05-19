@@ -13,7 +13,7 @@ This tool only requires a free Google account to host the project using Google S
 
 If [Google Cloud Vision Services](https://cloud.google.com/vision) are enabled on your host account, it can also perform text recognition on insurance cards for much faster (and less error prone) check-in process.  The VisionAPI service is free for the first 1000 queries/month, with a [modest cost for additional queries/month](https://cloud.google.com/vision/pricing).
 
-You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbyE-oYPWFtNmOr0epXRmwLXghkGDoGR1WiqdH_FhVtB9NLw0yJTulm6vqfbvUcyLep2NA/exec).  It is under VERY active development.
+You can play with a [early prototype instance of the tool](https://script.google.com/macros/s/AKfycbxQCGeOBYJZ4EucvnUoFeXr6I2RhDTABp1R8vlCMRJq7QZNV6sJCIsdp1wd-EO7XhCvHw/exec).  It is under VERY active development.
 
 ## Setup your own instance
 
