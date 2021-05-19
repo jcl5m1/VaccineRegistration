@@ -88,12 +88,12 @@
     html = "<select id='dateSelect' name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
 
     var profileAppointments = null;
-    var dose1brand = null;
+    var dose1brand = '';
     // get appointments for this profile and display
     <? if(profileData != null) {
       var res = getOnlyAppointmentData(profileData)
       ?>
-      var profileAppointments = <?!=JSON.stringify(res)?>;
+      profileAppointments = <?!=JSON.stringify(res)?>;
       dose1brand = profileAppointments.Dose1VaccineBrand
     <? } ?>
 
@@ -105,7 +105,7 @@
       var name = appointment['Name'];
 
       // skip if brand doesn't match ----------------
-      if(dose1brand != null) {
+      if(dose1brand != '') {
         if(brand != dose1brand) {
           continue
         }
