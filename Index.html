@@ -37,6 +37,10 @@
     </table>
     <br /><br /><br />
 
+    Scan to share this page with a mobile device:<br />
+    <img src="<?=QR_CODE_URL?><?=url?>" />
+
+
     <!-- Display staff only pages if staff-->
     <? if( staff_session) {?>
     <h2>Staff Only Pages</h2>
@@ -129,11 +133,8 @@
       <button>Submit</button>
     </form>
 
-    <br /><br />
-    Scan to send mobile device to this page:<br />
-    <img src="<?=QR_CODE_URL?><?=url?>" />
-    <? } ?>
 
+    <? } ?>
     <script>
 
       function onLogout() {
