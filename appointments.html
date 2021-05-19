@@ -64,6 +64,7 @@
   var days = {};
   var hasAvailability = {};
   var appointments;
+  var appointmentsLUT = {};
 
   function onLoad() {
     <? if(appointmentData == null) {?>
@@ -86,11 +87,30 @@
     appointments = results;
     html = "<select id='dateSelect' name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
 
+    var profileAppointments = null;
+    var dose1brand = null;
+    // get appointments for this profile and display
+    <? if(profileData != null) {
+      var res = getOnlyAppointmentData(profileData)
+      ?>
+      var profileAppointments = <?!=JSON.stringify(res)?>;
+      dose1brand = profileAppointments.Dose1VaccineBrand
+    <? } ?>
+
     //load appointments group by day and by name
     for (var i in appointments) {
       var appointment = appointments[i];
       var day = appointment['Date'];
+      var brand = appointment['VaccineBrand'];
       var name = appointment['Name'];
+
+      // skip if brand doesn't match ----------------
+      if(dose1brand != null) {
+        if(brand != dose1brand) {
+          continue
+        }
+      }
+
       if (!(day in days))
         days[day] = {}
       if (!(name in days[day]))
@@ -98,25 +118,46 @@
       days[day][name].push(appointment);
       if(appointment['Remaining'] > 0)
         hasAvailability[day] = true;
+      appointmentsLUT[appointment['ID']] = appointment
+    }
+
+    var dose1appointment = null
+    // if 1st appointment is done, restrict the list based on date range and brand
+    if(profileAppointments.Dose1Status == "completed") {
+      var dose1appointment = appointmentsLUT[profileAppointments.Dose1AppointmentID];
     }
 
     // construct date drop down with availability
     for (var day in days) {
       var disabled = (day in hasAvailability) ? '' : 'disabled';
-      html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+
+      if(dose1appointment == null) {
+        html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+      } else {
+
+        // skip if date range doesn't match ---------------------
+        var dose1Time_ms = Date.parse(dose1appointment['Date'])
+        var dose1brand = dose1appointment['VaccineBrand']
+        var nextDoseMinTime_ms = dose1Time_ms + dose1appointment.NextDoseMinDays*24*3600*1000;
+        var nextDoseMaxTime_ms = dose1Time_ms + dose1appointment.NextDoseMaxDays*24*3600*1000;
+        if(Date.parse(day) <  nextDoseMinTime_ms) {
+          continue;
+        }
+        if(Date.parse(day) >  nextDoseMaxTime_ms) {
+          continue;
+        }
+        html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+      }
     }
     html += "</select>"
     document.getElementById("selectDate").innerHTML = html;
 
-    // get appointments for this profile and display
-    <? if(profileData != null) {
-      var data = getOnlyAppointmentData(profileData)
-      ?>
-      var res = <?!=JSON.stringify(data)?>;
-      updateExistingReservations(res);
-    <?  } else { ?>
+    if(profileAppointments == null) {
       updateExistingReservations();
-    <? } ?>
+    } else {
+      updateExistingReservations(profileAppointments);
+    }
+
   }
 
   function generateAppointmentHtml(appointmentId) {
