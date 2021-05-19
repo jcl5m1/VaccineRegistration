@@ -35,10 +35,10 @@
         </td>
       </tr>
     </table>
-    <br /><br /><br />
+    <br><br><br>
 
-    Scan to share this page with a mobile device:<br />
-    <img src="<?=QR_CODE_URL?><?=url?>" />
+    Scan to share this page with a mobile device:<br>
+    <img src="<?=QR_CODE_URL?><?=url?>" /><br><br>
 
 
     <!-- Display staff only pages if staff-->
@@ -58,12 +58,10 @@
 
     <!-- Else display staff login page -->
     <?} else {?>
-
-      <ul>
-      <li><a href="<?=url?>?page=login">Staff Login</a> - TO DO remove when in prod, and share url with staff</li>
-      </ul>
-
+      <a href="<?=url?>?page=login">Staff Login</a>
     <? } ?>
+
+<br><br><a href="https://github.com/jcl5m1/VaccineRegistration" target="new">Github Project Page</a>
 
 <? if(DEVELOPER_MODE) { ?>
     <!-- Development pages -->
@@ -107,9 +105,7 @@
     <br />
     <form id="feedback" method="POST" action="<?=url?>">
       <br /><br />
-      <a href="https://github.com/jcl5m1/VaccineRegistration" target="new"
-        >Github Page</a
-      >
+
       <h2>Feedback/Feature Request/Bug Reporting:</h2>
       <a
         href="https://github.com/jcl5m1/VaccineRegistration/issues"
