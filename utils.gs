@@ -75,6 +75,13 @@ function importHTML(filename) {
   return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
 }
 
+function importNavbar(active) {
+  var t = HtmlService.createTemplateFromFile('navbar.html');
+
+  t.active = active;
+  return t.evaluate().getContent();
+}
+
 function getUserEmail() {
   email = Session.getActiveUser().getEmail()
   if (email == "")
