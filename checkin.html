@@ -220,11 +220,7 @@ function onCheckInData(result) {
   showMatches();
 }
 
-function onSuccess(result){
-//  console.log(result);
-  updateStats()
 
-}
 
 function showMatches() {
   if(data == null)
@@ -319,7 +315,6 @@ function showMatches() {
 
       var nameAppointmentUrl = `<a href='<?=url?>?page=appointments&ID=${id}' target=new>${lastName}, ${firstName}</a>`;
       var profileUrl = `<a href='<?=url?>?page=profile&ID=${id}' target=new>profile</a>`;
-
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
       } else {
@@ -429,6 +424,30 @@ function showMatches() {
   document.getElementById('results').innerHTML = html;
 }
 
+function onSuccess(result){
+  if(result.action == 'checkin') {
+    var url = '<?=url?>'
+    // don't send follow up email if J&J or 2nd dose
+    if((result.brand == 'J&J') || 
+        (result.dose == "2") || 
+        (result.status == "registered")){
+      console.log("no follow up email")
+    } else {
+      google.script.run.sendAppointmentFollowupEmail(result.id, parseInt(result.dose)+1, url);
+    }
+
+  }
+  updateStats()
+
+}
+
+function onRequestConsent(elem, id,dose) {            
+  var now = new Date()            
+  elem.innerHTML = "requested @ " + now.getHours() + ":" + ('0' + now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2)            
+  var url = '<?=url?>'
+  google.script.run.sendAppointmentConsentEmail(id, dose, url)
+}
+
 function scheduleToday(id, appointmentId, dose){
   console.log("schedule today:", id, appointmentId, dose)
   var appointment = appointmentsLUT[appointmentId]
@@ -436,7 +455,6 @@ function scheduleToday(id, appointmentId, dose){
 
   //update database
   google.script.run.withSuccessHandler(onScheduledToday).processReserveAppointment(id, dose, appointmentId, brand)
-
 }
 
 // called when scheduleToday spreadsheet update finishes

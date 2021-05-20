@@ -36,22 +36,22 @@
 			</div><br>
 			<form id='AppointmentForm' action="<?=url?>">
 				<input type="hidden" name='page' value='appointments'>
-				<input type="hidden" name='ID' value='<?=('ID' in urlParameters)?urlParameters['ID']:''?>'>
-				<input type="hidden" name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
+				<input type="hidden" name='ID' value='<?=(profileData == null) ? '' : profileData['ID']?>'>
+				<input type="hidden" id='Dose' name='Dose' value='<?=('Dose' in urlParameters)?urlParameters['Dose']:'1'?>'>
 				<div id="dayInfo"></div>
 			</form>
 	</div>
 	<br>
 
 	<table width=400>
-		<td align=center>        
-			<? if('ID' in urlParameters) {
+		<td align=center>
+			<? if(profileData != null) {
         if(ENABLE_QR_CODE){?>
-          <img src='<?=QR_CODE_URL?><?=urlParameters['ID']?>'>
+          <img src='<?=QR_CODE_URL?><?=profileData['ID']?>'>
           <div class='qr-caption'>
-  				<?=urlParameters['ID']?></div>
+  				ID: <?=profileData['ID']?></div>
 		  	<?} else {?>
-	  		  ID: <?=urlParameters['ID']?>
+          ID not found
 		  <?}
       }?>
 		</td>
@@ -64,6 +64,7 @@
   var days = {};
   var hasAvailability = {};
   var appointments;
+  var appointmentsLUT = {};
 
   function onLoad() {
     <? if(appointmentData == null) {?>
@@ -84,13 +85,33 @@
 
   function onAppointmentData(results) {
     appointments = results;
-    html = "<select name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
+    html = "<select id='dateSelect' name='date' onchange='onDateSelect(this)'><option value='' disabled selected>--select day--</option>"
+
+    var profileAppointments = null;
+    var dose1brand = '';
+    // get appointments for this profile and display
+    <? if(profileData != null) {
+      var res = getOnlyAppointmentData(profileData)
+
+      ?>
+      profileAppointments = <?!=JSON.stringify(res)?>;
+      dose1brand = profileAppointments.Dose1VaccineBrand
+    <? } ?>
 
     //load appointments group by day and by name
     for (var i in appointments) {
       var appointment = appointments[i];
       var day = appointment['Date'];
+      var brand = appointment['VaccineBrand'];
       var name = appointment['Name'];
+
+      // skip if brand doesn't match ----------------
+      if(dose1brand != '') {
+        if(brand != dose1brand) {
+          continue
+        }
+      }
+
       if (!(day in days))
         days[day] = {}
       if (!(name in days[day]))
@@ -98,25 +119,48 @@
       days[day][name].push(appointment);
       if(appointment['Remaining'] > 0)
         hasAvailability[day] = true;
+      appointmentsLUT[appointment['ID']] = appointment
+    }
+
+    var dose1appointment = null
+    // if 1st appointment is done, restrict the list based on date range and brand
+    if(profileAppointments != null){
+      if(profileAppointments.Dose1Status == "completed") {
+        var dose1appointment = appointmentsLUT[profileAppointments.Dose1AppointmentID];
+      }
     }
 
     // construct date drop down with availability
     for (var day in days) {
       var disabled = (day in hasAvailability) ? '' : 'disabled';
-      html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+
+      if(dose1appointment == null) {
+        html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+      } else {
+
+        // skip if date range doesn't match ---------------------
+        var dose1Time_ms = Date.parse(dose1appointment['Date'])
+        var dose1brand = dose1appointment['VaccineBrand']
+        var nextDoseMinTime_ms = dose1Time_ms + dose1appointment.NextDoseMinDays*24*3600*1000;
+        var nextDoseMaxTime_ms = dose1Time_ms + dose1appointment.NextDoseMaxDays*24*3600*1000;
+        if(Date.parse(day) <  nextDoseMinTime_ms) {
+          continue;
+        }
+        if(Date.parse(day) >  nextDoseMaxTime_ms) {
+          continue;
+        }
+        html += "<option value='" + day + "' " + disabled + ">" + convertDateToString(day)+ "</option>";
+      }
     }
     html += "</select>"
     document.getElementById("selectDate").innerHTML = html;
 
-    // get appointments for this profile and display
-    <? if(profileData != null) {
-      var data = getOnlyAppointmentData(profileData)
-      ?>
-      var res = <?!=JSON.stringify(data)?>;
-      updateExistingReservations(res);
-    <?  } else { ?>
+    if(profileAppointments == null) {
       updateExistingReservations();
-    <? } ?>
+    } else {
+      updateExistingReservations(profileAppointments);
+    }
+
   }
 
   function generateAppointmentHtml(appointmentId) {
@@ -168,6 +212,7 @@
     status.innerHTML = "CANCELLING..."
     status.className = 'status-cancelling'
     google.script.run.withSuccessHandler(updateExistingReservations).processCancelAppointment(formElem)
+
   }
 
   function updateExistingReservations(data){
@@ -222,11 +267,38 @@
       }
     }
 
+    // store this in the page form
+    document.getElementById("Dose").value = dose
+
     // both doses done, remove selection body
     if((dose1status == 'completed')&&(dose2status == 'completed')) {
       document.getElementById('selectionBody').innerHTML = ""
     }
 
+
+    // process data action if specified
+    if(data.action == 'cancel') {
+      // send cancel email
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentCancellationEmail(data['ID'], dose,'<?=url?>')
+    }
+
+    if(data.action == 'reserve'){
+      var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
+      modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
+      modalHTML += "<h1>Your done! You can close this page</h1>"
+      modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
+      showModalDialog(modalHTML, null) // add third parameter to disable closing.
+
+      // reset date select
+      var dateSelect = document.getElementById('dateSelect')
+      dateSelect.value=''
+      onDateSelect(dateSelect)
+
+      // send confirmation email
+      google.script.run.withSuccessHandler(onSuccess).sendAppointmentConfirmationEmail(data['ID'], dose,'<?=url?>')
+    }
+
+    // create table of dose appointments
     var html = "<table class='section-bar'><td width=400 align=center>Your Appointments</td></table><br>"
     var arr =[dose1status, dose2status]
     for(var dose = 1; dose < arr.length+1; dose++)
@@ -236,20 +308,14 @@
       // more patient readable status
       if(status == 'registered'){
         statusHTML = `<p class='status-registered' id='status${dose}'>REGISTERED</p>`
-        if(data.action == 'reserve'){
-          var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
-          modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-          modalHTML += "<h1>Your done. You can close this page</h1>"
-          modalHTML += "We've sent a confirmation message to your email. If you need to make any modifications to your appointment, click use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <b>after</b> you have recieved your first dose."
-          showModalDialog(modalHTML, null) // add third parameter to disable closing.
-        }
       }
-      if(status == 'completed')
+      if(status == 'completed') {
         statusHTML = `<p class='status-completed' id='status${dose}'>RECIEVED</p>`
+      }
 
       html += `<table>`
       html += `<tr><td valign=top>`
-      html += `<b>Dose ${dose}: ${statusHTML}</b><br>`
+      html += `Dose ${dose}: ${statusHTML}<br>`
       html += `Consent: ${data['Dose' + dose + 'ConsentStatus']}`
       html += "</td><td>"
       html += "</td><td>"
@@ -265,14 +331,20 @@
     document.getElementById("existingReservations").innerHTML = html;
   }
 
-  function onAppointmentSelect(selectId) {
-    document.getElementById(selectId).disabled=false
+  function onAppointmentSelect(formElem) {
+    formElem.appointmentSelectButton.disabled=false
   }
 
   function onRegister(form) {
+
     var appointmentId = form.appointment.value
     var appointment = null
 
+    // disable the select button while we are processing
+    var selectBtn = form.appointmentSelectButton
+    selectBtn.disabled = true
+    selectBtn.innerHTML = "processing..."
+    
     //get the appointment that matches this ID
     for (var i in appointments) {
       if(appointments[i]['ID'] == appointmentId){
@@ -282,7 +354,8 @@
     }
 
     var patientId = '';
-    var dose= form.Dose.value;
+    var dose = document.getElementById("Dose").value
+
     <? if(profileData != null) { ?>
       patientId = '<?=profileData['ID']?>'
     <? } ?>    
@@ -318,6 +391,14 @@
     var names = days[day];
 
     html = ''
+
+    if(day == '') {
+      document.getElementById("dayInfo").innerHTML = html;
+      return
+    }
+
+
+
     for(var j in names) {
       var appts = names[j]
       var appointment = appts[0];// use the first appointment of this day for displaying general information
@@ -332,7 +413,8 @@
       html += `Notes: ${appointment['Notes']}<br>`
 
       html += `<form>`
-      html += `<select id='appointment' onchange="onAppointmentSelect('${selectId}button')"">`
+      html += `<select id='appointment' onchange="onAppointmentSelect(this.form)">`
+
       html += "<option disabled selected value>select a time</option>";
       for (var i in appts) {
         var appointment = appts[i];
@@ -346,7 +428,7 @@
 
       }
       html += "</select><br>";
-      html += `<button id='${selectId}button' type='button' disabled onclick='onRegister(this.form)'>Select</button>`
+      html += `<button id='appointmentSelectButton' type='button' disabled onclick='onRegister(this.form)'>Select</button>`
       html += `</form><br><br>`;
     }
     document.getElementById("dayInfo").innerHTML = html;

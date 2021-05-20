@@ -3,6 +3,8 @@
 
 // use to toggle developer version of the tool on/off
 var DEVELOPER_MODE = false
+var DEVELOPER_RECIPIENT_EMAIL = "test@testemail.com"
+var DEVELOPER_BYPASS_STAFF_AUTHENTICATION = false
 
 //Google drive id of your project folder
 var GOOGLE_DRIVE_FOLDER_ID = 'YOUR_FOLDER_ID'
@@ -38,10 +40,20 @@ var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME';  //https://admindemo.docusign.c
 
 /* 
 RSA keys required for JWT Grant Authentication (server can impersonate an authorized user without user present to login to Docusign), docusign generates a RSA PRIVATE KEY.  However, App Script's Utilities.computeRsaSha256Signature requires a PRIVATE KEY for encrypting the JWT.  Converting the private key is a manual step using openssl.  Sad.  Possible to do this in App Script?
-
 https://stackoverflow.com/questions/36614051/computersasha256signature-returns-invalid-argument-key-error-when-key-is-publ/36700930#36700930
-
 Also appscript requires new lines to be converted to \n. Muliline string requires the additional \. Easiest with a text editor.
 */
 
 var DOCUSIGN_PUBLIC_KEY = null; // non-RSA PRIVATE KEY
+
+/**** OAUTH API ****/ 
+var OAUTH_CLIENT_ID = "YOUR_CLIENT_ID";
+var OAUTH_CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+
+// Enter required scopes (we only need email)
+var SCOPES = ["https://www.googleapis.com/auth/userinfo.email"];
+var AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+var TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
+// API URL for user info endpoint.
+var API_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+

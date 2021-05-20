@@ -1,11 +1,13 @@
-var profileData = null;
-var urlParameters = null;
-var appointmentData = null;
+var profileData = null; // info for one patient
+var urlParameters = null; // object containing URL parameters
+var appointmentData = null; // all appointments
 
 var VALID_PAGES = ['appointments', 'register', 'lookup', 'camera',
 'checkin', 'profile', 'barcode', 'questionaire', 'waitlist', 'consent',
 'email', 'upload', 'insurance', 'docusign', 'email.test',
-'login', 'logout','confirmation'];
+'login', 'logout','confirmation', 'confirmation.email', 'cancel.email',
+ 'followup.email','invitation.email','consent.email'];
+
 
 function doGet(e) {
 
@@ -50,6 +52,30 @@ function doGet(e) {
     appointmentData = getSheetDataAsDict('Appointments')
   }
 
+  //allows testing of email templates
+  if(page == 'confirmation.email') {
+    id = urlParameters['ID']
+    sendAppointmentConfirmationEmail(id, 1, getScriptUrl())
+  }
+  if(page == 'cancel.email') {
+    id = urlParameters['ID']
+    sendAppointmentCancellationEmail(id, 1,getScriptUrl())
+  }
+
+  if(page == 'followup.email') {
+    id = urlParameters['ID']
+    sendAppointmentFollowupEmail(id, 2,getScriptUrl())
+  }
+  if(page == 'consent.email') {
+    id = urlParameters['ID']
+    sendAppointmentConsentEmail(id, 2,getScriptUrl())
+  }
+
+  if(page == 'invitation.email') {
+    email = urlParameters['Email']
+    sendRegisterInvitationEmail(email,getScriptUrl())
+  }
+  
   return routePage(page);
 }
 
@@ -112,6 +138,7 @@ function getAppointments(profileID, action) {
   return res
 }
 
+// strips out all data from this dictionary that is not relevant to dosage
 function getOnlyAppointmentData(data) {
   var res = {}
   for (var key in data) {
@@ -372,8 +399,13 @@ function processCheckIn(patientId, appointmentId, dose, lot, status) {
 
   debugLog('checkedin', patientId + ',' + appointmentId + ',' + dose)
 
+  var data = searchPatients({ID: patientId})
+
   // update the patient page
   var prefix = 'Dose' + dose
+
+  brand = data[prefix+'VaccineBrand']
+
   values[prefix + 'Status'] = status
   if(status == 'completed')
     values[prefix + 'Lot'] = lot
@@ -385,6 +417,14 @@ function processCheckIn(patientId, appointmentId, dose, lot, status) {
     return msg
   }
 
+  var res = {
+    'id': patientId,
+    'action': "checkin",
+    'dose': dose,
+    'brand': brand,
+    'status': status
+  }
+
   // appointment stats are updated by spreadeheet
-  return getAppointments(patientId, 'checkin')
+  return res;
 }

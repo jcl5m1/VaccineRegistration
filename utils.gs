@@ -26,6 +26,24 @@ function formatIfURL(data) {
   return "<a href='" + data + "'>" + data + "</a>";
 }
 
+//convert 24 time to 12hr with AM/PM
+function convert24to12hr(time){
+  var hrs = parseInt(time.split(':')[0]);
+  var suffix = (hrs >= 12) ? " PM" : " AM";
+  hrs = (hrs >= 13) ? hrs-12: hrs;
+  return '' + hrs + ':' + time.split(':')[1] + suffix;
+}
+
+//convert yyyy-mm-dd to yyyy-MMM-dd
+function convertDateToString(date){
+  var parts = date.split('-')
+  var year = parts[0];
+  var month = parseInt(parts[1])-1;
+  var day = parts[2];
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  return year + '-' + months[month] + '-'+day;
+}
+
 // convert variables,array, and dict to html table
 function formatToHTML(data) {
   var i = 0;
@@ -62,8 +80,7 @@ function getErrorObject() {
 }
 
 function getScriptUrl() {
-  var url = ScriptApp.getService().getUrl();
-  return url;
+  return ScriptApp.getService().getUrl();
 }
 
 
@@ -71,8 +88,13 @@ function testUserEmail() {
   debug(getUserEmail())
 }
 
-function importHTML(filename) {
-  return HtmlService.createTemplateFromFile(filename).evaluate().getContent();
+
+// imports html file and evaluates with Appscript using optional parameters
+function importHTML(filename, params) {
+  var htmlTemplate = HtmlService.createTemplateFromFile(filename);
+  if(params != null)
+    htmlTemplate.dataFromServerTemplate = params
+  return htmlTemplate.evaluate().getContent();
 }
 
 function importNavbar(active) {

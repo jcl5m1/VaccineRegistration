@@ -13,40 +13,56 @@
   <body style="font-family: Montserrat; background-color: #f3f5e1">
 
     <?!=importNavbar('home')?>
+  
+    Scan to share this page with a mobile device:<br>
+    <img src="<?=QR_CODE_URL?><?=url?>" /><br><br>
+  
+    <br><br><a href="https://github.com/jcl5m1/VaccineRegistration" target="new">Github Project Page</a>
 
     <? if(DEVELOPER_MODE) { ?>
-      <!-- Development pages -->
+    <!-- Development pages -->
 
-      <h2>Development/Test Pages</h2>
-      <ul>
-        <li><a href="<?=url?>?page=appointments">Appointments</a></li>
-        <li><a href="<?=url?>?page=questionaire">COVID Questionaire</a></li>
-        <li><a href="<?=url?>?page=camera">Parse Image Testing</a></li>
-        <li><a href="<?=url?>?page=barcode">Parse Barcode Testing</a></li>
-        <li><a href="<?=url?>?page=email.test">Email Testing</a></li>
-        <li><a href="<?=url?>?page=upload">Upload Testing</a></li>
-        <li>
-          <a href="<?=url?>?page=docusign">Docusign Form Testing - Docusign</a>
-        </li>
-        <li><a href="<?=url?>?page=login">Google Login Testing</a></li>
-        <li onclick="showModalDialog('Test')">Test Modal Dialog</li>
-        <li
-          onclick="showModalDialog('Select one',[{text:'Go Back', callback: 'console.log(\'goback\')'},{text:'Confirm', callback: 'console.log(\'confirm\')'}])"
-        >
-          Test OK-Cancel Modal Dialog
-        </li>
-      </ul>
+    <h2>Development/Test Pages</h2>
+    <ul>
+      <li><a href="<?=url?>?page=appointments">Appointments</a></li>
+      <li><a href="<?=url?>?page=questionaire">COVID Questionaire</a></li>
+      <li><a href="<?=url?>?page=camera">Parse Image Testing</a></li>
+      <li><a href="<?=url?>?page=barcode">Parse Barcode Testing</a></li>
+      <li><a href="<?=url?>?page=email.test">Email Testing</a></li>
+      <li><a href="<?=url?>?page=upload">Upload Testing</a></li>
+      <li>
+        <a href="<?=url?>?page=docusign">Docusign Form Testing - Docusign</a>
+      </li>
+      <li><a href="<?=url?>?page=login">Google Login Testing</a></li>
+      <li onclick="showModalDialog('Test')">Test Modal Dialog</li>
+      <li
+        onclick="showModalDialog('Select one',[{text:'Go Back', callback: 'console.log(\'goback\')'},{text:'Confirm', callback: 'console.log(\'confirm\')'}])"
+      >
+        Test OK-Cancel Modal Dialog
+      </li>
+    </ul>
 
-      <h2>User Info</h2>
-      Active User Email:
-      <?=getUserEmail() ?><br />
-      Temp User Key:
-      <?=Session.getTemporaryActiveUserKey() ?><br />
-      Browser:
-      <div id="browser"></div>
-      <br />
-      <br />
+    <h2>User Info</h2>
+    Active User Email:
+    <?=getUserEmail() ?><br />
+    Temp User Key:
+    <?=Session.getTemporaryActiveUserKey() ?><br />
+    Browser:
+    <div id="browser"></div>
+    <br />
+    <br />
 
+    <a
+      href="https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>"
+      target="new"
+      >Destination Drive Folder</a
+    >
+
+    <br />
+    <form id="feedback" method="POST" action="<?=url?>">
+      <br /><br />
+
+      <h2>Feedback/Feature Request/Bug Reporting:</h2>
       <a
         href="https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>"
         target="new"
@@ -81,13 +97,8 @@
         <button>Submit</button>
       </form>
 
-      <br /><br />
-      Scan to send mobile device to this page:<br />
-      <img src="<?=QR_CODE_URL?><?=url?>" />
     <? } ?>
-
     <script>
-      document.getElementById("browser").innerHTML = navigator.appVersion;
 
       function onLogout() {
         Utilities.sleep(5000);

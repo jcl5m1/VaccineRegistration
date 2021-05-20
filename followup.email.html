@@ -1,0 +1,31 @@
+<html>
+
+<body style="font-family: sans-serif">
+	<?
+    var id = dataFromServerTemplate.id;
+    var dose = dataFromServerTemplate.dose;
+    var url = dataFromServerTemplate.url;
+  ?>
+
+	<h1>You've recieved a COVID Vaccine dose!</h1><br>
+	<br>
+   To schedule your second dose appointment, <a href='<?=url?>?page=appointments&ID=<?=id?>&Dose=<?=dose?>' target=new>use this
+		link</a>.<br>
+
+  <table width=400>
+  <td align=center>        
+    <?if(ENABLE_QR_CODE){?>
+      <img src='<?=QR_CODE_URL?><?=id?>'>
+      <div class='qr-caption'>
+      ID: <?=id?></div>
+    <?} else {?>
+      ID: <?=id?>
+  <?}?>
+  </td>
+	</table><br><br>
+
+  If you have any futher question, please email <a href="mailto:<?=HELP_EMAIL?>"><?=HELP_EMAIL?><a/> or call <a href="tel:<?=HELP_PHONE_NUMBER?>"><?=HELP_PHONE_NUMBER?></a><br>
+
+
+  </body>
+</html>

@@ -1,14 +1,3 @@
-var CLIENT_ID = "YOUR_CLIENT_ID";
-var CLIENT_SECRET = "YOUR_CLIENT_SECRET";
-
-// Enter required scopes (we only need email)
-var SCOPES = ["https://www.googleapis.com/auth/userinfo.email"];
-var AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-var TOKEN_URL = "https://accounts.google.com/o/oauth2/token";
-
-// API URL for user info endpoint.
-var API_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
-
 /**#####################################
  * Gets the full authorization endpoint URL.
  *
@@ -21,7 +10,7 @@ function generateAuthUrl() {
     redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
     response_type: "code",
     access_type: "offline",
-    client_id: CLIENT_ID,
+    client_id: OAUTH_CLIENT_ID,
   };
   var options = { payload: payload };
   var request = UrlFetchApp.getRequest(AUTH_URL, options);
@@ -41,8 +30,8 @@ function generateAuthUrl() {
 function generateAccessToken(token) {
   var payload = {
     code: token,
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
+    client_id: OAUTH_CLIENT_ID,
+    client_secret: OAUTH_CLIENT_SECRET,
     // Specify that no redirection should take place
     // This is Google-specific and not part of the OAuth2 specification.
     redirect_uri: "urn:ietf:wg:oauth:2.0:oob",
@@ -131,7 +120,9 @@ function testGetId() {
  * @return {bool} Validated staff session.
  */
 function validateStaffSession() {
-  return true
+
+  if(DEVELOPER_BYPASS_STAFF_AUTHENTICATION)
+    return true;
 
   var userKey = Session.getTemporaryActiveUserKey();
   var prop_keys = PropertiesService.getScriptProperties().getKeys();
