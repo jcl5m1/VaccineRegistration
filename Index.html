@@ -3,67 +3,23 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=2.0" />
     <base target="_top" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <?!=importHTML('css.html')?>
   <?!=importHTML('modaldialog.html')?>
   <?!=importHTML('wait.html')?>
-  <body style="font-family: sans-serif">
-    <?var url = getScriptUrl();?>
-    <img src="<?!=FRONT_PAGE_LOGO_IMAGE?>" /><br />
+  <body style="font-family: Montserrat; background-color: #f3f5e1">
 
-    <?var staff_session = validateStaffSession();?>
-
-    <!-- Display registration header or staff page header -->
-    <? if( staff_session ) {?>
-
-    <div class="title">COVID-19 Vaccine Staff Dashboard</div>
-    <br />
-    <?} else {?>
-    <div class="title">COVID-19 Vaccine Registration</div>
-    <br />
-    <? } ?>
-
-    <table>
-      <tr>
-        <td>
-          <h1><a href="<?=url?>?page=register">New Registration</a></h1>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <h1><a href="<?=url?>?page=lookup">Lookup Registration</a></h1>
-        </td>
-      </tr>
-    </table>
-    <br><br><br>
-
+    <?!=importNavbar('home')?>
+  
     Scan to share this page with a mobile device:<br>
     <img src="<?=QR_CODE_URL?><?=url?>" /><br><br>
+  
+    <br><br><a href="https://github.com/jcl5m1/VaccineRegistration" target="new">Github Project Page</a>
 
-
-    <!-- Display staff only pages if staff-->
-    <? if( staff_session) {?>
-    <h2>Staff Only Pages</h2>
-    <ul>
-      <li><a href="<?=url?>?page=checkin">Check-In</a></li>
-      <li><a href="<?=url?>?page=waitlist">Waitlist</a></li>
-      <li>
-        <a
-          onclick="google.script.run.withSuccessHandler(onLogout).deleteCurrentUserSession()"
-          href="<?=url?>?page=logout"
-          >Log Out</a
-        >
-      </li>
-    </ul>
-
-    <!-- Else display staff login page -->
-    <?} else {?>
-      <a href="<?=url?>?page=login">Staff Login</a>
-    <? } ?>
-
-<br><br><a href="https://github.com/jcl5m1/VaccineRegistration" target="new">Github Project Page</a>
-
-<? if(DEVELOPER_MODE) { ?>
+    <? if(DEVELOPER_MODE) { ?>
     <!-- Development pages -->
 
     <h2>Development/Test Pages</h2>
@@ -108,27 +64,38 @@
 
       <h2>Feedback/Feature Request/Bug Reporting:</h2>
       <a
-        href="https://github.com/jcl5m1/VaccineRegistration/issues"
+        href="https://drive.google.com/drive/folders/<?=GOOGLE_DRIVE_FOLDER_ID?>"
         target="new"
-        >Create a Github Issue</a
-      >
-      (github account required)<br /><br />
+        >Destination Drive Folder</a>
 
-      <b>Create a Spreadsheet Ticket</b> (no account required) <br />
-      <input type="hidden" name="action" value="feedback" /><br />
-      Your Name: <input type="text" name="CreatedBy" /><br />
-      Type:
-      <select name="Type">
-        <option value="support">Support Request</option>
-        <option value="feedback">General Feedback</option>
-        <option value="feature">Feature Request</option>
-        <option value="bug">Report Bug</option></select
-      ><br />
-      Description:<br />
-      <textarea name="Description" rows="4" cols="50"></textarea><br />
-      <button>Submit</button>
-    </form>
+        <br />
+      <form id="feedback" method="POST" action="<?=url?>">
+        <br /><br />
+        <a href="https://github.com/jcl5m1/VaccineRegistration" target="new"
+          >Github Page</a
+        >
+        <h2>Feedback/Feature Request/Bug Reporting:</h2>
+        <a
+          href="https://github.com/jcl5m1/VaccineRegistration/issues"
+          target="new"
+          >Create a Github Issue</a
+        >
+        (github account required)<br /><br />
 
+        <b>Create a Spreadsheet Ticket</b> (no account required) <br />
+        <input type="hidden" name="action" value="feedback" /><br />
+        Your Name: <input type="text" name="CreatedBy" /><br />
+        Type:
+        <select name="Type">
+          <option value="support">Support Request</option>
+          <option value="feedback">General Feedback</option>
+          <option value="feature">Feature Request</option>
+          <option value="bug">Report Bug</option></select
+        ><br />
+        Description:<br />
+        <textarea name="Description" rows="4" cols="50"></textarea><br />
+        <button>Submit</button>
+      </form>
 
     <? } ?>
     <script>
@@ -137,6 +104,7 @@
         Utilities.sleep(5000);
       }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   </body>
 <? if(DEVELOPER_MODE) { ?>
   <script>
