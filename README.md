@@ -100,5 +100,24 @@ https://cloud.google.com/resource-manager/docs/creating-managing-projects
 
 
 
+## Setting Up Docusign Integration (JWT API)
 
+This tool uses [Docusign](https://www.docusign.com/) for [eSignatures](https://en.wikipedia.org/wiki/Electronic_signature), which contains an audit trail in case a signature is challenged. This is a level of safety desired by many businesses.  However, Docusign is a paid service. If a free option is required (where you assume the risk if the signature is challenged), please file a bug and we can look into supporting that option.
 
+This configruation uses the [JWT Grant Authorization](https://developers.docusign.com/platform/auth/jwt/jwt-get-token/) to allow the web app to act on behalf of a Docusign account holder to request eSignatures without the authorizer user to be present at the time of request. To configure the web app to use Docusign in this mode, you will have to create authorization keys and copy them to your `config.gs` file.  
+
+1. Create (or login into) your [Docusign Developer](https://developers.docusign.com/) Account.  NOTE: This is only tested on a developer account which allows free testing.  I have not sure what would change for a billed account, but I assume these key are also available in the non-developer account UI.
+1. Goto menu item **My Apps & Keys**
+1. If you do not already have an application key you would like to use, click on **Add an App and Integration Key**.  Enter a new app name like "VaccineTool"
+1. Copy the shown "Integration Key" for your new application and set `var DOCUSIGN_INTEGRATION_KEY = 'YOUR_INTEGRATION_KEY` in `config.gs` 
+1. Click "Add Secret Key".  Copy the shown key to `var DOCUSIGN_SECRET_KEY = 'YOUR_SECRET_KEY'` in `config.gs`
+1. Click "Generate RSA key". A pop up will appear showing your new Public and Private Key.  Copy your public key to `var DOCUSIGN_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'` in `congif.gs` and copy your private key to `var DOCUSIGN_RSA_PRIVATE_KEY = 'YOUR_RSA_PRIVATE_KEY'` in `config.gs`.  You must include all the data including the `------`.  You will also have to manually add `\n\` to the end of each row to make AppScript happy with the string that takes multiple lines.
+1. Click "Save" to finalize your new application keys.
+1. Unfortunately, the `DOCUSIGN_RSA_PRIVATE_KEY` generated is not compatible with AppScript, and has to be converted to a non-RSA PRIVATE_KEY.  To do this, [follow this help article](https://stackoverflow.com/questions/36614051/computersasha256signature-returns-invalid-argument-key-error-when-key-is-publ/36700930#36700930).  Once you generate the non-RSA private key, copy your private key to `var DOCUSIGN_RSA_PRIVATE_KEY = 'YOUR_RSA_PRIVATE_KEY'` in `config.gs`
+1. On the Docusing Website, click on "Templates".  This is the empty version of your PDF consent form that the app can use as a template.  Create (or upload) your template. Docusign offers many ways of creating templates with many features.  Please refer to thier documentation on how to configure a template.
+1. Create a "Role" for the template called "Patient".  Hit "Next".  Set the signature location on the PDF, then "Save and Close" to finish the template.
+1. Once you've create your template and you see it in the list.  Click on the name to look at the details.
+1. In the URL, you will see something like `https://appdemo.docusign.com/templates/details/e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Your templateID is `e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Copy this to `var DOCUSIGN_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'` in `config.gs`
+1. Goto [https://admindemo.docusign.com/users](https://admindemo.docusign.com/users), and click on your user name.
+1. Copy your API Username to `var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME'` in `config.gs`
+1. Once these variables are all defined in `config.gs`, refresh your tool and instead of a spinning wait screen during the registration process, it should redirect you to a docusign flow requesting a signature.  After the signature is complete, if will send the patient a PDF copy of the consent form, upload a PDF copy to your Google Drive, and redirect the patient to the Appointment selection page.
