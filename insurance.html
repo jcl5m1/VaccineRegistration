@@ -4,7 +4,8 @@
 <head>
 	<base target="_top">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <?!=importHTML('css.html')?>
@@ -15,13 +16,6 @@
 	<?var url = getScriptUrl();?>
 	<?!=importNavbar('register')?>
   <div class="container-lg" style="margin-top: 2%">
-    <!-- <table>
-      <td>
-        <div class='title'>Insurance</div>
-      </td>
-      <td>
-        <?!=importHTML('help.html')?>
-    </table> -->
     <div class="row">
       <div class="section-bar col-10" align=center>
         Insurance
@@ -53,7 +47,7 @@
           <label for="InsuranceType" class="col-form-label">Do you have insurance?</label>
         </div>
         <div class="col">
-          <select name="InsuranceType" id="InsuranceType" class="form-select" required onchange="onSelectInsurace(this)">
+          <select name="InsuranceType" id="InsuranceType" class="form-select" onchange="onSelectInsurace(this)">
             <option disabled selected>--select--</option>
             <option value="Private">Yes (Private)</option>
             <option value="Medicare">Yes (Medicare)</option>
@@ -61,10 +55,94 @@
           </select>
         </div>
       </div>
-      <div id='insuranceField' class="mb-1"></div>
-      <br>
+
+      <div class="row mb-3 g-3 align-items-center" id="ImageDiv" hidden>
+        <div class="col">
+          <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
+        </div>
+        <div class="col">
+          <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control" capture="environment" 
+          onchange="uploadImage(this,'canvasInsuranceFront')">
+        </div>
+        <div class="col">
+          <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
+        </div>
+        <div class="col">
+          <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
+          onchange="uploadImage(this,'canvasInsuranceBack')">
+        </div>
+      </div>
+      <div class="row mb-3" id="PolicyHolderDiv" hidden>
+        <div class="col-5">
+          <div class="form-floating">
+            <input type="text" name="InsurancePolicyHolder" id="InsurancePolicyHolder" class="form-control" placeholder="Name">
+            <label for="InsurancePolicyHolder" class="col-form-label">Policy Holder Name</label>
+          </div>
+        </div>
+        <div class='col-4'>
+          <div class="form-floating">
+            <input type="date" name="InsurancePolicyHolderDateOfBirth" id="InsurancePolicyHolderDateOfBirth" class="form-control" placeholder="Date of Birth">
+            <label for="InsurancePolicyHolderDateOfBirth" class="col-form-label">Policy Holder Date of Birth</label>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3" id="CompanyDiv" hidden>
+        <div class="col-5">
+          <div class="form-floating">
+            <input type="text" name="InsuranceCompany" id="InsuranceCompany" class="form-control" placeholder="Company">
+            <label for="InsuranceCompany" class="col-form-label">Insurance Company</label>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3" id="ClaimAddressDiv" hidden>
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="text" name="InsuranceClaimAddress" id="InsuranceClaimAddress" class="form-control" placeholder="Claim Address">
+            <label for="InsuranceClaimAddress" class="col-form-label">Claim Address</label>
+            <div class="form-text">Some cards do not have a specified claim address. If that is the case, put "No address" in the field above.</div>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3" id="InsuranceNumbersDiv" hidden>
+        <div class="col-4" id="SubscriberIDDiv" hidden>
+          <div class="form-floating">
+            <input type="text" name="InsuranceSubscriberID" id="InsuranceSubscriberID" class="form-control" placeholder="Subscriber ID">
+            <label for="InsuranceSubscriberID" class="col-form-label">Subscriber ID</label>
+          </div>
+        </div>
+        <div class="col-4" id="GroupNumberDiv" hidden>
+          <div class="form-floating">
+            <input type="text" name="InsuranceGroupNumber" id="InsuranceGroupNumber" class="form-control" placeholder="Name">
+            <label for="InsuranceGroupNumber" class="col-form-label">Group Number</label>
+          </div>
+        </div>
+      </div>
+      <div id="NoInsuranceDiv" hidden>
+        <div class="mb-2">
+          If you have them, please provide one of the following:
+        </div>
+        <div class="row mb-2">
+          <div class="col">
+            <div class="form-floating">
+              <input type="text" name="InsuranceSSN" id="InsuranceSSN" class="form-control" placeholder="SSN">
+              <label for="InsuranceSSN" class="col-form-label">Social Security Number</label>
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-floating">
+              <input type="text" name="InsuranceDriversLicense" id="InsuranceDriversLicense" class="form-control" placeholder="Driver's License">
+              <label for="InsuranceDriversLicense" class="col-form-label">Driver's License Number</label>
+            </div>
+          </div>
+        </div>
+        <div class="mb-2">
+          If you do not have either, just press Submit.
+        </div>
+      </div>
+
       <canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
       <canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
+      
       <button id='confirm' type="button" onclick="showInfoConfirm()" class="btn btn-primary" 
       style="background-color: #17a7d4; border-color: #17a7d4" disabled>Submit</button>
       <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4" 
@@ -74,217 +152,193 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
+  <script>
+    function checkFields() {
+      var allAreFilled = true;
+      document.getElementById("myform").querySelectorAll("[required]").forEach(function(i) {
+        i.classList.remove("is-invalid");
+        i.classList.remove("is-valid");
+        if (!i.value) {
+          allAreFilled = false;
+          i.classList.add("is-invalid");
+        } else {
+          i.classList.add("is-valid");
+        }
+      })
+      return allAreFilled;
+    }
+
+    function showInfoConfirm() {
+      if (!checkFields()) {
+        return;
+      }
+
+      var modalHTML = "<h1>Is Your Information Correct?</h1>"  
+      modalHTML += "<table class='confirm-table'>";
+      var i = 0;
+
+      var res = {}
+
+      <? 
+      var keys = {FirstName: 'First Name',
+                  LastName: 'Last Name',
+                  DateOfBirth: 'Date of Birth',
+                  Phone: 'Phone',
+                  Email: 'Email',
+                  Gender: 'Gender',
+                  Race: 'Race',
+                  Ethnicity: 'Ethnicity',
+                  };
+
+      // copy out the data from app script
+      for(var key in keys){ ?>
+        res['<?=keys[key]?>'] = '<?=profileData[key]?>'
+      <?}?>
+
+      //add address
+      res.Address = <?=profileData.AddressStreet + '<br>' + profileData.AddressCity + ', ' + profileData.AddressState + ' ' + profileData.AddressZip?>;
+
+      //add Guardian name
+      <?if(profileData.RelationshipToPatient != 'self') {?>
+        res['Guardian Name'] = <?=profileData.GuardianFirstName + " " + profileData.GuardianLastName?>;
+      <?}?>
+
+      // pull out the current insurance form data
+      res['Insurance Type'] = myform.InsuranceType.value;
+      if(myform.InsuranceType.value == "Private") {
+        res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
+        res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
+        res['Insurance Company'] = myform.InsuranceCompany.value;
+        res['Insurance Claim Address'] = myform.InsuranceClaimAddress.value;
+        res['Group Number'] = myform.InsuranceGroupNumber.value;
+        res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
+      }
+      if(myform.InsuranceType.value == "Medicare") {
+        res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
+        res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
+        res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
+      }
+      if(myform.InsuranceType.value == "None") {
+        res['Social Security Number'] = myform.InsuranceSSN.value;
+        res['Driver License'] = myform.InsuranceDriversLicense.value;
+      }
+
+      for (var key in res) {
+        var color = (i % 2 == 0) ? '#eee' : '#fff';
+        i += 1;
+        modalHTML += "<tr bgcolor='" + color + "'>";
+        modalHTML += "<td class='confirm-table'><span style='font-weight: 500'>" + key + ":</span></td>";
+        modalHTML += "<td class='confirm-table'>" + res[key] + "</td>";
+        modalHTML += "</tr>";
+
+      }
+      modalHTML += "</table>";
+      showModalDialog(modalHTML,[{text:'Go Back'},{text:'Yes/Confirm',callback:'onInfoConfirm()'}]);
+    }
+
+    function onInfoConfirm(){
+      document.getElementById("myform").submit();
+      showWaitScreen();
+    } 
+
+    function bootstrapTextInput(name, text, placeholder) {
+      return `
+        <div class="form-floating mb-2">
+          <input type="text" name="${name}" id="${name}" required class="form-control" placeholder="${placeholder}">
+          <label for="${name}" class="col-form-label">${text}</label>
+        </div>
+        `
+    }
+
+    function onSelectInsurace(elem) {
+      switch(elem.value) {
+        case 'Private':
+          document.getElementById("ImageDiv").hidden = false;
+          document.getElementById("PolicyHolderDiv").hidden = false;
+          document.getElementById("InsurancePolicyHolder").required = true;
+          document.getElementById("InsurancePolicyHolderDateOfBirth").required = true;
+          document.getElementById("CompanyDiv").hidden = false;
+          document.getElementById("InsuranceCompany").required = true;
+          document.getElementById("ClaimAddressDiv").hidden = false;
+          document.getElementById("InsuranceClaimAddress").required = true;
+          document.getElementById("InsuranceNumbersDiv").hidden = false;
+          document.getElementById("SubscriberIDDiv").hidden = false;
+          document.getElementById("InsuranceSubscriberID").required = true;
+          document.getElementById("GroupNumberDiv").hidden = false;
+          document.getElementById("InsuranceGroupNumber").required = true;
+          document.getElementById("NoInsuranceDiv").hidden = true;
+          break;
+        case 'Medicare':
+          document.getElementById("ImageDiv").hidden = false;
+          document.getElementById("PolicyHolderDiv").hidden = false;
+          document.getElementById("InsurancePolicyHolder").required = true;
+          document.getElementById("InsurancePolicyHolderDateOfBirth").required = true;
+          document.getElementById("CompanyDiv").hidden = true;
+          document.getElementById("InsuranceCompany").required = false;
+          document.getElementById("ClaimAddressDiv").hidden = true;
+          document.getElementById("InsuranceClaimAddress").required = false;
+          document.getElementById("InsuranceNumbersDiv").hidden = false;
+          document.getElementById("SubscriberIDDiv").hidden = false;
+          document.getElementById("InsuranceSubscriberID").required = true;
+          document.getElementById("GroupNumberDiv").hidden = true;
+          document.getElementById("InsuranceGroupNumber").required = false;
+          document.getElementById("NoInsuranceDiv").hidden = true;
+          break;
+        default:
+          document.getElementById("ImageDiv").hidden = true;
+          document.getElementById("PolicyHolderDiv").hidden = true;
+          document.getElementById("InsurancePolicyHolder").required = false;
+          document.getElementById("InsurancePolicyHolderDateOfBirth").required = false;
+          document.getElementById("CompanyDiv").hidden = true;
+          document.getElementById("InsuranceCompany").required = false;
+          document.getElementById("ClaimAddressDiv").hidden = true;
+          document.getElementById("InsuranceClaimAddress").required = false;
+          document.getElementById("InsuranceNumbersDiv").hidden = true;
+          document.getElementById("SubscriberIDDiv").hidden = true;
+          document.getElementById("InsuranceSubscriberID").required = false;
+          document.getElementById("GroupNumberDiv").hidden = true;
+          document.getElementById("InsuranceGroupNumber").required = false;
+          document.getElementById("NoInsuranceDiv").hidden = false;
+          break;
+      }
+      document.getElementById('confirm').disabled = false;
+    }
+
+    function onGenerate(record){
+      //set insurance first to generate fields
+      myform.InsuranceType.value = record.InsuranceType;
+
+      onSelectInsurace(myform.InsuranceType);
+
+      myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
+      myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
+      myform.InsuranceCompany.value = record.InsuranceCompany;
+      myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
+      myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
+      myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
+      myform.InsuranceSSN.value = record.InsuranceSSN;
+      myform.InsuranceDriversLicense.value = record.InsuranceDriversLicense;
+    }
+
+    async function uploadImage(elem, canvasId) {
+      // scale to fit maximum dimension
+      var maxDimension = 1000;
+      var canvas = document.getElementById(canvasId);
+      await scaleImageToFit(elem,maxDimension,canvas);
+
+      // ecnode data and upload
+      var encodedData = canvas.toDataURL();
+      console.log("uploading " + elem.name);
+      google.script.run.withSuccessHandler(uploadComplete).uploadInsuranceImage(
+        <?=profileData.ID?>, <?=profileData.FirstName?>, <?=profileData.LastName?>, elem.name, encodedData);
+    }
+
+    function uploadComplete(result){  
+      console.log("upload complete:" + result)
+    }
+  </script>
 
 </body>
-<?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
-
-<script>
-	function showInfoConfirm(){
-    var modalHTML = "<h1>Is Your Information Correct?</h1>"  
-    modalHTML += "<table class='confirm-table'>";
-    var i = 0;
-
-    var res = {}
-
-
-    <? 
-    var keys = {FirstName: 'First Name',
-                LastName: 'Last Name',
-                DateOfBirth: 'Date of Birth',
-                Phone: 'Phone',
-                Email: 'Email',
-                Gender: 'Gender',
-                Race: 'Race',
-                Ethnicity: 'Ethnicity',
-                };
-
-    // copy out the data from app script
-    for(var key in keys){ ?>
-      res['<?=keys[key]?>'] = '<?=profileData[key]?>'
-    <?}?>
-
-    //add address
-    res.Address = <?=profileData.AddressStreet + '<br>' + profileData.AddressCity + ', ' + profileData.AddressState + ' ' + profileData.AddressZip?>;
-
-    //add Guardian name
-    <?if(profileData.RelationshipToPatient != 'self') {?>
-      res['Guardian Name'] = <?=profileData.GuardianFirstName + " " + profileData.GuardianLastName?>;
-    <?}?>
-
-    // pull out the current insurance form data
-    res['Insurance Type'] = myform.InsuranceType.value;
-    if(myform.InsuranceType.value == "Private") {
-      res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
-      res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
-      res['Insurance Company'] = myform.InsuranceCompany.value;
-      res['Insurance Claim Address'] = myform.InsuranceClaimAddress.value;
-      res['Group Number'] = myform.InsuranceGroupNumber.value;
-      res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
-    }
-    if(myform.InsuranceType.value == "Medicare") {
-      res['Policy Holder Name'] = myform.InsurancePolicyHolder.value;
-      res['Policy Holder Date Of Birth'] = myform.InsurancePolicyHolderDateOfBirth.value;
-      res['Subscriber ID'] = myform.InsuranceSubscriberID.value;
-    }
-    if(myform.InsuranceType.value == "None") {
-      res['Social Security Number'] = myform.InsuranceSSN.value;
-      res['Driver License'] = myform.InsuranceDriversLicense.value;
-    }
-
-    for (var key in res) {
-      var color = (i % 2 == 0) ? '#eee' : '#fff';
-      i += 1;
-      modalHTML += "<tr bgcolor='" + color + "'>";
-      modalHTML += "<td class='confirm-table'><b>" + key + ":</b></td>";
-      modalHTML += "<td class='confirm-table'>" + res[key] + "</td>";
-      modalHTML += "</tr>";
-
-    }
-    modalHTML += "</table>";
-    showModalDialog(modalHTML,[{text:'Go Back'},{text:'Yes/Confirm',callback:'onInfoConfirm()'}]);
-  }
-
-  function onInfoConfirm(){
-    document.getElementById("myform").submit();
-    showWaitScreen();
-  } 
-
-  function bootstrapTextInput(name, text, placeholder) {
-    return `
-      <div class="form-floating mb-2">
-        <input type="text" name="${name}" id="${name}" required class="form-control" placeholder="${placeholder}">
-        <label for="${name}" class="col-form-label">${text}</label>
-      </div>
-      `
-  }
-
-	function onSelectInsurace(elem) {
-  html = '';
-  switch(elem.value) {
-    case 'Private':
-      html += `
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsurancFront" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceFront')">
-          </div>
-        </div>
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">` +
-            bootstrapTextInput("InsurancePolicyHolder", "Policy Holder Name", "Name") +
-          "</div><div class='col'>" +
-            bootstrapTextInput("InsurancePolicyHolderDateOfBirth", "Policy Holder Date of Birth", "Date of Birth") +
-        "</div></div>" +
-        bootstrapTextInput("InsuranceCompany", "Insurance Company", "Company") + 
-        bootstrapTextInput("InsuranceClaimAddress", "Insurance Claim Address", "Claim Address") + 
-        bootstrapTextInput("InsuranceSubscriberID", "Subscriber ID", "Subscriber ID") +
-        bootstrapTextInput("InsuranceGroupNumber", "Group Number", "Group Number") +
-        `<input type='text' hidden name='InsuranceSSN'>
-        <input type='text' hidden name='InsuranceDriversLicense'>`;
-      break;
-    case 'Medicare':
-      html += `
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsurancFront" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceFront')">
-          </div>
-        </div>
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">` +
-            bootstrapTextInput("InsurancePolicyHolder", "Policy Holder Name", "Name") +
-          "</div><div class='col'>" +
-            bootstrapTextInput("InsurancePolicyHolderDateOfBirth", "Policy Holder Date of Birth", "Date of Birth") +
-        "</div></div>" +
-        `<input type='text' name='InsuranceCompany' hidden value='Medicare'>
-        <input type='text' name='InsuranceClaimAddress' hidden value=''>
-        <input type='text' name='InsuranceGroupNumber' hidden value=''>` +
-        bootstrapTextInput("InsuranceSubscriberID", "Subscriber ID", "Subscriber ID") +
-        `<input type='text' hidden name='InsuranceSSN'>
-        <input type='text' hidden name='InsuranceDriversLicense'>
-      `;
-      break;
-    default:
-      html += `
-        <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
-        <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
-        <input type='text' name='InsurancePolicyHolder' hidden value=''>
-        <input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
-        <input type='text' name='InsuranceCompany' hidden value=''>
-        <input type='text' name='InsuranceClaimAddress' hidden value=''>
-        <input type='text' name='InsuranceGroupNumber' hidden value=''>
-        <input type='text' name='InsuranceSubscriberID' hidden value=''>
-        <div class="mb-2">
-          If you have them, please provide one of the following:
-        </div>` +
-        bootstrapTextInput("InsuranceSSN", "Social Security Number", "SSN") + 
-        bootstrapTextInput("InsuranceDriversLicense", "Drivers License", "Drivers License") +
-       `If you do not have either, just press Submit.
-      `;
-      break;
-  }
-  document.getElementById('insuranceField').innerHTML = html;
-  document.getElementById('confirm').disabled = false;
-}
-
-
-function onGenerate(record){
-  //set insurance first to generate fields
-  myform.InsuranceType.value = record.InsuranceType;
-
-  onSelectInsurace(myform.InsuranceType);
-
-  myform.InsurancePolicyHolder.value = record.InsurancePolicyHolder;
-  myform.InsurancePolicyHolderDateOfBirth.value = record.InsurancePolicyHolderDateOfBirth;
-  myform.InsuranceCompany.value = record.InsuranceCompany;
-  myform.InsuranceClaimAddress.value = record.InsuranceClaimAddress;
-  myform.InsuranceGroupNumber.value = record.InsuranceGroupNumber;
-  myform.InsuranceSubscriberID.value = record.InsuranceSubscriberID;
-  myform.InsuranceSSN.value = record.InsuranceSSN;
-  myform.InsuranceDriversLicense.value = record.InsuranceDriversLicense;
-}
-
-async function uploadImage(elem, canvasId) {
-  // scale to fit maximum dimension
-  var maxDimension = 1000;
-  var canvas = document.getElementById(canvasId);
-  await scaleImageToFit(elem,maxDimension,canvas);
-
-  // ecnode data and upload
-  var encodedData = canvas.toDataURL();
-  console.log("uploading " + elem.name);
-  google.script.run.withSuccessHandler(uploadComplete).uploadInsuranceImage(
-    <?=profileData.ID?>, <?=profileData.FirstName?>, <?=profileData.LastName?>, elem.name, encodedData);
-}
-
-function uploadComplete(result){  
-  console.log("upload complete:" + result)
-}
-
-</script>
 
 </html>

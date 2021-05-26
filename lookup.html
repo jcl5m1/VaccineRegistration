@@ -4,7 +4,8 @@
 <head>
 	<base target="_top">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <?!=importHTML('css.html')?>
@@ -12,74 +13,68 @@
 <body style="font-family: Montserrat; background-color: #f3f5e1">
   
   <?!=importNavbar('lookup')?>
-	<!-- <?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
-	<table>
-		<td>
-			<div class='title'>Lookup Registration</div>
-		</td>
-		<td>
-			<?!=importHTML('help.html')?>
-	</table> -->
-
+	<?var url = getScriptUrl();?>
   
   <div class="container-lg">
     <form id="lookupForm" method="GET" action="<?=url?>" style="margin: 2%">
       <input type="hidden" name="page" value="appointments">
 
-      <div class='w100 section-bar' align=center>
-        Search
-      </div><br>
+      <div class="row mb-3">
+        <div class='col-10 section-bar' align=center>
+          Lookup Registration
+        </div>
+        <div class="col-2" align=center>
+          <?!=importHTML('help.html')?>
+        </div>
+      </div>
 
       <? if(ENABLE_QR_CODE) {?>
-        <div class="row mb-1 g-3 align-items-center">
-          <div class="col-auto">
+        <div class="row mb-3 g-3 align-items-center">
+          <div class="col">
             <label for="ImageIDBack" class="col-form-label">(optional) Scan QR Code/State ID barcode</label>
           </div>
-          <div class="col-auto">
+          <div class="col">
             <input type="file" accept="image/*" class="form-control" id="ImageIDBack"
               name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
           </div>
           <canvas hidden id="canvas" width="0" height="0"></canvas>
         </div>
       <?}?>
-      <div class="row mb-2 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="ID" class="col-form-label">ID</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id='ID' name="ID" class="form-control" value="" placeholder="ID Number">
+      <div class="row mb-3">
+        <div class="col-6">
+          <div class="form-floating">
+            <input type="text" id='ID' name="ID" class="form-control" value="" placeholder="ID Number">
+            <label for="ID" class="col-form-label">ID Number</label>
+          </div>
         </div>
       </div>
       <div class="mb-2">
         or
       </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="FirstName" class="col-form-label">First Name</label>
+      <div class="row mb-3 g-2">
+        <div class="col-4">
+          <div class="form-floating">
+            <input type="text" id="FirstName" name="FirstName" class="form-control" placeholder="First Name">
+            <label for="FirstName" class="col-form-label">First Name</label>
+          </div>
         </div>
-        <div class="col-auto">
-          <input type="text" id="FirstName" name="FirstName" class="form-control" placeholder="First Name">
+        <div class="col-4">
+          <div class="form-floating">
+            <input type="text" id="LastName" name="LastName" class="form-control" placeholder="Last Name">
+            <label for="LastName" class="col-form-label">Last Name</label>
+          </div>
         </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="LastName" class="col-form-label">Last Name</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="LastName" name="LastName" class="form-control" placeholder="Last Name">
-        </div>
-      </div>
-      <div class="row mb-4 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="DateOfBirth" class="col-form-label">Date of Birth</label>
-        </div>
-        <div class="col-auto">
-          <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control">
+        <div class="col-3">
+          <div class="form-floating">
+            <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control">
+            <label for="DateOfBirth" class="col-form-label">Date of Birth</label>
+          </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Search</button>
-      <!-- <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4" onclick="generateLookupTest()">Generate</button> -->
+      <div align=center>
+        <button type="submit" class="btn btn-primary" 
+        style="background-color: #17a7d4; border-color: #17a7d4; width: 15vmax; height: 3vmax; font-size: 1.5vmax">Search</button>
+      </div>
     </form>
   </div>
 

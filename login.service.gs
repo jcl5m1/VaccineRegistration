@@ -173,7 +173,7 @@ function getID() {
     " " +
     hours +
     ". <p>" +
-    "<p><em> No other personal data was taken besides an anonymous temporary active user key</em><br><br>Please return to the home page.</p>";
+    "<p><em> No other personal data was taken besides an anonymous temporary active user key</em><br><br>Please return to the HOME_LINK page.</p>";
   // TODO(hellojas): Add auto redirect?
 
   return textOutput;

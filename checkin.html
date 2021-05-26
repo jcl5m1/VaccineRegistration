@@ -4,7 +4,8 @@
 <head>
 	<base target="_top">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
 </head>
 
 <body onload="onLoad()" style="font-family: Montserrat; background-color: #f3f5e1">
@@ -19,7 +20,7 @@
 		<td>
       <div class="row mb-1 g-3 align-items-center">
         <div class="col-auto">
-			    <label for="lot" class="col-form-label"><b>Lot</b></label>
+			    <label for="lot" class="col-form-label"><span style="font-weight: 500">Lot</span></label>
         </div>
         <div class="col-auto">
           <select class="form-select" id='lot'>
@@ -286,17 +287,17 @@ function showMatches() {
 
     html = '';
     html += "<div><table width=100%><tr bgcolor='#ddf'>"
-    html += "<td width=300><b>Name</b></td>"
-    html += "<td><b>Profile</b></td>"
+    html += "<td width=300><span style='font-weight: 500'>Name</b></td>"
+    html += "<td><span style='font-weight: 500'>Profile</span></td>"
 
     // only show the first incomplete dose
-    html += "<td><b>Date@Time:</b></td>";
-    html += "<td><b>Dose:</b></td>";
-    html += "<td><b>Brand:</b></td>";
-    html += "<td><b>Consent:</b></td>";
-    html += "<td><b>Status:</b></td>";
-    html += "<td><b>HighRisk:</b></td>";
-    html += "<td><b>Notes:</b></td>";
+    html += "<td><span style='font-weight: 500'>Date@Time:</span></td>";
+    html += "<td><span style='font-weight: 500'>Dose:</span></td>";
+    html += "<td><span style='font-weight: 500'>Brand:</span></td>";
+    html += "<td><span style='font-weight: 500'>Consent:</span></td>";
+    html += "<td><span style='font-weight: 500'>Status:</span></td>";
+    html += "<td><span style='font-weight: 500'>HighRisk:</span></td>";
+    html += "<td><span style='font-weight: 500'>Notes:</span></td>";
     html += "</tr>";
 
     for(var i in matches){

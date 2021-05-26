@@ -48,7 +48,7 @@ function convertDateToString(date){
 function formatToHTML(data) {
   var i = 0;
   if (isDict(data)) {
-    html = "<table border=0>";
+    html = "<table border=0 style='width: 100%'>";
     for (var key in data) {
       var color = (i % 2 == 0) ? '#eee' : '#fff';
       i += 1;
@@ -61,11 +61,11 @@ function formatToHTML(data) {
     return html;
   }
   if (Array.isArray(data)) {
-    html = "<table border=0>";
+    html = "<table border=0 style='width: 100%>";
     for (var i = 0; i < data.length; i++) {
       var color = (i % 2 == 0) ? '#eee' : '#fff';
       html += "<tr bgcolor='" + color + "'>";
-      html += "<td>" + i + ":</td>";
+      html += "<td><b>" + i + ":</b></td>";
       html += "<td>" + formatIfURL(data[i]) + "</td>";
       html += "</tr>";
     }
