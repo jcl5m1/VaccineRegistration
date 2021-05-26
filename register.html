@@ -3,17 +3,11 @@
 
 <head>
 	<base target="_top">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <?!=importHTML('css.html')?>
 
-<body onload="onLoad()" style="font-family: Montserrat; background-color: #f3f5e1">
-
-  <?!=importNavbar('register')?>
-
-	<!-- <?var url = getScriptUrl();?>
+<body onload="onLoad()" style="font-family: sans-serif">
+	<?var url = getScriptUrl();?>
 	<a href='<?=url?>'>Home</a><br>
 	<table>
 		<td>
@@ -21,197 +15,90 @@
 		</td>
 		<td>
 			<?!=importHTML('help.html')?>
-	</table> -->
+	</table>
 
-  <div class="container-xl">
-    <form id="myform" style="padding: 2%" method="GET" action="<?=url?>">
-      <input type="hidden" name="page" value="insurance">
-      <input type="hidden" name="action" value="register">
-      <input type="hidden" name="Dose" value="1">
-      <input type="hidden" name="ID" value="<?=profileData['ID']?>">
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="insurance">
+		<input type="hidden" name="action" value="register">
+		<input type="hidden" name="Dose" value="1">
+		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
 
-      <div class="section-bar w100" align=center>
-        Patient Information
-      </div><br>
-      <? if(ENABLE_QR_CODE) {?>
-        <div class="row mb-3 g-3 align-items-center">
-          <div class="col-auto">
-            <label for="ImageIDBack" class="col-form-label">(optional) Scan State ID Barcode</label>
-          </div>
-          <div class="col-auto">
-            <input type="file" accept="image/*" id="ImageIDBack"
-                name="ImageIDBack" class="form-control form-control" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment">
-            <canvas hidden id="canvasID" width="0" height="0"></canvas>
-          </div>
-        </div>
-      <?}?>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="FirstName" class="col-form-label">First Name</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="FirstName" class="form-control" required name="FirstName" placeholder="First Name">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="LastName" class="col-form-label">Last Name</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="LastName" class="form-control" required name="LastName" placeholder="Last Name">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="DateOfBirth" class="col-form-label">Date of Birth</label>
-        </div>
-        <div class="col-auto">
-          <input type="date" id="DateOfBirth" class="form-control" required name="DateOfBirth">
-        </div>
-        <div class="col-auto">
-          <select class="form-select" required name="Gender">
-            <option selected>Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Race" class="col-form-label">Race</label>
-        </div>
-        <div class="col-auto">
-          <select class="form-select" id="Race" required name="Race">
-            <option selected>Race</option>
-            <option value="White">White</option>
-            <option value="BlackOrAfricanAmerican">Black or African American</option>
-            <option value="AmericanIndianOrAlaskaNative">American Indian or Alaska Native</option>
-            <option value="Asian">Asian</option>
-            <option value="NativeHawaiianOrOtherPacificIslander">Native Hawaiian or Other Pacific Islander</option>
-            <option value="Other">Other</option>
-            <option value="DeclineToSpecify">Decline to Specify</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mb-4 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Ethnicity" class="col-form-label">Ethnicity</label>
-        </div>
-        <div class="col-auto">
-          <select class="form-select" id="Ethnicity" required name="Ethnicity">
-            <option selected>Ethnicity</option>
-            <option value="HispanicOrLatino">Hispanic or Latino</option>
-            <option value="NonHispanicOrLatino">Non Hispanic or Latino</option>
-            <option value="Other">Other</option>
-            <option value="DeclineToSpecify">Decline to Specify</option>
-          </select>
-        </div>
-      </div>
+		<table class='section-bar'>
+			<td width=400 align=center>
+				Patient Information
+			</td>
+		</table><br>
+		<? if(ENABLE_QR_CODE) {?>
+		(optional) Scan State ID Barcode:
+		<input type="file" accept="image/*"
+        name="ImageIDBack" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment"><br>
+		<canvas hidden id="canvasID" width="0" height="0"></canvas>
+		<?}?>
+		First Name: <input type="text" required name="FirstName"><br>
+      Last Name: <input type="text" required name="LastName"><br>
+      Date of Birth <input type="date" required name="DateOfBirth"><br>
+      Gender: <select required name="Gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select><br>
+      Race:
+		<select required name="Race">
+        <option value="White">White</option>
+        <option value="BlackOrAfricanAmerican">Black or African American</option>
+        <option value="AmericanIndianOrAlaskaNative">American Indian or Alaska Native</option>
+        <option value="Asian">Asian</option>
+        <option value="NativeHawaiianOrOtherPacificIslander">Native Hawaiian or Other Pacific Islander</option>
+        <option value="Other">Other</option>
+        <option value="DeclineToSpecify">Decline to Specify</option>
+      </select><br>
+      Ethnicity:
+		<select required name="Ethnicity">
+        <option value="HispanicOrLatino">Hispanic or Latino</option>
+        <option value="NonHispanicOrLatino">Non Hispanic or Latino</option>
+        <option value="Other">Other</option>
+        <option value="DeclineToSpecify">Decline to Specify</option>
+      </select><br>
+		<br>
 
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="RelationshipToPatient" class="col-form-label">What is your relationship to Patient?</label>
-        </div>
-        <div class="col-auto">
-          <select class="form-select" id="RelationshipToPatient" name="RelationshipToPatient" onchange="onRelationshipSelect(this.value)">
-            <option selected value="self">Self</option>
-            <option value="guardian">Parent/Guardian</option>
-          </select>
-        </div>
-      </div>
+
+
+
+		What is your relationship to Patient? <select name="RelationshipToPatient" onchange="onRelationshipSelect(this.value)">
+        <option value="self">Self</option>
+        <option value="guardian">Parent/Guardian</option>
+      </select><br><br>
       <div id='GuardianInfo' style="display: none">
-        <div class="mb-1">
-          Since you are not the patient, enter your name:
-        </div>
-        <div class="row mb-1 g-3 align-items-center">
-          <div class="col-auto">
-            <label for="GuardianFirstName" class="col-form-label">Guardian First Name</label>
-          </div>
-          <div class="col-auto">
-            <input type="text" id="GuardianFirstName" name="GuardianFirstName" class="form-control" placeholder="First Name">
-          </div>
-        </div>
-        <div class="row mb-1 g-3 align-items-center">
-          <div class="col-auto">
-            <label for="GuardianLastName" class="col-form-label">Guardian Last Name</label>
-          </div>
-          <div class="col-auto">
-            <input type="text" id="GuardianLastName" name="GuardianLastName" class="form-control" placeholder="Last Name">
-          </div>
-        </div>
+      <table><td>
+      Since you are not the patient, enter your name:<br>
+      Guardian First Name <input type="text" name="GuardianFirstName"><br>
+      Guardian Last Name <input type="text" name="GuardianLastName"><br>
+      </td></table>
       </div>
-      <br>
+		<br>
 
-      <div class="section-bar w100" align=center>
-        Contact Information
-      </div><br>
+		<table class='section-bar'>
+			<td width=400 align=center>
+				Contact Infomation
+			</td>
+		</table><br>
 
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Phone" class="col-form-label">Phone</label>
-        </div>
-        <div class="col-auto">
-          <input type="tel" id="Phone" class="form-control" required name="Phone" placeholder="Phone">
-        </div>
-      </div>
-      <div class="row mb-4 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Email" class="col-form-label">Email</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="Email" class="form-control" required name="Email" placeholder="Email">
-        </div>
-      </div>
-      <div class="mb-1">
-        <b>Address:</b>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="AddressStreet" class="col-form-label">Street</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="AddressStreet" class="form-control" required name="AddressStreet" placeholder="Street">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="AddressCity" class="col-form-label">City</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="AddressCity" class="form-control" required name="AddressCity" placeholder="City">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="AddressState" class="col-form-label">State</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="AddressState" class="form-control" required name="AddressState" placeholder="State">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="AdddressZip" class="col-form-label">Zip</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" id="AddressZip" class="form-control" required name="AddressZip" placeholder="Zip">
-        </div>
-      </div>
-      <div class="mb-3 row">
-        <label for="Notes" class="form-label">Any notes we should know?</label>
-        <div class="col-4">
-          <textarea id="Notes" name="Notes" rows="4" cols="50" class="form-control"></textarea>
-        </div>
-      </div>
-      <input type="hidden" id="Browser" name="Browser" value="">
+      Phone: <input type="text" required name="Phone"><br>
+      Email: <input type="text" name="Email"><br>
+		<br>
+		<b>Address:</b><br>
+      Street: <input type="text" required name="AddressStreet"><br>
+      City: <input type="text" required name="AddressCity"><br>
+      State: <input type="text" required name="AddressState" value="VA"><br>
+      Zip: <input type="text" required name="AddressZip"><br><br>
+      Any notes we should know?<br>
+		<textarea name="Notes" rows="4" cols="50"></textarea><br>
+		<input type="hidden" id="Browser" name="Browser" value="">
 
-      <button type="submit" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Submit</button>
-      <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4"
-        onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
-    </form>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+		<button type="submit">Submit</button>
+		<button type="button"
+      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+	</form>
 
 </body>
 <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>

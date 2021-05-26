@@ -4,75 +4,63 @@
 <html>
   <head>
     <base target="_top" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
-  <body style="font-family: Montserrat; background-color: #f3f5e1">
+  <body style="font-family: sans-serif">
     <?var url = getScriptUrl();?>
     <?var auth_url = generateAuthUrl();?>
     <?var user_email = getUserEmail();?>
     <?var staff_session = validateStaffSession();?>
 
-    <?!=importHTML('css.html')?>
-    <?!=importNavbar('login')?>
+    <a href="<?=url?>">Home</a><br />
+    <h1>Login</h1>
 
-    <div class="container-lg" style="margin-top: 2%">
+    <!-- Display registration header or staff page header -->
+    <? if( staff_session ) {?>
+    <br />
+    You are already logged in!<br /><br />
+    Current Session Key:
+    <?=Session.getTemporaryActiveUserKey() ?><br />
 
-      <div class="section-bar w100 mb-2" align=center>
-        Staff Login
-      </div>
+    <?} else {?>
 
-      <!-- Display registration header or staff page header -->
-      <? if( staff_session ) {?>
+    <p>
+      <b>Directions:</b>
+      <br /><br />
+      Please click the <i>login</i> button below (it will take you to the
+      standard 'Sign in With Google' page)<br />
+    </p>
+
+    <a href="<?=auth_url?>" target="_blank"><button>login</button></a>
+
+    <br /><br />
+    <p>
+      After you successfully login, it will provide you with an authorization
+      token.<br />
+      You will need to copy and paste the token in the form below.<br />
+    </p>
+
+    <form id="myform">
+      <input type="hidden" name="page" value="login" />
+      <input type="hidden" name="prev" value="login" />
+      <label for="auth_code">Authorization Code:</label><br />
+      <input type="text" id="auth_code" name="auth_code" /><br />
       <br />
-      You are already logged in!<br /><br />
-      Current Session Key:
-      <?=Session.getTemporaryActiveUserKey() ?><br />
+      <button
+        type="button"
+        onclick="google.script.run.withSuccessHandler(onOauthAPIComplete).tryGetEmailWithToken(document.getElementById('auth_code').value)"
+      >
+        Submit</button
+      ><br />
+    </form>
+    <br /><br />
 
-      <?} else {?>
+    <!-- Populates result of email login -->
+    <div id="result"></div>
+    <!-- Populates user session key if email is validated to be staff -->
+    <div id="staff_status"></div>
 
-      <p>
-        Please click the <i>Login</i> button below (it will take you to the
-        standard 'Sign in With Google' page)<br />
-      </p>
-
-      <a href="<?=auth_url?>" target="_blank"><button class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Login</button></a>
-
-      <br /><br />
-      <p>
-        After you successfully login, it will provide you with an authorization
-        token.<br />
-        You will need to copy and paste the token in the form below.<br />
-      </p>
-
-      <form id="myform">
-        <input type="hidden" name="page" value="login" />
-        <input type="hidden" name="prev" value="login" />
-        <div class="form-floating mb-3">
-          <input type="text" id="auth_code" name="auth_code" class="form-control" placeholder="Authorization Code">
-          <label for="auth_code">Authorization Code</label>
-        </div>
-        
-        <button
-          type="button"
-          class="btn btn-primary"
-          style="background-color: #17a7d4; border-color: #17a7d4"
-          onclick="google.script.run.withSuccessHandler(onOauthAPIComplete).tryGetEmailWithToken(document.getElementById('auth_code').value)"
-        >
-          Submit</button
-        ><br />
-      </form>
-      <br /><br />
-
-      <!-- Populates result of email login -->
-      <div id="result"></div>
-      <!-- Populates user session key if email is validated to be staff -->
-      <div id="staff_status"></div>
-
-      <? } ?>
-    </div>
+    <? } ?>
 
     <script>
       // On authorization completion
@@ -131,6 +119,5 @@
         document.querySelector("#staff_status").innerHTML = uniqueID;
       }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
   </body>
 </html>

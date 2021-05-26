@@ -3,77 +3,54 @@
 
 <head>
 	<base target="_top">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <?!=importHTML('css.html')?>
 <?!=importHTML('modaldialog.html')?>
 <?!=importHTML('wait.html')?>
 
-<body style="font-family: Montserrat; background-color: #f3f5e1">
+<body style="font-family: sans-serif">
 	<?var url = getScriptUrl();?>
-	<?!=importNavbar('register')?>
-  <div class="container-lg" style="margin-top: 2%">
-    <!-- <table>
-      <td>
-        <div class='title'>Insurance</div>
-      </td>
-      <td>
-        <?!=importHTML('help.html')?>
-    </table> -->
-    <div class="row">
-      <div class="section-bar col-10" align=center>
-        Insurance
-      </div>
-      <div class="col-2" align=center>
-        <?!=importHTML('help.html')?>
-      </div>
-    </div>
-    <br>
+	<a href='<?=url?>'>Home</a><br>
 
-    <form id="myform" method="GET" action="<?=url?>">
-      <input type="hidden" name="page" value="consent">
-      <input type="hidden" name="action" value="insurance">
-      <input type="hidden" name="Dose" value="<?=('Dose' in urlParameters) ? urlParameters['Dose']:1?>">
-      <?
-        if(profileData != null) {
-          ?>
-      <input type="hidden" name="ID" value="<?=profileData['ID']?>">
-      <input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
-      <input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
-      <input type="hidden" name="GuardianFirstName" value="<?=profileData['GuardianFirstName']?>">
-      <input type="hidden" name="GuardianLastName" value="<?=profileData['GuardianLastName']?>">
-      <input type="hidden" name="Email" value="<?=profileData['Email']?>">
-      <?
-        }
-      ?>
-      <div class="row mb-5 g-3 align-items-center">
-        <div class="col">
-          <label for="InsuranceType" class="col-form-label">Do you have insurance?</label>
-        </div>
-        <div class="col">
-          <select name="InsuranceType" id="InsuranceType" class="form-select" required onchange="onSelectInsurace(this)">
-            <option disabled selected>--select--</option>
-            <option value="Private">Yes (Private)</option>
-            <option value="Medicare">Yes (Medicare)</option>
-            <option value="None">No</option>
-          </select>
-        </div>
-      </div>
-      <div id='insuranceField' class="mb-1"></div>
-      <br>
-      <canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
-      <canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
-      <button id='confirm' type="button" onclick="showInfoConfirm()" class="btn btn-primary" 
-      style="background-color: #17a7d4; border-color: #17a7d4" disabled>Submit</button>
-      <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4" 
-      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
 
-    </form>
-  </div>
+	<table>
+		<td>
+			<div class='title'>Insurance</div>
+		</td>
+		<td>
+			<?!=importHTML('help.html')?>
+	</table>
+	<form id="myform" method="GET" action="<?=url?>">
+		<input type="hidden" name="page" value="consent">
+		<input type="hidden" name="action" value="insurance">
+		<input type="hidden" name="Dose" value="<?=('Dose' in urlParameters) ? urlParameters['Dose']:1?>">
+		<?
+      if(profileData != null) {
+        ?>
+		<input type="hidden" name="ID" value="<?=profileData['ID']?>">
+		<input type="hidden" name="FirstName" value="<?=profileData['FirstName']?>">
+		<input type="hidden" name="LastName" value="<?=profileData['LastName']?>">
+		<input type="hidden" name="GuardianFirstName" value="<?=profileData['GuardianFirstName']?>">
+		<input type="hidden" name="GuardianLastName" value="<?=profileData['GuardianLastName']?>">
+		<input type="hidden" name="Email" value="<?=profileData['Email']?>">
+		<?
+      }
+    ?>
+		Do you have insurance?
+		<select name="InsuranceType" required onchange="onSelectInsurace(this)">
+        <option disabled selected>--select--</option>
+        <option value="Private">Yes (Private)</option>
+        <option value="Medicare">Yes (Medicare)</option>
+        <option value="None">No</option>
+      </select><br>
+		<div id='insuranceField'></div>
+		<br>
+		<canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
+		<canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
+		<button id='confirm' type="button" onclick="showInfoConfirm()" disabled>Submit</button>
+		<button type="button" onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+	</form>
 
 </body>
 <?!=HtmlService.createHtmlOutputFromFile('barcode.js').getContent()?>
@@ -141,7 +118,7 @@
 
     }
     modalHTML += "</table>";
-    showModalDialog(modalHTML,[{text:'Go Back'},{text:'Yes/Confirm',callback:'onInfoConfirm()'}]);
+    showModalDialog(modalHTML,[{text:'Go Back'},{text:'Yes',callback:'onInfoConfirm()'}]);
   }
 
   function onInfoConfirm(){
@@ -149,101 +126,59 @@
     showWaitScreen();
   } 
 
-  function bootstrapTextInput(name, text, placeholder) {
-    return `
-      <div class="form-floating mb-2">
-        <input type="text" name="${name}" id="${name}" required class="form-control" placeholder="${placeholder}">
-        <label for="${name}" class="col-form-label">${text}</label>
-      </div>
-      `
-  }
-
 	function onSelectInsurace(elem) {
   html = '';
   switch(elem.value) {
     case 'Private':
       html += `
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsurancFront" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceFront')">
-          </div>
-        </div>
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">` +
-            bootstrapTextInput("InsurancePolicyHolder", "Policy Holder Name", "Name") +
-          "</div><div class='col'>" +
-            bootstrapTextInput("InsurancePolicyHolderDateOfBirth", "Policy Holder Date of Birth", "Date of Birth") +
-        "</div></div>" +
-        bootstrapTextInput("InsuranceCompany", "Insurance Company", "Company") + 
-        bootstrapTextInput("InsuranceClaimAddress", "Insurance Claim Address", "Claim Address") + 
-        bootstrapTextInput("InsuranceSubscriberID", "Subscriber ID", "Subscriber ID") +
-        bootstrapTextInput("InsuranceGroupNumber", "Group Number", "Group Number") +
-        `<input type='text' hidden name='InsuranceSSN'>
-        <input type='text' hidden name='InsuranceDriversLicense'>`;
+Photo of FRONT: <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceFront')"><br>
+Photo of BACK: <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceBack')"><br>
+Policy Holder Name: <input type='text' required name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' required name='InsurancePolicyHolderDateOfBirth'><br>
+Insurance Company: <input type='text' required name='InsuranceCompany'><br>
+Insurance Claim Address: <input type='text' required name='InsuranceClaimAddress'><br>
+Group Number: <input type='text' name='InsuranceGroupNumber'><br>
+Subscriber ID: <input type='text' required name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+<input type='text' hidden name='InsuranceDriversLicense'>
+      `;
       break;
     case 'Medicare':
       html += `
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsurancFront" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceFront')">
-          </div>
-        </div>
-        <div class="row mb-2 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
-          </div>
-          <div class="col">
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">` +
-            bootstrapTextInput("InsurancePolicyHolder", "Policy Holder Name", "Name") +
-          "</div><div class='col'>" +
-            bootstrapTextInput("InsurancePolicyHolderDateOfBirth", "Policy Holder Date of Birth", "Date of Birth") +
-        "</div></div>" +
-        `<input type='text' name='InsuranceCompany' hidden value='Medicare'>
-        <input type='text' name='InsuranceClaimAddress' hidden value=''>
-        <input type='text' name='InsuranceGroupNumber' hidden value=''>` +
-        bootstrapTextInput("InsuranceSubscriberID", "Subscriber ID", "Subscriber ID") +
-        `<input type='text' hidden name='InsuranceSSN'>
-        <input type='text' hidden name='InsuranceDriversLicense'>
+Photo of FRONT:
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceFront')"><br>
+Photo of BACK:
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" 
+  onchange="uploadImage(this,'canvasInsuranceBack')"><br>
+Policy Holder: <input type='text' required name='InsurancePolicyHolder'><br>
+Policy Holder Date Of Birth: <input type='text' required name='InsurancePolicyHolderDateOfBirth'><br>
+<input type='text' name='InsuranceCompany' hidden value='Medicare'>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+Subscriber ID: <input type='text' required name='InsuranceSubscriberID'><br>
+<input type='text' hidden name='InsuranceSSN'>
+<input type='text' hidden name='InsuranceDriversLicense'>
       `;
       break;
     default:
       html += `
-        <input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
-        <input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
-        <input type='text' name='InsurancePolicyHolder' hidden value=''>
-        <input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
-        <input type='text' name='InsuranceCompany' hidden value=''>
-        <input type='text' name='InsuranceClaimAddress' hidden value=''>
-        <input type='text' name='InsuranceGroupNumber' hidden value=''>
-        <input type='text' name='InsuranceSubscriberID' hidden value=''>
-        <div class="mb-2">
-          If you have them, please provide one of the following:
-        </div>` +
-        bootstrapTextInput("InsuranceSSN", "Social Security Number", "SSN") + 
-        bootstrapTextInput("InsuranceDriversLicense", "Drivers License", "Drivers License") +
-       `If you do not have either, just press Submit.
+<input type="file" accept="image/*" name="ImageInsuranceFront" capture="environment" hidden>
+<input type="file" accept="image/*" name="ImageInsuranceBack" capture="environment" hidden>
+<input type='text' name='InsurancePolicyHolder' hidden value=''>
+<input type='text' name='InsurancePolicyHolderDateOfBirth' hidden value=''>
+<input type='text' name='InsuranceCompany' hidden value=''>
+<input type='text' name='InsuranceClaimAddress' hidden value=''>
+<input type='text' name='InsuranceGroupNumber' hidden value=''>
+<input type='text' name='InsuranceSubscriberID' hidden value=''>
+<br>
+If you have them, please provide one of the following:<br><br>
+Social Security Number: <input type='text' name='InsuranceSSN'><br>
+Drivers License: <input type='text' name='InsuranceDriversLicense'><br>
+<br>
+If you do not have either, just press Submit.
       `;
       break;
   }
