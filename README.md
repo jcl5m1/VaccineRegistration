@@ -133,10 +133,10 @@ AFWtRhH++kqJu4F9gfkzDQUnfzSiXGxDGi+Xs0+ECzgq1IknmfuDZKOVynA2Tj6H\n\
 3GxOXnRQ05WJbWlz6J3+Cg==\n\
 -----END PRIVATE KEY-----';
 ```
-3. On the Docusing Website, click on "Templates".  This is the empty version of your PDF consent form that the app can use as a template.  Create (or upload) your template. Docusign offers many ways of creating templates with many features.  Please refer to thier documentation on how to configure a template.
-4. Create a "Role" for the template called "Patient".  Hit "Next".  Set the signature location on the PDF, then "Save and Close" to finish the template.
-5. Once you've create your template and you see it in the list.  Click on the name to look at the details.
-6. In the URL, you will see something like `https://appdemo.docusign.com/templates/details/e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Your templateID is `e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Copy this to `var DOCUSIGN_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'` in `config.gs`
-7. Goto [https://admindemo.docusign.com/users](https://admindemo.docusign.com/users), and click on your user name.
-8. Copy your API Username to `var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME'` in `config.gs`
-9. Once these variables are all defined in `config.gs`, refresh your tool and instead of a spinning wait screen during the registration process, it should redirect you to a docusign flow requesting a signature.  After the signature is complete, if will send the patient a PDF copy of the consent form, upload a PDF copy to your Google Drive, and redirect the patient to the Appointment selection page.
+9. On the Docusing Website, click on "Templates".  This is the empty version of your PDF consent form that the app can use as a template.  Create (or upload) your template. Docusign offers many ways of creating templates with many features.  Please refer to thier documentation on how to configure a template.
+10. Create a "Role" for the template called "Patient".  Hit "Next".  Set the signature location on the PDF, then "Save and Close" to finish the template.
+11. Once you've create your template and you see it in the list.  Click on the name to look at the details.
+12. In the URL, you will see something like `https://appdemo.docusign.com/templates/details/e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Your templateID is `e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Copy this to `var DOCUSIGN_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'` in `config.gs`
+13. Goto [https://admindemo.docusign.com/users](https://admindemo.docusign.com/users), and click on your user name.
+14. Copy your API Username to `var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME'` in `config.gs`
+15. Once these variables are all defined in `config.gs`, refresh your tool and instead of a spinning wait screen during the registration process, it should redirect you to a docusign flow requesting a signature.  After the signature is complete, if will send the patient a PDF copy of the consent form, upload a PDF copy to your Google Drive, and redirect the patient to the Appointment selection page.
