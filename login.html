@@ -5,7 +5,8 @@
   <head>
     <base target="_top" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
@@ -27,9 +28,9 @@
       <!-- Display registration header or staff page header -->
       <? if( staff_session ) {?>
       <br />
-      You are already logged in!<br /><br />
+      <p> You are already logged in!<br /><br />
       Current Session Key:
-      <?=Session.getTemporaryActiveUserKey() ?><br />
+      <?=Session.getTemporaryActiveUserKey() ?><br /></p>
 
       <?} else {?>
 
@@ -38,7 +39,7 @@
         standard 'Sign in With Google' page)<br />
       </p>
 
-      <a href="<?=auth_url?>" target="_blank"><button class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Login</button></a>
+      <a href="<?=auth_url?>" target="_blank"><button class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4">Login</button></a>
 
       <br /><br />
       <p>
@@ -52,12 +53,12 @@
         <input type="hidden" name="prev" value="login" />
         <div class="form-floating mb-3">
           <input type="text" id="auth_code" name="auth_code" class="form-control" placeholder="Authorization Code">
-          <label for="auth_code">Authorization Code</label>
+          <label for="auth_code" class="label">Authorization Code</label>
         </div>
         
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary submit-button"
           style="background-color: #17a7d4; border-color: #17a7d4"
           onclick="google.script.run.withSuccessHandler(onOauthAPIComplete).tryGetEmailWithToken(document.getElementById('auth_code').value)"
         >
@@ -128,7 +129,7 @@
        * @param {string} uniqueID - HTML containing details of unique user key.
        */
       function onGetIDSuccess(uniqueID) {
-        document.querySelector("#staff_status").innerHTML = uniqueID;
+        document.querySelector("#staff_status").innerHTML = uniqueID.replace("HOME_LINK", "<a href='<?=url?>'>home</a>");
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>

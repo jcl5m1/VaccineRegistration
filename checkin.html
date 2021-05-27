@@ -4,8 +4,34 @@
 <head>
 	<base target="_top">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-  <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
 </head>
+
+<style>
+  #results {
+    margin-left: 2%; 
+    margin-right: 2%; 
+    margin-bottom: 2%; 
+    overflow: auto; 
+    font-size: 1.5vh;
+    width: 96%;
+  }
+
+  button {
+    font-size: 1.5vh !important;
+  }
+
+  @media screen and (max-width: 992px) {
+    #results {
+      font-size: 1.5vmax;
+    }
+
+    button {
+      font-size: 1.5vmax !important;
+    }
+  }
+</style>
 
 <body onload="onLoad()" style="font-family: Montserrat; background-color: #f3f5e1">
 	<?var url = getScriptUrl();?>
@@ -15,62 +41,70 @@
 	<?!=importNavbar('checkin')?>
 
 	<? if (validateStaffSession()) {?>
-	<table style="margin: 1%">
-		<td>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-			    <label for="lot" class="col-form-label"><b>Lot</b></label>
-        </div>
-        <div class="col-auto">
-          <select class="form-select" id='lot'>
-            <option value='1'>1</option>
-            <option value='2'>2</option>
-            <option value='3'>3</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="dateSelect" class="col-form-label">Filter by day</label>
-        </div>
-        <div class="col-auto">
-          <select id='dateSelect' name='date' class="form-select" onchange='onDateSelect(this)'>
-            <option value='all'>all</option>
-          </select>
-        </div>
-      </div>
-			<form id="myform">
-        <div class="row mb-1 g-3 align-items-center">
-          <div class="col-auto">
-            <label for="query" class="col-form-label">Search</label>
-          </div>
-          <div class="col-auto">
-            <input type="text" id="query" class="form-control" onkeyup="onKeyUp(this)">
+  <div class="container-lg" style="margin-top: 2%"> 
+    <div class="section-bar w100 mb-3" align=center>
+      Check-in
+    </div>
+    <table>
+      <td style="width: 40vw">
+        <div class="row mb-3">
+          <div class="col-12 col-lg-6">
+            <div class="form-floating">
+              <select class="form-select" id='lot'>
+                <option value='1'>1</option>
+                <option value='2'>2</option>
+                <option value='3'>3</option>
+              </select>
+              <label for="lot" class="col-form-label label">Lot Number</label>
+            </div>
           </div>
         </div>
-				<? if(ENABLE_QR_CODE) {?>
-        <div class="row mb-1 g-3 align-items-center">
-          <div class="col-auto">
-            <label for="ImageIDBack" class="col-form-label">Scan QR code/ID barcode</label>
-          </div>
-          <div class="col-auto">
-            <input type="file" accept="image/*" id="ImageIDBack" class="form-control"
-            name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
+        <div class="row mb-3">
+          <div class="col-12 col-lg-8">
+            <div class="form-floating">
+              <select id='dateSelect' name='date' class="form-select" onchange='onDateSelect(this)'>
+                <option value='all'>all</option>
+              </select>
+              <label for="dateSelect" class="col-form-label label">Filter by day</label>
+            </div>
           </div>
         </div>
-				<canvas hidden id="canvas" width="0" height="0"></canvas>
-				<?}?>
-			</form>
-		</td>
-		<td>
-			<h3>
-				<div id='summaryStatsHeader'>Summary Stats:</div>
-			</h3>
-			<div id='summaryStats'></div>
-		</td>
-	</table>
+        <form id="myform">
+          <div class="row mb-3">
+            <div class="col-12 col-lg-8">
+              <div class="form-floating">
+                <input type="text" id="query" class="form-control" onkeyup="onKeyUp(this)">
+                <label for="query" class="col-form-label label">Search</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </td>
+      <td style="width: 60vw">
+        <div align=center>
+          <h3>
+            <div id='summaryStatsHeader'>Summary Stats:</div>
+          </h3>
+          <div id='summaryStats'></div>
+        </div>
+      </td>
+    </table>
 
-	<div id="results" style="margin-left: 2%; margin-right: 2%; margin-bottom: 2%"></div>
+    <? if(ENABLE_QR_CODE) {?>
+      <div class="row mb-3 g-3 align-items-center" style="margin-left: 2%; margin-right: 2%">
+        <div class="col-5 col-lg-6">
+          <label for="ImageIDBack" class="col-form-label label">Scan QR code/ID barcode</label>
+        </div>
+        <div class="col-7 col-lg-6">
+          <input type="file" accept="image/*" id="ImageIDBack" class="form-control file-select"
+          name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
+        </div>
+      </div>
+      <canvas hidden id="canvas" width="0" height="0"></canvas>
+    <?}?>
+  </div>
+
+	<div id="results"></div>
 
 	<?} else {?>
 	Hi! This is a staff only page.<br>
@@ -285,18 +319,18 @@ function showMatches() {
     });
 
     html = '';
-    html += "<div><table width=100%><tr bgcolor='#ddf'>"
-    html += "<td width=300><b>Name</b></td>"
-    html += "<td><b>Profile</b></td>"
+    html += "<table width=1600><tr bgcolor='#ddf'>"
+    html += "<td width=300 align=center><span style='font-weight: 500'>Name</span></td>"
+    html += "<td align=center><span style='font-weight: 500'>Profile</span></td>"
 
     // only show the first incomplete dose
-    html += "<td><b>Date@Time:</b></td>";
-    html += "<td><b>Dose:</b></td>";
-    html += "<td><b>Brand:</b></td>";
-    html += "<td><b>Consent:</b></td>";
-    html += "<td><b>Status:</b></td>";
-    html += "<td><b>HighRisk:</b></td>";
-    html += "<td><b>Notes:</b></td>";
+    html += "<td align=center><span style='font-weight: 500'>Date@Time</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Dose</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Brand</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Consent</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Status</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Risk Level</span></td>";
+    html += "<td align=center><span style='font-weight: 500'>Notes</span></td>";
     html += "</tr>";
 
     for(var i in matches){
@@ -318,7 +352,7 @@ function showMatches() {
       if(consent1 == 'completed') {
         consent1 = `<a href='${consent1url}'>${consent1}</a>`
       } else {
-        consent1 = `<button type='button' class="btn btn-secondary btn-sm">request</button>`        
+        consent1 = `<button type='button' class="btn btn-secondary btn-sm" onclick="onRequestConsent(this, '${id}', 1)">request</button>`        
       }
 
       if(status1 == null)
@@ -347,7 +381,7 @@ function showMatches() {
       if(consent2 == 'completed') {
         consent2 = `<a href='${consent2url}'>${consent2}</a>`
       } else {
-        consent2 = `<button type='button' class="btn btn-secondary btn-sm" disabled>request</button>`        
+        consent2 = `<button type='button' class="btn btn-secondary btn-sm" onclick="onRequestConsent(this, '${id}', 2)">request</button>`        
       }
 
       if(status2 == null)
@@ -390,9 +424,9 @@ function showMatches() {
 
 
       var bgcolor = (i%2 == 0) ? '#eeeeee' : '#ffffff';
-      html += `<tr bgcolor="${bgcolor}" width=100% height=30>`
-      html += `<td width=300>${nameAppointmentUrl}</td>`      
-      html += `<td>${profileUrl}</td>`
+      html += `<tr bgcolor="${bgcolor}" width=100% style='height: 4vh'>`
+      html += `<td width=300 align=center>${nameAppointmentUrl}</td>`      
+      html += `<td align=center>${profileUrl}</td>`
       var name = `${lastName}, ${firstName}`
       if (status) {
         var statusHTML = `<button type='button' class='${status}-status-button' id='status${dose}_${id}' onclick="doCheckin('${name}','${id}','${appointmentId}',${dose})">${status}</button>`
@@ -409,13 +443,13 @@ function showMatches() {
         date = appointment['Date'] + "@" + appointment['Time']
       }
 
-      html += `<td>${date}</td>`;
+      html += `<td align=center>${date}</td>`;
       html += `<td align=center>${dose}</td>`;
-      html += `<td>${brand}</td>`;
-      html += `<td>${consent}</td>`;
-      html += `<td>${statusHTML}</td>`;
-      html += `<td>${highriskHTML}</td>`;
-      html += `<td>${notes}</td>`;
+      html += `<td align=center>${brand}</td>`;
+      html += `<td align=center>${consent}</td>`;
+      html += `<td align=center>${statusHTML}</td>`;
+      html += `<td align=center>${highriskHTML}</td>`;
+      html += `<td align=center>${notes}</td>`;
       html += "</tr>"
     } // for each match
     html += "</table>"
@@ -441,7 +475,8 @@ function onSuccess(result){
 
 }
 
-function onRequestConsent(elem, id,dose) {            
+function onRequestConsent(elem, id, dose) {      
+  console.log("consent requested");    
   var now = new Date()            
   elem.innerHTML = "requested @ " + now.getHours() + ":" + ('0' + now.getMinutes()).slice(-2) + ":" + ('0'+now.getSeconds()).slice(-2)            
   var url = '<?=url?>'

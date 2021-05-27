@@ -3,24 +3,39 @@
 
 <head>
 	<base target="_top">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;800&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/39c0232a19.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
-<body style="font-family: sans-serif">
+<body style="font-family: Montserrat; background-color: #f3f5e1">
 	<?var url = getScriptUrl();?>
-	<a href='<?=url?>'>Home</a><br>
-	<h1>Profile</h1>
-  <!-- If staff session, show full profile, else limit. -->
-  <? if (validateStaffSession()) {?>
-    <? if(profileData != null) {?>
-      <img src="<?=QR_CODE_URL?><?=profileData['ID']?>"><br>
-      <?!=formatToHTML(profileData)?>
+  <?!=importHTML('css.html')?>
+	<?!=importNavbar('profile')?>
+  <div class="container-lg" style="margin-top: 2%; margin-bottom: 2%">
+    <div class="section-bar w100 mb-3" align=center>
+      Profile
+    </div>
+    <!-- If staff session, show full profile, else limit. -->
+    <? if (validateStaffSession()) {?>
+      <? if(profileData != null) {?>
+        <div class="mb-3" align=center>
+          <img src="<?=QR_CODE_URL?><?=profileData['ID']?>">
+        </div>
+        <div style="overflow: auto">
+          <?!=formatToHTML(profileData)?>
+        </div>
+      <?} else {?>
+        <h2>Not Found</h2>
+      <? } ?>
     <?} else {?>
-      <h2>Not Found</h2>
+      Hi! This is a staff only page.
+      Please <a href='<?=url?>?page=login'>login</a></li> to access patient data or return home if you arrived here in error.
     <? } ?>
-    <?} else {?>
-    Hi! This is a staff only page.
-    Please <a href='<?=url?>?page=login'>login</a></li> to access patient data or return home if you arrived here in error.
-    <? } ?>
+  </div>
 </body>
 
 </html>

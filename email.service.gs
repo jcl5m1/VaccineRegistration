@@ -69,6 +69,7 @@ function sendAppointmentCancellationEmail(id, dose, url) {
 
 function sendRegisterInvitationEmail(email, url) {
   // override email with developer recipient email address
+  console.log("hello")
   if(DEVELOPER_MODE)
     email=DEVELOPER_RECIPIENT_EMAIL
 
