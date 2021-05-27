@@ -30,44 +30,44 @@
 
       <? if(ENABLE_QR_CODE) {?>
         <div class="row mb-3 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageIDBack" class="col-form-label">(optional) Scan QR Code/State ID barcode</label>
+          <div class="col-12 col-lg-6">
+            <label for="ImageIDBack" class="col-form-label label">(optional) Scan QR Code/State ID barcode</label>
           </div>
-          <div class="col">
-            <input type="file" accept="image/*" class="form-control" id="ImageIDBack"
+          <div class="col-12 col-lg-6">
+            <input type="file" accept="image/*" class="form-control file-select label" id="ImageIDBack"
               name="ImageIDBack" onchange="onImageChange(this,'canvas')" capture="environment">
           </div>
           <canvas hidden id="canvas" width="0" height="0"></canvas>
         </div>
       <?}?>
       <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-9 col-lg-6">
           <div class="form-floating">
             <input type="text" id='ID' name="ID" class="form-control" value="" placeholder="ID Number">
-            <label for="ID" class="col-form-label">ID Number</label>
+            <label for="ID" class="label">ID Number</label>
           </div>
         </div>
       </div>
-      <div class="mb-2">
+      <div class="mb-3 label">
         or
       </div>
       <div class="row mb-3 g-2">
-        <div class="col-4">
+        <div class="col-6 col-lg-4">
           <div class="form-floating">
             <input type="text" id="FirstName" name="FirstName" class="form-control" placeholder="First Name">
-            <label for="FirstName" class="col-form-label">First Name</label>
+            <label for="FirstName" class="label">First Name</label>
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-6 col-lg-4">
           <div class="form-floating">
             <input type="text" id="LastName" name="LastName" class="form-control" placeholder="Last Name">
-            <label for="LastName" class="col-form-label">Last Name</label>
+            <label for="LastName" class="label">Last Name</label>
           </div>
         </div>
-        <div class="col-3">
+        <div class="col-4 col-lg-3">
           <div class="form-floating">
             <input type="date" id="DateOfBirth" name="DateOfBirth" class="form-control">
-            <label for="DateOfBirth" class="col-form-label">Date of Birth</label>
+            <label for="DateOfBirth" class="label">Date of Birth</label>
           </div>
         </div>
       </div>

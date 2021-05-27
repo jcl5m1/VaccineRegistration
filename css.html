@@ -12,15 +12,28 @@
 		//  border: 2px solid #888;
 		//width: 500; /* Could be more or less, depending on screen size */
 		font-family: Montserrat;
-		font-size: 25px;
+		font-size: 3vh;
 		font-weight: 500;
 		color: white;
 		border-radius: 10px;
 
 	}
 
+  .form-control:not(.file-select):not(.notes), .form-select {
+    height: 6vh !important;
+    font-size: 1.5vh !important;
+  }
+
+  .notes {
+    font-size: 1.5vh !important;
+  }
+
+  .label, .file-select {
+    font-size: 2vh;
+  }
+
   .home-button-container {
-    height: 40vmin;
+    height: 30vmax;
   }
 
   .home-button {
@@ -33,15 +46,91 @@
 
   .home-button-text {
     color: #1383a6;
-    font-size: 2.5vmax;
+    font-size: 3vh;
     font-weight: bold;
+  }
+
+  .home-button-icon {
+    color: #17a7d4;
+    font-size: 1.5vh;
   }
 
   .home-button-subtext {
     color: #17a7d4;
-    font-size: 1vmax;
+    font-size: 2vh;
   }
 
+  p {
+    font-size: 2vh;
+  }
+
+  .choose-file-help {
+    display: none;
+  }
+
+  .cancel-button {
+		background-color: #ff0000;
+		border: none;
+		color: white;
+		padding: 10px 15px;
+		text-align: center;
+		border-radius: 10px;
+		text-decoration: none;
+		display: inline-block;
+		cursor: pointer;
+		font-size: 1.5vh;
+	}
+
+  .submit-button {
+    font-size: 2vh !important;
+  }
+
+  @media screen and (max-width: 992px) {
+    .home-button-text {
+      font-size: 3vmax;
+    }
+
+    .home-button-icon {
+      font-size: 1.5vmax;
+    }
+
+    .home-button-subtext {
+      font-size: 2vmax;
+    }
+
+    p {
+      font-size: 2vmax;
+    }
+
+    .section-bar {
+      font-size: 3vmax;
+    }
+
+    .form-control:not(.file-select):not(.notes), .form-select {
+      height: 6vmax !important;
+      font-size: 1.5vmax !important;
+    }
+
+    .notes {
+      font-size: 1.5vmax !important;
+    }
+
+    .label, .file-select {
+      font-size: 2vmax;
+    }
+
+    .choose-file-help {
+      display: inline-block;
+    }
+
+    .cancel-button {
+      font-size: 1.5vmax;
+    }
+
+    .submit-button {
+      font-size: 2vmax !important;
+    }
+  }
 
 	.title {
 		margin: auto; /* 15% from the top and centered */
@@ -59,10 +148,6 @@
 		padding: 10px;
 		font-size: 12px;
 		color: #ccc;
-	}
-
-	.qr-caption {
-		font-size: 15px;
 	}
 
 	.appointment-details {
@@ -88,20 +173,6 @@
 		color: #f00;
 		display: inline
 	}
-
-	.cancel-button {
-		background-color: #ff0000;
-		border: none;
-		color: white;
-		padding: 10px 15px;
-		text-align: center;
-		border-radius: 10px;
-		text-decoration: none;
-		display: inline-block;
-		cursor: pointer;
-		font-size: 16px;
-	}
-
 
 	.high-risk-button {
 		background-color: #ff0000;
@@ -161,5 +232,5 @@
 
 	table, th, td {
   border: 0px solid black
-} 
+  } 
 </style>

@@ -28,9 +28,9 @@
       <!-- Display registration header or staff page header -->
       <? if( staff_session ) {?>
       <br />
-      You are already logged in!<br /><br />
+      <p> You are already logged in!<br /><br />
       Current Session Key:
-      <?=Session.getTemporaryActiveUserKey() ?><br />
+      <?=Session.getTemporaryActiveUserKey() ?><br /></p>
 
       <?} else {?>
 
@@ -39,7 +39,7 @@
         standard 'Sign in With Google' page)<br />
       </p>
 
-      <a href="<?=auth_url?>" target="_blank"><button class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Login</button></a>
+      <a href="<?=auth_url?>" target="_blank"><button class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4">Login</button></a>
 
       <br /><br />
       <p>
@@ -53,12 +53,12 @@
         <input type="hidden" name="prev" value="login" />
         <div class="form-floating mb-3">
           <input type="text" id="auth_code" name="auth_code" class="form-control" placeholder="Authorization Code">
-          <label for="auth_code">Authorization Code</label>
+          <label for="auth_code" class="label">Authorization Code</label>
         </div>
         
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary submit-button"
           style="background-color: #17a7d4; border-color: #17a7d4"
           onclick="google.script.run.withSuccessHandler(onOauthAPIComplete).tryGetEmailWithToken(document.getElementById('auth_code').value)"
         >

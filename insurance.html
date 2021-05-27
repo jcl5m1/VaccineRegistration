@@ -15,7 +15,7 @@
 <body style="font-family: Montserrat; background-color: #f3f5e1">
 	<?var url = getScriptUrl();?>
 	<?!=importNavbar('register')?>
-  <div class="container-lg" style="margin-top: 2%">
+  <div class="container-lg" style="padding: 2%">
     <div class="row">
       <div class="section-bar col-10" align=center>
         Insurance
@@ -44,98 +44,114 @@
       ?>
       <div class="row mb-5 g-3 align-items-center">
         <div class="col">
-          <label for="InsuranceType" class="col-form-label">Do you have insurance?</label>
+          <label for="InsuranceType" class="col-form-label label">Do you have insurance?</label>
         </div>
         <div class="col">
-          <select name="InsuranceType" id="InsuranceType" class="form-select" onchange="onSelectInsurace(this)">
-            <option disabled selected>--select--</option>
-            <option value="Private">Yes (Private)</option>
-            <option value="Medicare">Yes (Medicare)</option>
-            <option value="None">No</option>
-          </select>
+          <div class="form-floating">
+            <select name="InsuranceType" id="InsuranceType" class="form-select" onchange="onSelectInsurace(this)">
+              <option disabled selected>--select--</option>
+              <option value="Private">Yes (Private)</option>
+              <option value="Medicare">Yes (Medicare)</option>
+              <option value="None">No</option>
+            </select>
+            <label for="InsuranceType" class="label">Insurance Type</label>
+          </div>
         </div>
       </div>
 
-      <div class="row mb-3 g-3 align-items-center" id="ImageDiv" hidden>
-        <div class="col">
-          <label for="ImageInsuranceFront" class="col-form-label">Photo of FRONT</label>
+      <div class="row mb-5 g-3 align-items-center" id="ImageDiv" hidden>
+        <div class="choose-file-help mb-2 notes col-12 col-lg-12" align=center>
+          The "Choose File" buttons below will open the camera if you are on a mobile device
         </div>
-        <div class="col">
-          <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control" capture="environment" 
+        <div class="col-4 col-lg-2">
+          <label for="ImageInsuranceFront" class="col-form-label label">Photo of FRONT</label>
+        </div>
+        <div class="col-8 col-lg-4">
+          <? if(DEVELOPER_MODE) { ?>
+            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control file-select" capture="environment" 
           onchange="uploadImage(this,'canvasInsuranceFront')">
+          <? } else { ?>
+            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control file-select" capture="environment" 
+            onchange="uploadImage(this,'canvasInsuranceFront')" required>
+          <? } ?>
         </div>
-        <div class="col">
-          <label for="ImageInsuranceBack" class="col-form-label">Photo of BACK</label>
+        <div class="col-4 col-lg-2">
+          <label for="ImageInsuranceBack" class="col-form-label label">Photo of BACK</label>
         </div>
-        <div class="col">
-          <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsurancBack" class="form-control" capture="environment" 
-          onchange="uploadImage(this,'canvasInsuranceBack')">
+        <div class="col-8 col-lg-4">
+          <? if(DEVELOPER_MODE) { ?>
+            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsuranceBack" class="form-control file-select" capture="environment" 
+            onchange="uploadImage(this,'canvasInsuranceBack')">
+          <? } else { ?>
+            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsuranceBack" class="form-control file-select" capture="environment" 
+            onchange="uploadImage(this,'canvasInsuranceBack')" required>
+          <? } ?>
         </div>
       </div>
-      <div class="row mb-3" id="PolicyHolderDiv" hidden>
-        <div class="col-5">
+      <div class="row" id="PolicyHolderDiv" hidden>
+        <div class="col-8 col-lg-5 mb-3">
           <div class="form-floating">
             <input type="text" name="InsurancePolicyHolder" id="InsurancePolicyHolder" class="form-control" placeholder="Name">
-            <label for="InsurancePolicyHolder" class="col-form-label">Policy Holder Name</label>
+            <label for="InsurancePolicyHolder" class="label">Policy Holder Name</label>
           </div>
         </div>
-        <div class='col-4'>
+        <div class="col-6 col-lg-4 mb-5">
           <div class="form-floating">
             <input type="date" name="InsurancePolicyHolderDateOfBirth" id="InsurancePolicyHolderDateOfBirth" class="form-control" placeholder="Date of Birth">
-            <label for="InsurancePolicyHolderDateOfBirth" class="col-form-label">Policy Holder Date of Birth</label>
+            <label for="InsurancePolicyHolderDateOfBirth" class="label">Policy Holder Date of Birth</label>
           </div>
         </div>
       </div>
       <div class="row mb-3" id="CompanyDiv" hidden>
-        <div class="col-5">
+        <div class="col-8 col-lg-5">
           <div class="form-floating">
             <input type="text" name="InsuranceCompany" id="InsuranceCompany" class="form-control" placeholder="Company">
-            <label for="InsuranceCompany" class="col-form-label">Insurance Company</label>
+            <label for="InsuranceCompany" class="label">Insurance Company</label>
           </div>
         </div>
       </div>
       <div class="row mb-3" id="ClaimAddressDiv" hidden>
-        <div class="col-6">
+        <div class="col-10 col-lg-6">
           <div class="form-floating">
             <input type="text" name="InsuranceClaimAddress" id="InsuranceClaimAddress" class="form-control" placeholder="Claim Address">
-            <label for="InsuranceClaimAddress" class="col-form-label">Claim Address</label>
-            <div class="form-text">Some cards do not have a specified claim address. If that is the case, put "No address" in the field above.</div>
+            <label for="InsuranceClaimAddress" class="label">Claim Address</label>
+            <div class="form-text notes">Some cards do not have a specified claim address. If that is the case, put "No address" in the field above.</div>
           </div>
         </div>
       </div>
       <div class="row mb-3" id="InsuranceNumbersDiv" hidden>
-        <div class="col-4" id="SubscriberIDDiv" hidden>
+        <div class="col-6 col-lg-4" id="SubscriberIDDiv" hidden>
           <div class="form-floating">
             <input type="text" name="InsuranceSubscriberID" id="InsuranceSubscriberID" class="form-control" placeholder="Subscriber ID">
-            <label for="InsuranceSubscriberID" class="col-form-label">Subscriber ID</label>
+            <label for="InsuranceSubscriberID" class="label">Subscriber ID</label>
           </div>
         </div>
-        <div class="col-4" id="GroupNumberDiv" hidden>
+        <div class="col-6 col-lg-4" id="GroupNumberDiv" hidden>
           <div class="form-floating">
             <input type="text" name="InsuranceGroupNumber" id="InsuranceGroupNumber" class="form-control" placeholder="Name">
-            <label for="InsuranceGroupNumber" class="col-form-label">Group Number</label>
+            <label for="InsuranceGroupNumber" class="label">Group Number</label>
           </div>
         </div>
       </div>
       <div id="NoInsuranceDiv" hidden>
-        <div class="mb-2">
+        <div class="mb-3 label">
           If you have them, please provide one of the following:
         </div>
-        <div class="row mb-2">
-          <div class="col">
+        <div class="row mb-3">
+          <div class="col-8 col-lg-6 mb-3">
             <div class="form-floating">
               <input type="text" name="InsuranceSSN" id="InsuranceSSN" class="form-control" placeholder="SSN">
-              <label for="InsuranceSSN" class="col-form-label">Social Security Number</label>
+              <label for="InsuranceSSN" class="label">Social Security Number</label>
             </div>
           </div>
-          <div class="col">
+          <div class="col-8 col-lg-6">
             <div class="form-floating">
               <input type="text" name="InsuranceDriversLicense" id="InsuranceDriversLicense" class="form-control" placeholder="Driver's License">
-              <label for="InsuranceDriversLicense" class="col-form-label">Driver's License Number</label>
+              <label for="InsuranceDriversLicense" class="label">Driver's License Number</label>
             </div>
           </div>
         </div>
-        <div class="mb-2">
+        <div class="mb-3 label">
           If you do not have either, just press Submit.
         </div>
       </div>
@@ -143,10 +159,14 @@
       <canvas hidden id="canvasInsuranceFront" width="0" height="0"></canvas>
       <canvas hidden id="canvasInsuranceBack" width="0" height="0"></canvas>
       
-      <button id='confirm' type="button" onclick="showInfoConfirm()" class="btn btn-primary" 
-      style="background-color: #17a7d4; border-color: #17a7d4" disabled>Submit</button>
-      <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4" 
-      onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+      <div align=center>
+        <button id='confirm' type="button" onclick="showInfoConfirm()" class="btn btn-primary submit-button" 
+        style="background-color: #17a7d4; border-color: #17a7d4" disabled>Submit</button>
+        <? if (DEVELOPER_MODE) { ?>
+          <button type="button" class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4" 
+          onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+        <? } ?>
+      </div>
 
     </form>
   </div>

@@ -14,7 +14,7 @@
 	<? var url = getScriptUrl(); ?>
 	<?!=importHTML('modaldialog.html') ?>
 	<?!=importNavbar('')?>
-  <div class="container-lg" style="margin-top: 2%">
+  <div class="container-lg" style="padding: 2%">
     <div class="row mb-2">
       <div class="section-bar col-10" align=center>Your Appointments</div>
       <div class="col-2" align=center>
@@ -28,10 +28,12 @@
     </div><br>
     <div id='selectionBody'>
       <form id='DateForm'>
-        <div id="selectDate" class="mb-3 col-6">
-          <select name='date' class="form-select" onchange='onDateSelect(this)'>
-            <option value='' disabled selected>(loading appointments)</option>
-          </select>
+        <div class="row d-flex justify-content-center">
+          <div id="selectDate" class="mb-3 col-8 col-lg-6">
+            <select name='date' class="form-select" onchange='onDateSelect(this)'>
+              <option value='' disabled selected>(loading appointments)</option>
+            </select>
+          </div>
         </div>
       </form>
       <form id='AppointmentForm' action="<?=url?>">
@@ -43,19 +45,19 @@
     </div>
     <br>
 
-    <div class="w100" align=center>
-      <? if(profileData != null) {
-        if(ENABLE_QR_CODE){?>
+    <div class="w100 notes" align=center>
+      <? if(profileData != null) { ?>
+        <? if(ENABLE_QR_CODE) { ?>
           <img src='<?=QR_CODE_URL?><?=profileData['ID']?>'>
-          <div class='qr-caption mt-1'>
+          <div class='mt-1'>
           ID: <?=profileData['ID']?></div>
         <?} else {?>
           ID not found
-      <?}
-      }?>
+        <? } ?>
+      <? } ?>
     </div><br><br>
 
-    <div class="time-check">Last checked: <?= new Date().toLocaleString() ?></div>
+    <div class="time-check notes">Last checked: <?= new Date().toLocaleString() ?></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
@@ -179,14 +181,14 @@
       return '<br><br>'
 
     //show appointment information
-    html = "<table ><td class='appointment-details'>"
+    html = "<table ><td class='appointment-details'><span class='notes'>"
     html += `${appointment['Name']}<br>`;
     var loc = appointment['Location']
     html += `When: ${convertDateToString(appointment['Date'])} ${convert24to12hr(appointment['Time'])}<br>`
     html += `Where: <a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
     html += `Brand: ${appointment['VaccineBrand']}<br>`
     html += `Notes: ${appointment['Notes']}<br>`
-    html += `</td></table>`
+    html += `</span></td></table><br>`
 
     return html
   }
@@ -286,8 +288,8 @@
     if(data.action == 'reserve'){
       var modalHTML = `<h1>Your appointment registration is confirmed!</h1>`
       modalHTML += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-      modalHTML += "<h1>Your done! You can close this page</h1>"
-      modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <span style='font-weight: 500'>after</span> you have recieved your first dose."
+      modalHTML += "<h1>You're done! You can close this page</h1>"
+      modalHTML += "We have sent a confirmation message to your email. If you need to make any modifications to your appointment, use the link provided in the email.  If this is your first dose, you will be able to schedule your second dose <span style='font-weight: 500'>after</span> you have received your first dose."
       showModalDialog(modalHTML, null) // add third parameter to disable closing.
 
       // reset date select
@@ -305,29 +307,28 @@
     for(var dose = 1; dose < arr.length+1; dose++)
     {
       var status = arr[dose-1]
-      var statusHTML = `<p class='status-unscheduled' id='status${dose}'>NOT SCHEDULED</p>`
+      var statusHTML = `<span class='status-unscheduled' id='status${dose}'>NOT SCHEDULED</span>`
       // more patient readable status
       if(status == 'registered'){
-        statusHTML = `<p class='status-registered' id='status${dose}'>REGISTERED</p>`
+        statusHTML = `<span class='status-registered' id='status${dose}'>REGISTERED</span>`
       }
       if(status == 'completed') {
-        statusHTML = `<p class='status-completed' id='status${dose}'>RECIEVED</p>`
+        statusHTML = `<span class='status-completed' id='status${dose}'>RECEIVED</span>`
       }
 
-      html += `<table>`
-      html += `<tr><td valign=top>`
-      html += `Dose ${dose}: ${statusHTML}<br>`
-      html += `Consent: ${data['Dose' + dose + 'ConsentStatus']}`
-      html += "</td><td>"
-      html += "</td><td>"
+      html += `<table>
+                <tr><td style='width: 35vw'><p>
+                  Dose ${dose}: ${statusHTML}<br>
+                  Consent: ${data['Dose' + dose + 'ConsentStatus']}
+                </p></td><td>`
       if(status == "registered") {
         html += generateAppointmentCancelButton(data['ID'], dose)
       }
-      html += "</td></tr>"
-      html += "<tr><td colspan=2>"
-      html += generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])
-      html += "</td></tr>"
-      html += "</table>"
+      html += `</td></tr>
+                <tr><td colspan=2>
+                  ${generateAppointmentHtml(data['Dose' + dose + 'AppointmentID'])}
+                </td></tr>
+              </table>`
     }
     document.getElementById("existingReservations").innerHTML = html;
   }
@@ -398,22 +399,20 @@
       return
     }
 
-
-
     for(var j in names) {
       var appts = names[j]
       var appointment = appts[0];// use the first appointment of this day for displaying general information
   
       var selectId = appointment['ID']
       //show appointment information with time slot drop down
-      html += `<span style="font-weight: 500">${appointment['Name']}</span><br>`;
+      html += `<p align=center><span style="font-weight: 500">${appointment['Name']}</span><br>`;
       var loc = appointment['Location']
       html += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURI(loc)}" target=new> ${loc}</a><br>`;
 
       html += `Vaccine Brand: ${appointment['VaccineBrand']}<br>`;
-      html += `Notes: ${appointment['Notes']}<br>`
+      html += `Notes: ${appointment['Notes']}<br></p>`
 
-      html += `<div class="col-6">`
+      html += `<div class="row d-flex justify-content-center"><div class="col-8 col-lg-6" align=center>`
       html += `<form>`
       html += `<select id='appointment' onchange="onAppointmentSelect(this.form)" class="form-select">`
 
@@ -430,8 +429,8 @@
 
       }
       html += "</select><br>";
-      html += `<button id='appointmentSelectButton' type='button' class="btn btn-primary"
-                style="background-color: #17a7d4; border-color: #17a7d4" disabled onclick='onRegister(this.form)'>Select</button>`
+      html += `<div align=center><button id='appointmentSelectButton' type='button' class="btn btn-primary submit-button"
+                style="background-color: #17a7d4; border-color: #17a7d4" disabled onclick='onRegister(this.form)'>Select</button></div></div>`
       html += `</form></div><br><br>`;
     }
     document.getElementById("dayInfo").innerHTML = html;

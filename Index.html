@@ -16,29 +16,26 @@
     <?var url = getScriptUrl();?>
     <?!=importNavbar('home')?>
 
-    <div class="container-lg" style="margin-top: 2%">
-      <div class="row mb-4">
-        <div class="col home-button-container">
+    <div class="container-lg" style="margin-top: 2%" align=center>
+      <div class="row mb-4 justify-content-md-center">
+        <div class="col-10 col-lg-6 mb-3 home-button-container">
           <a href="<?=url?>?page=register"><button type="button" class="home-button">
             <span class="home-button-text">New Registration</span><br><br>
-            <span class="home-button-subtext">
-              <i class="fas fa-plus-circle fa-6x"></i><br><br>
-              Create a new registration for the COVID-19 vaccine
+            <span class="home-button-icon"><i class="fas fa-plus-circle fa-6x"></i><br><br></span>
+            <span class="home-button-subtext">Create a new registration for the COVID-19 vaccine</span>
           </button></a>
         </div>
-        <div class="col home-button-container">
+        <div class="col-10 col-lg-6 home-button-container">
           <a href="<?=url?>?page=lookup"><button type="button" class="home-button">
             <span class="home-button-text">Lookup Registration</span><br><br>
-            <span class="home-button-subtext">
-              <i class="fas fa-search fa-6x"></i><br><br>
-              Find a registration using patient ID number <br> or name and date of birth
-            </span>
+            <span class="home-button-icon"><i class="fas fa-search fa-6x"></i><br><br></span>
+            <span class="home-button-subtext">Find a registration using patient ID number <br> or name and date of birth</span>
           </button></a>
         </div>
       </div>
       
       <div align=center>
-        Scan to share this page with a mobile device:<br><br>
+        <p>Scan to share this page with a mobile device:<br><br></p>
         <img src="<?=QR_CODE_URL?><?=url?>" /><br><br>
       </div>
 
@@ -123,7 +120,7 @@
       <? } ?>
       <br><br>
       <div align=center>
-        <a href="https://github.com/jcl5m1/VaccineRegistration" target="new" style="color: #818181">Github Project Page</a>
+        <a href="https://github.com/jcl5m1/VaccineRegistration" target="new" style="color: #818181"><p>Github Project Page</p></a>
       </div>
     </div>
     <script>

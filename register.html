@@ -15,7 +15,7 @@
   <?!=importNavbar('register')?>
 	<?var url = getScriptUrl();?>
 
-  <div class="container-xl">
+  <div class="container-lg">
     <form id="myform" style="padding: 2%" method="GET" action="<?=url?>">
       <input type="hidden" name="page" value="insurance">
       <input type="hidden" name="action" value="register">
@@ -31,38 +31,38 @@
       </div>
       <? if(ENABLE_QR_CODE) {?>
         <div class="row mb-3 g-3 align-items-center">
-          <div class="col">
-            <label for="ImageIDBack" class="col-form-label">(optional) Scan State ID Barcode</label>
+          <div class="col-12 col-lg-6">
+            <label for="ImageIDBack" class="col-form-label label">(optional) Scan State ID Barcode</label>
           </div>
-          <div class="col">
+          <div class="col-12 col-lg-6">
             <input type="file" accept="image/*" id="ImageIDBack"
-                name="ImageIDBack" class="form-control form-control" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment">
+                name="ImageIDBack" class="form-control file-select" onchange="onBarcodeImageChange(this,'canvasID')" capture="environment">
             <canvas hidden id="canvasID" width="0" height="0"></canvas>
           </div>
         </div>
       <?}?>
       <div class="row mb-3">
-        <div class="col-4">
+        <div class="col-6 col-lg-4">
           <div class="form-floating">
             <input type="text" id="FirstName" class="form-control" required name="FirstName" placeholder="First Name">
-            <label for="FirstName" class="col-form-label">First Name</label>
+            <label for="FirstName" class="label">First Name</label>
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-6 col-lg-4">
           <div class="form-floating">
             <input type="text" id="LastName" class="form-control" required name="LastName" placeholder="Last Name">
-            <label for="LastName">Last Name</label>
+            <label for="LastName" class="label">Last Name</label>
           </div>
         </div>
       </div>
       <div class="row mb-3">
-        <div class="col-3">
+        <div class="col-5 col-lg-3">
           <div class="form-floating">
             <input type="date" id="DateOfBirth" class="form-control" required name="DateOfBirth">
-            <label for="DateOfBirth" class="col-form-label">Date of Birth</label>
+            <label for="DateOfBirth" class="label">Date of Birth</label>
           </div>
         </div>
-        <div class="col-2">
+        <div class="col-4 col-lg-2">
           <div class="form-floating">
             <select class="form-select" required id="Gender" name="Gender">
               <option disabled selected>--select--</option>
@@ -70,12 +70,12 @@
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-            <label for="Gender">Gender</label>
+            <label for="Gender" class="label">Gender</label>
           </div>
         </div>
       </div>
       <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-9 col-lg-6">
           <div class="form-floating">
             <select class="form-select" id="Race" required name="Race">
               <option disabled selected>--select--</option>
@@ -87,12 +87,12 @@
               <option value="Other">Other</option>
               <option value="DeclineToSpecify">Decline to Specify</option>
             </select>
-            <label for="Race">Race</label>
+            <label for="Race" class="label">Race</label>
           </div>
         </div>
       </div>
       <div class="row mb-4">
-        <div class="col-6">
+        <div class="col-9 col-lg-6">
           <div class="form-floating">
             <select class="form-select" id="Ethnicity" required name="Ethnicity">
               <option disabled selected>--select--</option>
@@ -101,14 +101,14 @@
               <option value="Other">Other</option>
               <option value="DeclineToSpecify">Decline to Specify</option>
             </select>
-            <label for="Ethnicity" class="col-form-label">Ethnicity</label>
+            <label for="Ethnicity" class="label">Ethnicity</label>
           </div>
         </div>
       </div>
 
       <div class="row mb-1 g-3 align-items-center">
         <div class="col-auto">
-          <label for="RelationshipToPatient" class="col-form-label">What is your relationship to Patient?</label>
+          <label for="RelationshipToPatient" class="col-form-label label">What is your relationship to Patient?</label>
         </div>
         <div class="col-auto">
           <select class="form-select" id="RelationshipToPatient" name="RelationshipToPatient" onchange="onRelationshipSelect(this.value)">
@@ -118,20 +118,20 @@
         </div>
       </div>
       <div id='GuardianInfo' style="display: none">
-        <div class="mb-1">
+        <div class="mb-2 label">
           Since you are not the patient, enter your name:
         </div>
         <div class="row mb-3">
           <div class="col">
             <div class="form-floating">
               <input type="text" id="GuardianFirstName" name="GuardianFirstName" class="form-control" placeholder="First Name">
-              <label for="GuardianFirstName" class="col-form-label">Guardian First Name</label>
+              <label for="GuardianFirstName" class="label">Guardian First Name</label>
             </div>
           </div>
           <div class="col">
             <div class="form-floating">
               <input type="text" id="GuardianLastName" name="GuardianLastName" class="form-control" placeholder="Last Name">
-              <label for="GuardianLastName" class="col-form-label">Guardian Last Name</label>
+              <label for="GuardianLastName" class="label">Guardian Last Name</label>
             </div>
           </div>
         </div>
@@ -146,58 +146,62 @@
         <div class="col">
           <div class="form-floating">
             <input type="tel" id="Phone" class="form-control" required name="Phone" placeholder="Phone">
-            <label for="Phone" class="col-form-label">Phone</label>
+            <label for="Phone" class="label">Phone</label>
           </div>
         </div>
         <div class="col">
           <div class="form-floating">
             <input type="email" id="Email" class="form-control" required name="Email" placeholder="Email">
-            <label for="Email" class="col-form-label">Email</label>
+            <label for="Email" class="label">Email</label>
           </div>
         </div>
       </div>
-      <div class="mb-3">
+      <div class="mb-3 label">
         Address:
       </div>
       <div class="row mb-1">
-        <div class="col-8">
+        <div class="col-12 col-lg-8">
           <div class="form-floating">
             <input type="text" id="AddressStreet" class="form-control" required name="AddressStreet" placeholder="Street">
-            <label for="AddressStreet" class="col-form-label">Street</label>
+            <label for="AddressStreet" class="label">Street</label>
           </div>
         </div>
       </div>
       <div class="row mb-3 g-2">
-        <div class="col-3">
+        <div class="col-6 col-lg-3">
           <div class="form-floating">
             <input type="text" id="AddressCity" class="form-control" required name="AddressCity" placeholder="City">
-            <label for="AddressCity" class="col-form-label">City</label>
+            <label for="AddressCity" class="label">City</label>
           </div>
         </div>
-        <div class="col-2">
+        <div class="col-3 col-lg-2">
           <div class="form-floating">
             <input type="text" id="AddressState" class="form-control" required name="AddressState" placeholder="State">
-            <label for="AddressState" class="col-form-label">State</label>
+            <label for="AddressState" class="label">State</label>
           </div>
         </div>
-        <div class="col-2">
+        <div class="col-3 col-lg-2">
           <div class="form-floating">
             <input type="text" id="AddressZip" class="form-control" required name="AddressZip" placeholder="Zip">
-            <label for="AdddressZip" class="col-form-label">Zip</label>
+            <label for="AdddressZip" class="label">Zip</label>
           </div>
         </div>
       </div>
       <div class="mb-3 row">
-        <label for="Notes" class="form-label">Any notes we should know?</label>
-        <div class="col-6">
-          <textarea id="Notes" name="Notes" rows="4" class="form-control"></textarea>
+        <label for="Notes" class="form-label label">Any notes we should know?</label>
+        <div class="col-12 col-lg-6">
+          <textarea id="Notes" name="Notes" rows="4" class="form-control notes"></textarea>
         </div>
       </div>
       <input type="hidden" id="Browser" name="Browser" value="">
 
-      <button type="submit" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Submit</button>
-      <button type="button" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4"
-        onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+      <div align=center>
+        <button type="submit" class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4">Submit</button>
+        <? if (DEVELOPER_MODE) { ?>
+          <button type="button" class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4"
+            onclick="google.script.run.withSuccessHandler(onGenerate).generateRegistrationTest()">Generate</button>
+        <? } ?>
+      </div>
     </form>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>

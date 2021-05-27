@@ -8,6 +8,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;900&display=swap" rel="stylesheet">
 </head>
 
+<style>
+  #waitlist {
+    margin-left: 2%; 
+    margin-right: 2%; 
+    margin-bottom: 2%; 
+    overflow: auto; 
+    font-size: 1.5vh;
+    width: 96%;
+  }
+
+  .table-button {
+    font-size: 1.5vh !important;
+  }
+
+  @media screen and (max-width: 992px) {
+    #results {
+      font-size: 1.5vmax;
+    }
+
+    .table-button {
+      font-size: 1.5vmax !important;
+    }
+  }
+</style>
+
 <body onload="onLoad()" style="font-family: Montserrat; background-color: #f3f5e1">
 	<?var url = getScriptUrl();?>
 	
@@ -18,57 +43,60 @@
   <? if (validateStaffSession()) {?>
 
   <div class="container-lg">
-    <form id="myform" style="margin: 2%" onsubmit="google.script.run.processWaitlistForm(this)" method="GET" action="<?=url?>">
+    <form id="myform" style="margin: 2%" method="GET" action="<?=url?>">
       <div class="section-bar w100" align=center>
           Add to Waitlist
       </div><br>
       <input type='text' name="page" hidden value='waitlist'>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="CreatedBy" class="col-form-label">Created By</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" name="CreatedBy" id="CreatedBy" required class="form-control" placeholder="Created By">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="FirstName" class="col-form-label">Patient First Name</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" name="FirstName" id="FirstName" required class="form-control" placeholder="First Name">
+      <div class="row mb-3">
+        <div class="col-10 col-lg-5">
+          <div class="form-floating">
+            <input type="text" name="CreatedBy" id="CreatedBy" required class="form-control" placeholder="Created By">
+            <label for="CreatedBy" class="label">Created By</label>
+          </div>
         </div>
       </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="LastName" class="col-form-label">Patient Last Name</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" name="LastName" id="LastName" required class="form-control" placeholder="Last Name">
-        </div>
-      </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Phone" class="col-form-label">Patient Phone</label>
-        </div>
-        <div class="col-auto">
-          <input type="text" name="Phone" id="Phone" required class="form-control" placeholder="Phone">
+      <div class="row mb-3">
+        <div class="col-8 col-lg-4">
+          <div class="form-floating">
+            <input type="text" name="FirstName" id="FirstName" required class="form-control" placeholder="First Name">
+            <label for="FirstName" class="label">Patient First Name</label>
+          </div>
         </div>
       </div>
-      <div class="row mb-1 g-3 align-items-center">
-        <div class="col-auto">
-          <label for="Email" class="col-form-label">Patient Email</label>
-        </div>
-        <div class="col-auto">
-          <input type="email" name="Email" id="Email" required class="form-control" placeholder="Email">
+      <div class="row mb-3">
+        <div class="col-8 col-lg-4">
+          <div class="form-floating">
+            <input type="text" name="LastName" id="LastName" required class="form-control" placeholder="Last Name">
+            <label for="LastName" class="label">Patient Last Name</label>
+          </div>
         </div>
       </div>
-
-      <button class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Submit</button>
-      <button type='button' onclick="generateTest()" class="btn btn-primary" style="background-color: #17a7d4; border-color: #17a7d4">Generate</button>
+      <div class="row mb-3">
+        <div class="col-6 col-lg-4">
+          <div class="form-floating">
+            <input type="tel" name="Phone" id="Phone" required class="form-control" placeholder="Phone">
+            <label for="Phone" class="label">Patient Phone</label>
+          </div>
+        </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-10 col-lg-6">
+          <div class="form-floating">
+            <input type="email" name="Email" id="Email" required class="form-control" placeholder="Email">
+            <label for="Email" class="label">Patient Email</label>
+          </div>
+        </div>
+      </div>
+      <div align=center>
+        <button type="button" class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4" onclick="onFormSubmit()">Submit</button>
+        <? if (DEVELOPER_MODE) { ?>
+          <button type='button' onclick="generateTest()" class="btn btn-primary submit-button" style="background-color: #17a7d4; border-color: #17a7d4">Generate</button>
+        <? } ?>
+      </div>
     </form>
   </div>
-	<div id="waitlist" style="margin-left: 1%; margin-right: 1%; margin-bottom: 1%"></div>
+	<div id="waitlist"></div>
     <?} else {?>
     Hi! This is a staff only page.<br>
     Please <a href='<?=url?>?page=login'>login</a></li> to access the waitlist or return home if you arrived here in error.
@@ -79,115 +107,145 @@
 </body>
 <script>
 	function onLoad(){
-      <?
-      var createdBy = '';
-      if ('CreatedBy' in urlParameters){
-        createdBy = urlParameters['CreatedBy'];
+    <?
+    var createdBy = '';
+    if ('CreatedBy' in urlParameters){
+      createdBy = urlParameters['CreatedBy'];
+    }
+    ?>
+    myform.CreatedBy.value = <?=createdBy?>;
+    google.script.run.withSuccessHandler(onWaitlistData).getSheetDataAsDict('Waitlist')
+  }
+
+  function checkFields() {
+    var allAreFilled = true;
+    document.getElementById("myform").querySelectorAll("[required]").forEach(function(i) {
+      i.classList.remove("is-invalid");
+      i.classList.remove("is-valid");
+      if (!i.value) {
+        allAreFilled = false;
+        i.classList.add("is-invalid");
+      } else {
+        i.classList.add("is-valid");
       }
-      ?>
-      myform.CreatedBy.value = <?=createdBy?>;
-      google.script.run.withSuccessHandler(onWaitlistData).getSheetDataAsDict('Waitlist')
+    })
+    return allAreFilled;
+  }
+
+  function onFormSubmit() {
+    if (!checkFields()) {
+      return;
     }
+    var form = document.getElementById("myform");
+    google.script.run.withSuccessHandler(processFormSuccess).processWaitlistForm(form);
+    
+  }
 
-    function formatTimestamp(ts){
-      var date = new Date(parseInt(ts));
-      // Hours part from the timestamp
-      var hours = date.getHours();
-      // Minutes part from the timestamp
-      var minutes = "0" + date.getMinutes();
-      // Seconds part from the timestamp
-      var seconds = "0" + date.getSeconds();
+  function processFormSuccess(result) {
+    document.getElementById("myform").submit();
+  }
 
-      var day = "0" + date.getDate();
-      var month = "0" + (date.getMonth()+1);
-      var year = date.getFullYear();
+  function formatTimestamp(ts){
+    var date = new Date(parseInt(ts));
+    // Hours part from the timestamp
+    var hours = date.getHours();
+    // Minutes part from the timestamp
+    var minutes = "0" + date.getMinutes();
+    // Seconds part from the timestamp
+    var seconds = "0" + date.getSeconds();
 
-      // Will display time in 10:30:23 format
-      var formattedTime =  year + "-" + month.substr(-2) + "-" + day.substr(-2) + " " + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-      return formattedTime;
+    var day = "0" + date.getDate();
+    var month = "0" + (date.getMonth()+1);
+    var year = date.getFullYear();
+
+    // Will display time in 10:30:23 format
+    var formattedTime =  year + "-" + month.substr(-2) + "-" + day.substr(-2) + " " + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+    return formattedTime;
+  }
+
+  function formatPhone(n){
+    return n.substr(0,3) + '-' + n.substr(3,3) + '-' + n.substr(6,n.length-6)
+  }
+
+  function onWaitlistData(results){
+    html = '<table width=1600>';
+    html += `<tr bgcolor='#ddf'>`;
+    html += `<td><span style="font-weight: 500">Date / Time / Creator</span></td>`;
+    html += `<td><span style="font-weight: 500">Name / Contact Info</span></td>`;
+    html += `<td><span style="font-weight: 500">Notes</span></td>`;
+    html += `<td><span style="font-weight: 500">Status</span></td>`;
+    html += `<td><span style="font-weight: 500">Invite</span></td>`;
+    html += `<td><span style="font-weight: 500">Cancel</span></td></tr>`;
+
+    for(var i in results) {
+      var color = (i%2==0) ? '#eee' : '#fff';
+      var r = results[i]
+      var ts = formatTimestamp(r['Timestamp'])
+      var phone = formatPhone(r['Phone'])
+      var firstName = r['FirstName'];
+      var lastName = r['LastName'];
+      var createdBy = r['CreatedBy'];
+      var notes = (r['Notes'] == null) ? '': r['Notes']
+      var email = (r['Email'] == null) ? '': r['Email']
+
+      html += `<tr bgcolor='${color}' style="height: 4vh;">`;
+      html += `<td>${ts}<br> CreatedBy: ${createdBy}</td>`;
+      html += `<td>${firstName} ${lastName}<br>`;
+      html += `<a href='tel: ${phone}'>${phone}</a> <a href='mailto: ${email}'>${email}</a></td>`;
+      html += `<td>${notes}</td>`;
+      html += `<td> <div id='${r['ID']}status'>${r['Status']} </div></td>`;
+      html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED', '${r['Email']}')" class="btn btn-primary table-button">Invite</button></td>`;
+      html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED', '${r['Email']}')" class="btn btn-secondary table-button">Cancel</button></td>`;
+      html += "</tr>";
     }
+    html += "</table>"
 
-    function formatPhone(n){
-      return n.substr(0,3) + '-' + n.substr(3,3) + '-' + n.substr(6,n.length-6)
-    }
+    document.getElementById('waitlist').innerHTML = html;
+  }
 
-    function onWaitlistData(results){
-      html = '<table width=100%>';
-      html += `<tr bgcolor='#ddf'>`;
-      html += `<td><b>Date / Time / Creator</b></td>`;
-      html += `<td><b>Name / Contact Info</b></td>`;
-      html += `<td><b>Notes</b></td>`;
-      html += `<td><b>Status</b></td>`;
-      html += `<td><b>Invite</td>`;
-      html += `<td><b>Cancel</b></td></tr>`;
-
-      for(var i in results) {
-        var color = (i%2==0) ? '#eee' : '#fff';
-        var r = results[i]
-        var ts = formatTimestamp(r['Timestamp'])
-        var phone = formatPhone(r['Phone'])
-        var firstName = r['FirstName'];
-        var lastName = r['LastName'];
-        var createdBy = r['CreatedBy'];
-        var notes = (r['Notes'] == null) ? '': r['Notes']
-        var email = (r['Email'] == null) ? '': r['Email']
-
-        html += `<tr bgcolor='${color}'>`;
-        html += `<td>${ts}<br> CreatedBy: ${createdBy}</td>`;
-        html += `<td>${firstName} ${lastName}<br>`;
-        html += `<a href='tel: ${phone}'>${phone}</a> <a href='mailto: ${email}'>${email}</a></td>`;
-        html += `<td>${notes}</td>`;
-        html += `<td> <div id='${r['ID']}status'>${r['Status']} </div></td>`;
-        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','INVITED')" class="btn btn-primary">Invite</button></td>`;
-        html += `<td><button type'button' onclick="updateStatus('${r['ID']}','CANCELLED')" class="btn btn-secondary">Cancel</button></td>`;
-        html += "</tr>";
+  function onUpdateStatus(result) {
+    console.log(result)
+    if(result['Status']['updatedCells'] == 1) {
+      var status = result.input.Status.toUpperCase()
+      document.getElementById(result.input.ID+'status').innerHTML = status;
+      if(status == 'INVITED') {
+        console.log(result.input.Email);
+        google.script.run.withSuccessHandler(onSuccess).sendRegisterInvitationEmail(result.input.Email, '<?=url?>')
       }
-      html += "</table>"
-
-      document.getElementById('waitlist').innerHTML = html;
     }
-
-    function onUpdateStatus(result) {
-      if(result['Status']['updatedCells'] == 1) {
-        var status = result.input.Status.toUpperCase()
-        document.getElementById(result.input.ID+'status').innerHTML = status;
-        if(status == 'INVITED') {
-          google.script.run.withSuccessHandler(onSuccess).sendRegisterInvitationEmail(result.input.Email, '<?=url?>')
-        }
-      }
-      else
-        console.log(result)
-    }
-
-    function onSuccess(result) {
+    else
       console.log(result)
-    }
+  }
 
-    function updateStatus(id, status, email){
-      var payload = {
-        'Status': status,
-        'Email': email // don't actually have to update it, but the call back needs this to send the email
-        }
-      google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, payload)
-    }
+  function onSuccess(result) {
+    console.log(result)
+  }
 
-    function generateTest(){
-        myform.FirstName.value = randomString(8);
-        myform.LastName.value = randomString(8);
-        myform.Phone.value = Math.floor(Math.random() * 10000000000);
-        myform.Email.value = randomString(8)+'@'+randomString(8)+".com";
-    }
-
-    function randomString(length) {
-      var result           = [];
-      var characters       = 'abcdefghijklmnopqrstuvwxyz';
-      var charactersLength = characters.length;
-      for ( var i = 0; i < length; i++ ) {
-        var c = characters.charAt(Math.floor(Math.random() * charactersLength))
-        result.push(c);
+  function updateStatus(id, status, email){
+    var payload = {
+      'Status': status,
+      'Email': email // don't actually have to update it, but the call back needs this to send the email
       }
-      return result.join('').toUpperCase();
+    google.script.run.withSuccessHandler(onUpdateStatus).setSheetValueUsingHeaders('Waitlist', 'ID', id, payload)
+  }
+
+  function generateTest(){
+      myform.FirstName.value = randomString(8);
+      myform.LastName.value = randomString(8);
+      myform.Phone.value = Math.floor(Math.random() * 10000000000);
+      myform.Email.value = randomString(8)+'@'+randomString(8)+".com";
+  }
+
+  function randomString(length) {
+    var result           = [];
+    var characters       = 'abcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      var c = characters.charAt(Math.floor(Math.random() * charactersLength))
+      result.push(c);
     }
+    return result.join('').toUpperCase();
+  }
 </script>
 
 </html>
