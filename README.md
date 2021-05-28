@@ -113,30 +113,37 @@ This configruation uses the [JWT Grant Authorization](https://developers.docusig
 1. Click "Add Secret Key".  Copy the shown key to `var DOCUSIGN_SECRET_KEY = 'YOUR_SECRET_KEY'` in `config.gs`
 1. Click "Generate RSA key". A pop up will appear showing your new Public and Private Key.  Copy your public key to `var DOCUSIGN_PUBLIC_KEY = 'YOUR_PUBLIC_KEY'` in `congif.gs` and copy your private key to `var DOCUSIGN_RSA_PRIVATE_KEY = 'YOUR_RSA_PRIVATE_KEY'` in `config.gs`.  You must include all the data including the `------`.  You will also have to manually add `\n\` to the end of each row to make AppScript happy with the string that takes multiple lines. 
 
-
-1. Click "Save" to finalize your new application keys.
 1. Unfortunately, the `DOCUSIGN_RSA_PRIVATE_KEY` generated is not compatible with AppScript, and has to be converted to a non-RSA PRIVATE_KEY.  To do this, [follow this help article](https://stackoverflow.com/questions/36614051/computersasha256signature-returns-invalid-argument-key-error-when-key-is-publ/36700930#36700930).  You may need to install a terminal/command-line tool called `openssl`.  You can search on Google for "how to install openssl on ..." your platform (e.g. Windows, Max, Linux).  Once you generate the non-RSA version of your Docusign private key, copy the private key to `var DOCUSIGN_PRIVATE_KEY = 'YOUR_PRIVATE_KEY'` in `config.gs`.  Be sure to include the `------` and you will also have to manually add `\n\` to the end of each row to make AppScript happy with the string that takes multiple lines.  For example:
 
-```javascript
-var DOCUSIGN_PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n\
-MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC5akfQ5s4+nx0E\n\
-o5JTY3fNkBK1epJKyeRHKQTtpOg2NTygvj+c7J+F6tfjO0EvCj7OZuiJcAWfQnae\n\
-QJzLh8LHMvGwVycLaYCM9VP49dUJYuSxP1bQbEsUbSlK2CgzZoUu984gyNqv4Jzj\n\
-Qzxi/Z7elwP22epSTouzDM9V0+opFv+qEdImQJqB63Bg7JsZA3PQQZgkhFq6rWz1\n\
-uhLVIHtDHOxR3ce9fHaxbghWdCmKVLdAUMMppqvSK8AplGZO6XamATIE11ybyC72\n\
-...
-RKeSDV1pUliCJBWfsza5jlTs9PW3vDStqd+eh0I7q+/im7UTZLOgvdxrart4XoG\n\
-fKyqVnZ+lQQEEZM3RNEY3oAc6UBrY0wqEn11SsvxZUjLZSfcG9mGgUaHk7kpYGFR\n\
-p02MS34YFBLDIT5CwCjGaob9mAuvob0/n940RDsCgYB6AhQ/svaWUK8DFdFMrZrj\n\
-AFWtRhH++kqJu4F9gfkzDQUnfzSiXGxDGi+Xs0+ECzgq1IknmfuDZKOVynA2Tj6H\n\
-8pF6kfBskPtDDV5MA7+ZekwuzeZxl3NZuTuWwZWHF/TIPLDlm7WIfiXn6MWvNfx/\n\
-3GxOXnRQ05WJbWlz6J3+Cg==\n\
------END PRIVATE KEY-----';
-```
-9. On the Docusing Website, click on "Templates".  This is the empty version of your PDF consent form that the app can use as a template.  Create (or upload) your template. Docusign offers many ways of creating templates with many features.  Please refer to thier documentation on how to configure a template.
-10. Create a "Role" for the template called "Patient".  Hit "Next".  Set the signature location on the PDF, then "Save and Close" to finish the template.
-11. Once you've create your template and you see it in the list.  Click on the name to look at the details.
-12. In the URL, you will see something like `https://appdemo.docusign.com/templates/details/e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Your templateID is `e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Copy this to `var DOCUSIGN_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'` in `config.gs`
-13. Goto [https://admindemo.docusign.com/users](https://admindemo.docusign.com/users), and click on your user name.
-14. Copy your API Username to `var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME'` in `config.gs`
-15. Once these variables are all defined in `config.gs`, refresh your tool and instead of a spinning wait screen during the registration process, it should redirect you to a docusign flow requesting a signature.  After the signature is complete, if will send the patient a PDF copy of the consent form, upload a PDF copy to your Google Drive, and redirect the patient to the Appointment selection page.
+    ```javascript
+    var DOCUSIGN_PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n\
+    MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC5akfQ5s4+nx0E\n\
+    o5JTY3fNkBK1epJKyeRHKQTtpOg2NTygvj+c7J+F6tfjO0EvCj7OZuiJcAWfQnae\n\
+    QJzLh8LHMvGwVycLaYCM9VP49dUJYuSxP1bQbEsUbSlK2CgzZoUu984gyNqv4Jzj\n\
+    Qzxi/Z7elwP22epSTouzDM9V0+opFv+qEdImQJqB63Bg7JsZA3PQQZgkhFq6rWz1\n\
+    uhLVIHtDHOxR3ce9fHaxbghWdCmKVLdAUMMppqvSK8AplGZO6XamATIE11ybyC72\n\
+    ...
+    RKeSDV1pUliCJBWfsza5jlTs9PW3vDStqd+eh0I7q+/im7UTZLOgvdxrart4XoG\n\
+    fKyqVnZ+lQQEEZM3RNEY3oAc6UBrY0wqEn11SsvxZUjLZSfcG9mGgUaHk7kpYGFR\n\
+    p02MS34YFBLDIT5CwCjGaob9mAuvob0/n940RDsCgYB6AhQ/svaWUK8DFdFMrZrj\n\
+    AFWtRhH++kqJu4F9gfkzDQUnfzSiXGxDGi+Xs0+ECzgq1IknmfuDZKOVynA2Tj6H\n\
+    8pF6kfBskPtDDV5MA7+ZekwuzeZxl3NZuTuWwZWHF/TIPLDlm7WIfiXn6MWvNfx/\n\
+    3GxOXnRQ05WJbWlz6J3+Cg==\n\
+    -----END PRIVATE KEY-----';
+    ```
+1. Add a new Redirect URI: `https://localhost:3000/auth/docusign/callback`.  
+1. Click "Save" to finalize your changes.
+1. Now we need to grant consent for this Web App to use the Docusign account on behalf of an authorized user using [JWT Grant Authorization](https://developers.docusign.com/platform/auth/jwt/jwt-get-token/).  To do this, you need to create a URL of this format but replace `DOCUSIGN_INTEGRATION_KEY` with your intergation key from before.
+    ```
+    https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature%20impersonation&client_id=DOCUSIGN_INTEGRATION_KEY&redirect_uri=https://localhost:3000/auth/docusign/callback
+    ``` 
+1. Paste this URL into a new browser window.  It will take you to docusign and ask you to login.  After you grant permission, it will take you to an error page saying "This site can’t be reached".  Don't worry about that.  You just needed to complete the approval steps earlier.  
+    1. Optional: you can test if the docusign keys are working by going to the AppScript project, select `docusign.service.gs`, in the tool bar next to **Debug**, select `testDocusignAPI` from the drop down menu, then hit **Run**.  If all is well, the **Execution Log** should end with *pass*.
+1. On the Docusign Website, click on "Templates".  This is the empty version of your PDF consent form that the app can use as a template.  Create (or upload) your template. Docusign offers many ways of creating templates with many features.  Please refer to thier documentation on how to configure a template.
+1. Create a "Role" for the template called "Patient".  Hit "Next".  Set the signature location on the PDF, then "Save and Close" to finish the template.
+1. Once you've create your template and you see it in the list.  Click on the name to look at the details.
+1. In the URL, you will see something like `https://appdemo.docusign.com/templates/details/e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Your templateID is `e61c36b6-cca8-44df-97d3-2f1abe3504dc`.  Copy this to `var DOCUSIGN_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'` in `config.gs`
+1. Goto [https://admindemo.docusign.com/users](https://admindemo.docusign.com/users), and click on your user name.
+1. Copy your API Username to `var DOCUSIGN_API_USERNAME = 'YOUR_API_USERNAME'` in `config.gs`
+1. Once these variables are all defined in `config.gs`, refresh your tool and instead of a spinning wait screen during the registration process, it should redirect you to a docusign flow requesting a signature.  After the signature is complete, if will send the patient a PDF copy of the consent form, upload a PDF copy to your Google Drive, and redirect the patient to the Appointment selection page.
+1. Once your testing is working, you will have to change the DOCUSIGN_OAUTH_HOST from `account-d.docusign.com` to `account.docusign.com` in `config.gs`, and perform the consent process again with this in the URL. (TODO: move this from docusign.service.gs to config.gs and create better helper function)
