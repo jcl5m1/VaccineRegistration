@@ -374,7 +374,7 @@ function logRedirectUri() {
 //https://developers.docusign.com/platform/auth/jwt/jwt-get-token/
 function getApplicationConsentURI() {
   var redirect_uri = 'https://localhost:3000/auth/docusign/callback' // not important, just need a result page after approval
-  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;
+  var uri = 'https://account-d.docusign.com/oauth/auth?response_type=code&scope=signature%20impersonation&client_id=' + DOCUSIGN_INTEGRATION_KEY + '&redirect_uri=' + redirect_uri;
   return uri;
 }
 

@@ -67,25 +67,15 @@
           <label for="ImageInsuranceFront" class="col-form-label label">Photo of FRONT</label>
         </div>
         <div class="col-8 col-lg-4">
-          <? if(DEVELOPER_MODE) { ?>
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control file-select" capture="environment" 
-          onchange="uploadImage(this,'canvasInsuranceFront')">
-          <? } else { ?>
-            <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control file-select" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceFront')" required>
-          <? } ?>
+          <input type="file" accept="image/*" name="ImageInsuranceFront" id="ImageInsuranceFront" class="form-control file-select" capture="environment" 
+        onchange="uploadImage(this,'canvasInsuranceFront')">
         </div>
         <div class="col-4 col-lg-2">
           <label for="ImageInsuranceBack" class="col-form-label label">Photo of BACK</label>
         </div>
         <div class="col-8 col-lg-4">
-          <? if(DEVELOPER_MODE) { ?>
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsuranceBack" class="form-control file-select" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')">
-          <? } else { ?>
-            <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsuranceBack" class="form-control file-select" capture="environment" 
-            onchange="uploadImage(this,'canvasInsuranceBack')" required>
-          <? } ?>
+          <input type="file" accept="image/*" name="ImageInsuranceBack" id="ImageInsuranceBack" class="form-control file-select" capture="environment" 
+          onchange="uploadImage(this,'canvasInsuranceBack')">
         </div>
       </div>
       <div class="row" id="PolicyHolderDiv" hidden>
@@ -275,6 +265,8 @@
       switch(elem.value) {
         case 'Private':
           document.getElementById("ImageDiv").hidden = false;
+          document.getElementById("ImageInsuranceFront").required = !<?=DEVELOPER_MODE?>;
+          document.getElementById("ImageInsuranceBack").required = !<?=DEVELOPER_MODE?>;
           document.getElementById("PolicyHolderDiv").hidden = false;
           document.getElementById("InsurancePolicyHolder").required = true;
           document.getElementById("InsurancePolicyHolderDateOfBirth").required = true;
@@ -291,6 +283,8 @@
           break;
         case 'Medicare':
           document.getElementById("ImageDiv").hidden = false;
+          document.getElementById("ImageInsuranceFront").required = !<?=DEVELOPER_MODE?>;
+          document.getElementById("ImageInsuranceBack").required = !<?=DEVELOPER_MODE?>;
           document.getElementById("PolicyHolderDiv").hidden = false;
           document.getElementById("InsurancePolicyHolder").required = true;
           document.getElementById("InsurancePolicyHolderDateOfBirth").required = true;
@@ -307,6 +301,8 @@
           break;
         default:
           document.getElementById("ImageDiv").hidden = true;
+          document.getElementById("ImageInsuranceFront").required = false;
+          document.getElementById("ImageInsuranceBack").required = false;
           document.getElementById("PolicyHolderDiv").hidden = true;
           document.getElementById("InsurancePolicyHolder").required = false;
           document.getElementById("InsurancePolicyHolderDateOfBirth").required = false;
