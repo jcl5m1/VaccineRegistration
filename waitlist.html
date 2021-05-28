@@ -164,6 +164,7 @@
   }
 
   function formatPhone(n){
+    n = n.replace(/\D/g, '');
     return n.substr(0,3) + '-' + n.substr(3,3) + '-' + n.substr(6,n.length-6)
   }
 
