@@ -372,7 +372,7 @@ function showMatches() {
 
       var highrisk = matches[i]['HighRisk'];
       var highriskHTML = ''
-      if((highrisk == '')||(highrisk === undefined)||(highrisk == false)||(highrisk == 'FALSE')) {
+      if((highrisk == null)||(highrisk == '')||(highrisk === undefined)||(highrisk == false)||(highrisk == 'FALSE')) {
         highriskHTML = `<button class='low-risk-button' type='button' id="highrisk${id}" onclick="toggleHighRisk('${id}')">Low Risk</button>`
       } else {
         highriskHTML = `<button class='high-risk-button' type='button' id="highrisk${id}" onclick="toggleHighRisk('${id}')">High Risk</button>`
